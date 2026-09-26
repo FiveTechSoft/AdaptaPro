@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AdaptaPro ERP | Operaciones Inteligentes 2030</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/sql-wasm.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -501,6 +502,19 @@
   }
   .ap-human { border: 1px solid rgba(96,165,250,.4); background: rgba(59,130,246,.17); border-radius:50%; width:36px; height:36px; font-size:20px; cursor:pointer; color:#fff; }
   .ap-human:hover { background:rgba(59,130,246,.38); }
+  .ap-tabs { display:flex; border-bottom:1px solid #344361; }.ap-tabs button { flex:1; background:#17213a; color:#e0e6ed; border:0; padding:10px; cursor:pointer; }
+  [hidden] { display:none !important; }
+  #ap-supervision-panel { padding:12px; max-height:400px; overflow:auto; user-select:text; }
+  .ap-panel-title { font-size:12px; text-transform:uppercase; font-weight:700; color:#a5b4fc; margin:10px 0; }
+  #ap-state { font-size:12px; margin:9px 0; color:#94a3b8; }
+  #ap-stock,#ap-orders { max-height:92px; overflow:auto; margin:8px 0; }
+  .ap-line { font-size:12px; padding:5px 0; border-bottom:1px solid #30415a; }
+  .ap-warn { color:#fbbf24; }
+  .ap-action,.ap-proposal button { background:#183d70; border:1px solid #4079be; color:#fff; border-radius:6px; padding:6px 10px; cursor:pointer; margin:4px 5px 4px 0; }
+  .ap-action:hover,.ap-proposal button:hover { background:#29508a; }
+  .ap-proposal { border-left:3px solid #4e95ec; padding:8px; margin:7px 0; background:#101e32; font-size:12px; line-height:1.5; }
+  .ap-proposal small { color:#aabbd0; }.ap-status { color:#fbbf24; }
+  @media (max-width: 800px) { .chat-window { max-width:calc(100vw - 20px); left:10px; } }
 </style>
 </head>
 <body>
@@ -542,37 +556,37 @@
 
       <section class="metrics">
         <div class="metric-card">
-          <div class="metric-label">Ingresos Totales</div>
-          <div class="metric-value">$12.4M</div>
-          <div class="metric-change up">↑ 9.2%</div>
+          <div class="metric-label">Valor de pedidos</div>
+          <div class="metric-value" id="ap-order-value">...</div>
+          <div class="metric-change neutral">Pedidos registrados</div>
         </div>
         <div class="metric-card">
-          <div class="metric-label">Margen Neto</div>
-          <div class="metric-value">18.5%</div>
-          <div class="metric-change up">↑</div>
+          <div class="metric-label">Unidades reservadas</div>
+          <div class="metric-value" id="ap-reservations">...</div>
+          <div class="metric-change neutral">Inventario</div>
         </div>
         <div class="metric-card">
-          <div class="metric-label">Optimización de Inventario</div>
-          <div class="metric-value">94%</div>
-          <div class="metric-change neutral">●</div>
+          <div class="metric-label">SKU sin alerta de stock</div>
+          <div class="metric-value" id="ap-stock-metric">...</div>
+          <div class="metric-change neutral">Estado de inventario</div>
         </div>
         <div class="metric-card">
-          <div class="metric-label">Satisfacción del Cliente</div>
-          <div class="metric-value">4.8/5</div>
-          <div class="metric-change up">★</div>
+          <div class="metric-label">Decisiones pendientes</div>
+          <div class="metric-value" id="ap-pending-metric">...</div>
+          <div class="metric-change neutral">Supervisión humana</div>
         </div>
       </section>
 
       <section class="mid-row">
         <div class="agents-card">
-          <div class="section-title">Agentes Activos</div>
+          <div class="section-title">Agentes</div>
           <div class="agent-item">
             <div class="agent-badge a">A</div>
             <div class="agent-info">
               <div class="agent-name">ALPHA</div>
               <div class="agent-role">Inventario</div>
             </div>
-            <div class="agent-status">Operando</div>
+            <div class="agent-status">Conexión pendiente</div>
           </div>
           <div class="agent-item">
             <div class="agent-badge b">B</div>
@@ -580,7 +594,7 @@
               <div class="agent-name">BETA</div>
               <div class="agent-role">Ventas</div>
             </div>
-            <div class="agent-status">Operando</div>
+            <div class="agent-status">Próximamente</div>
           </div>
           <div class="agent-item">
             <div class="agent-badge g">G</div>
@@ -588,33 +602,17 @@
               <div class="agent-name">GAMMA</div>
               <div class="agent-role">Logística</div>
             </div>
-            <div class="agent-status">Operando</div>
+            <div class="agent-status">Próximamente</div>
           </div>
         </div>
 
         <div class="alerts-card">
-          <div class="section-title">Alertas de IA y Acciones de Agentes</div>
-          <div class="alert-item low">
-            <div class="alert-icon">⚠️</div>
-            <div class="alert-content">
-              <div class="alert-title">Inventario Bajo</div>
-              <div class="alert-desc">El agente <strong>ALPHA</strong> optimizó pedido de materias primas para SKU-451 <span style="color:#f59e0b">(-15% de costos)</span></div>
-            </div>
-          </div>
-          <div class="alert-item anomaly">
-            <div class="alert-icon">📉</div>
-            <div class="alert-content">
-              <div class="alert-title">Anomalía de Demanda</div>
-              <div class="alert-desc">El agente <strong>BETA</strong> ajustó pronóstico de ventas del T3 para Región LATAM <span style="color:#22c55e">(+12%)</span></div>
-            </div>
-          </div>
-          <div class="alert-item risk">
-            <div class="alert-icon">🔗</div>
-            <div class="alert-content">
-              <div class="alert-title">Riesgo de Cadena de Suministro</div>
-              <div class="alert-desc">Ruta alterna activada por el agente <strong>GAMMA</strong> <span style="color:#22c55e">(Ahorro: 18 h de retraso)</span></div>
-            </div>
-          </div>
+          <div class="section-title">Inventario</div>
+          <div id="ap-state">Cargando datos...</div>
+          <div id="ap-stock"></div>
+          <button class="ap-action" id="ap-analyze">Analizar inventario con ALPHA</button>
+          <div class="section-title" style="margin-top:16px">Pedidos</div>
+          <div id="ap-orders"></div>
         </div>
       </section>
 
@@ -641,18 +639,20 @@
       <h4>💬 CHAT CON ADAPTAPRO IA</h4>
       <div class="close" onclick="document.getElementById('chatWindow').style.display='none'">✕</div>
     </div>
-    <div class="chat-body">
-      <div class="chat-msg user">
-        ¿Cómo impactará la huelga en el puerto a nuestros pedidos del T4?
-      </div>
-      <div class="chat-msg ai">
-        Analizando la huelga... Agente <span class="agent-tag">GAMMA</span> sugiere desviar envíos a Callao y ajustar plazos de entrega en 3 días.<br>
-        Impacto estimado: <strong>2% costo operativo</strong>. ¿Implementar?
+    <div class="ap-tabs"><button id="ap-tab-chat">Chat</button><button id="ap-tab-supervision">Supervisión <span id="ap-pending">0</span></button></div>
+    <div id="ap-chat-panel">
+      <div class="chat-body"><div class="chat-msg ai">Consulta el inventario con ALPHA. Las propuestas requieren tu aprobación.</div></div>
+      <div class="chat-footer">
+        <input type="text" placeholder="Escribe un mensaje..." id="chatInput">
+        <button onclick="sendMessage()" aria-label="Enviar mensaje">➤</button>
       </div>
     </div>
-    <div class="chat-footer">
-      <input type="text" placeholder="Escribe un mensaje..." id="chatInput">
-      <button onclick="sendMessage()">➤</button>
+    <div id="ap-supervision-panel" hidden>
+      <div class="ap-panel-title">Propuestas de compra</div>
+      <div id="ap-queue"></div>
+      <div class="ap-panel-title">Actividad reciente</div>
+      <div id="ap-audit"></div>
+      <button class="ap-action" id="ap-reset">Restablecer datos locales</button>
     </div>
   </div>
 
@@ -792,40 +792,121 @@
     }
   });
 
-  // ========== Chat ==========
-  function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const text = input.value.trim();
-    if (!text) return;
-
-    const body = document.querySelector('.chat-body');
-    const userMsg = document.createElement('div');
-    userMsg.className = 'chat-msg user';
-    userMsg.textContent = text;
-    body.appendChild(userMsg);
-    input.value = '';
-
-    setTimeout(() => {
-      const aiMsg = document.createElement('div');
-      aiMsg.className = 'chat-msg ai';
-      aiMsg.innerHTML = `Procesando con agentes IA... <span class="agent-tag">ALPHA</span> + <span class="agent-tag">GAMMA</span> están evaluando el impacto en tiempo real.`;
-      body.appendChild(aiMsg);
-      body.scrollTop = body.scrollHeight;
-    }, 800);
-
-    body.scrollTop = body.scrollHeight;
-  }
-
-  document.getElementById('chatInput').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendMessage();
-  });
-
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => {
       document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
       item.classList.add('active');
     });
   });
+</script>
+<script>
+'use strict';
+const AP = {
+  model: 'mimo-v2.6-flash-free',
+  endpoints: ['https://api.fivetechsoft.com/zen/v1','https://api.fivetechsupport.com/zen/v1'],
+  db: null, busy: false, store: null,
+  money: n => new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'}).format(n/100),
+  esc: s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),
+  rows(sql,args=[]){ const q=this.db.prepare(sql); try {q.bind(args); const out=[]; while(q.step())out.push(q.getAsObject()); return out;} finally {q.free();} },
+  one(sql,args=[]){ return this.rows(sql,args)[0]; },
+  async storage(){ return new Promise((resolve,reject)=>{const r=indexedDB.open('adaptapro-local-v1',1); r.onupgradeneeded=()=>r.result.createObjectStore('database');r.onerror=()=>reject(r.error);r.onsuccess=()=>resolve(r.result);}); },
+  async loadBytes(){return new Promise((resolve,reject)=>{const t=this.store.transaction('database','readonly');const r=t.objectStore('database').get('main');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});},
+  async persist(){const bytes=this.db.export();return new Promise((resolve,reject)=>{const t=this.store.transaction('database','readwrite');t.objectStore('database').put(bytes,'main');t.oncomplete=resolve;t.onerror=()=>reject(t.error);});},
+  async reset(){if(!confirm('¿Restablecer los datos locales de este navegador? Se borrarán decisiones y movimientos hechos aquí.'))return;await new Promise((resolve,reject)=>{const t=this.store.transaction('database','readwrite');t.objectStore('database').delete('main');t.oncomplete=resolve;t.onerror=()=>reject(t.error);});this.db?.close();this.db=null;await this.init();this.note('Datos locales restablecidos.');},
+  tx(fn){this.db.run('BEGIN IMMEDIATE');try{const v=fn();this.db.run('COMMIT');return v;}catch(e){this.db.run('ROLLBACK');throw e;}},
+  async init(){
+    try{
+      const SQL=await initSqlJs({locateFile:f=>'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/'+f});
+      this.store=await this.storage();const saved=await this.loadBytes();this.db=saved?new SQL.Database(saved):new SQL.Database();this.db.run('PRAGMA foreign_keys=ON');
+      if(!saved){
+        const [schema,seed]=await Promise.all(['data/schema.sql','data/seed/demo.json'].map(async p=>{const r=await fetch(p);if(!r.ok)throw Error('No se pudo cargar '+p);return p.endsWith('.json')?r.json():r.text();}));
+        this.db.run(schema);this.tx(()=>{for(const [table,items] of Object.entries(seed)){if(table==='meta')continue;for(const item of items){const keys=Object.keys(item);this.db.run(`INSERT INTO ${table} (${keys.join(',')}) VALUES (${keys.map(()=>'?').join(',')})`,keys.map(k=>item[k]));}}});
+        await this.persist();
+      }
+      this.render();this.note('Datos locales listos. Las decisiones requieren supervisión humana.');
+    }catch(e){this.note('No se pudieron cargar los datos: '+e.message,true);console.error(e);}
+  },
+  note(text,error=false){const e=document.getElementById('ap-state');if(e){e.textContent=text;e.style.color=error?'#fca5a5':'#94a3b8';}},
+  render(){
+    if(!this.db)return;
+    const stock=this.rows('SELECT * FROM stock_status ORDER BY sku');
+    const queue=this.rows(`SELECT q.*,p.sku,p.proposed_qty,p.unit_cost_cents,p.currency,p.rationale,p.supplier_id,p.agent_id,
+       s.name AS supplier FROM approval_queue q JOIN purchase_proposals p ON p.id=q.proposal_id JOIN suppliers s ON s.id=p.supplier_id ORDER BY p.created_at DESC`);
+    const pending=queue.filter(x=>x.status==='pendiente');
+    const stockEl=document.getElementById('ap-stock');
+    stockEl.innerHTML=stock.map(x=>`<div class="ap-line"><b>${this.esc(x.sku)}</b> ${this.esc(x.name)} · ${x.available} disponibles / ${x.on_hand} físicos ${x.needs_restock?'<span class="ap-warn">· Reposición necesaria</span>':''}</div>`).join('');
+    document.getElementById('ap-queue').innerHTML=queue.map(x=>`<div class="ap-proposal"><b>${this.esc(x.proposal_id)} · ${this.esc(x.sku)}</b> · ${x.proposed_qty} unidades · ${this.money(x.proposed_qty*x.unit_cost_cents)}<br><small>${this.esc(x.supplier)} · ${this.esc(x.rationale)}</small><br><span class="ap-status">${this.esc(x.status)}</span> ${x.status==='pendiente'?`<button data-decision="aprobada" data-id="${this.esc(x.proposal_id)}">Aprobar</button><button data-decision="rechazada" data-id="${this.esc(x.proposal_id)}">Rechazar</button>`:''} ${x.status==='aprobada'&&!this.one('SELECT id FROM stock_movements WHERE proposal_id=?',[x.proposal_id])?`<button data-receive="${this.esc(x.proposal_id)}">Registrar recepción</button>`:''}</div>`).join('')||'<p>No hay propuestas.</p>';
+    document.getElementById('ap-pending').textContent=pending.length;
+    document.getElementById('ap-pending-metric').textContent=pending.length;
+    const total=this.one('SELECT coalesce(sum(quantity*unit_price_cents),0) AS n FROM sales_order_lines');
+    document.getElementById('ap-order-value').textContent=this.money(total.n);
+    const reservations=this.one('SELECT coalesce(sum(reserved),0) AS n FROM inventory');
+    document.getElementById('ap-reservations').textContent=reservations.n;
+    document.getElementById('ap-audit').innerHTML=this.rows('SELECT actor,action,entity_id,occurred_at FROM audit_log ORDER BY occurred_at DESC LIMIT 6').map(e=>`<div class="ap-line">${this.esc(e.actor)} · ${this.esc(e.action)} · ${this.esc(e.entity_id)}</div>`).join('');
+    document.getElementById('ap-orders').innerHTML=this.rows('SELECT id,customer_name,region,status FROM sales_orders ORDER BY placed_at DESC LIMIT 8').map(e=>`<div class="ap-line"><b>${this.esc(e.id)}</b> · ${this.esc(e.customer_name)} · ${this.esc(e.region)} · ${this.esc(e.status)}</div>`).join('');
+    document.querySelectorAll('[data-decision]').forEach(b=>b.onclick=()=>this.decide(b.dataset.id,b.dataset.decision));
+    document.querySelectorAll('[data-receive]').forEach(b=>b.onclick=()=>this.receive(b.dataset.receive));
+    const low=stock.filter(x=>x.needs_restock).length;
+    const metric=document.getElementById('ap-stock-metric');if(metric)metric.textContent=stock.length-low+'/'+stock.length;
+  },
+  async decide(id,status){
+    const actor=prompt('Nombre de quien supervisa esta decisión:');if(!actor?.trim())return;
+    const reason=prompt('Motivo de la decisión:');if(!reason?.trim())return;
+    const p=this.one('SELECT * FROM purchase_proposals WHERE id=?',[id]);if(!p)return;
+    if(!confirm(`${status==='aprobada'?'¿Aprobar':'¿Rechazar'} ${id}: ${p.proposed_qty} unidades de ${p.sku} por ${this.money(p.proposed_qty*p.unit_cost_cents)}? Esta decisión queda registrada. Aprobar no registra una recepción ni efectúa una compra.`))return;
+    try{this.tx(()=>{this.db.run('UPDATE approval_queue SET status=?,decided_by=?,decided_at=?,decision_reason=? WHERE proposal_id=? AND status=?',[status,actor.trim(),new Date().toISOString(),reason.trim(),id,'pendiente']);if(!this.db.getRowsModified())throw Error('La propuesta ya se había decidido');this.audit(actor.trim(),'decision_'+status,'purchase_proposal',id,{reason:reason.trim()});});await this.persist();this.render();this.note('Decisión registrada: '+status+'.');}catch(e){this.note(e.message,true);}
+  },
+  async receive(id){
+    const p=this.one(`SELECT p.* FROM purchase_proposals p JOIN approval_queue q ON q.proposal_id=p.id WHERE p.id=? AND q.status='aprobada'`,[id]);if(!p)return;
+    const actor=prompt('Nombre de quien registra la recepción:');if(!actor?.trim())return;
+    if(!confirm(`¿Registrar recepción de ${p.proposed_qty} unidades de ${p.sku}? Esto aumentará el stock local. Usa esta acción solo cuando la entrega se haya comprobado.`))return;
+    try{this.tx(()=>{if(this.one('SELECT id FROM stock_movements WHERE proposal_id=?',[id]))throw Error('Recepción ya registrada');const now=new Date().toISOString();this.db.run('UPDATE inventory SET on_hand=on_hand+?,updated_at=? WHERE sku=?',[p.proposed_qty,now,p.sku]);this.db.run('INSERT INTO stock_movements VALUES(?,?,?,?,?,?)',['MOV-'+id,p.sku,p.proposed_qty,'recepcion_registrada',id,now]);this.audit(actor.trim(),'recepcion_registrada','purchase_proposal',id,{sku:p.sku,quantity:p.proposed_qty});});await this.persist();this.render();this.note('Recepción registrada; existencias actualizadas.');}catch(e){this.note(e.message,true);}
+  },
+  audit(actor,action,type,id,details){this.db.run('INSERT INTO audit_log VALUES(?,?,?,?,?,?,?)',[crypto.randomUUID(),new Date().toISOString(),actor,action,type,id,JSON.stringify(details)]);},
+  context(){return {stock:this.rows('SELECT * FROM stock_status'),orders:this.rows("SELECT l.order_id,l.sku,l.quantity,o.status,o.region FROM sales_order_lines l JOIN sales_orders o ON o.id=l.order_id"),proposals:this.rows('SELECT p.id,p.sku,p.proposed_qty,p.rationale,q.status FROM purchase_proposals p JOIN approval_queue q ON p.id=q.proposal_id')};},
+  async propose(args){
+    const sku=String(args.sku||'');const x=this.one('SELECT * FROM stock_status WHERE sku=?',[sku]);if(!x||!x.needs_restock)throw Error('SKU inexistente o sin necesidad de reposición');
+    if(this.one("SELECT p.id FROM purchase_proposals p JOIN approval_queue q ON q.proposal_id=p.id WHERE p.sku=? AND q.status='pendiente'",[sku]))return 'Ya hay una propuesta pendiente para '+sku;
+    const supplier=this.one('SELECT sp.*,s.name FROM supplier_products sp JOIN suppliers s ON s.id=sp.supplier_id WHERE sp.sku=? AND s.active=1 ORDER BY sp.unit_cost_cents LIMIT 1',[sku]);if(!supplier)throw Error('No hay proveedor activo');
+    const qty=Math.max(x.target_stock-x.available,supplier.min_order_qty);const id='PROP-'+Date.now();
+    this.tx(()=>{this.db.run('INSERT INTO purchase_proposals VALUES(?,?,?,?,?,?,?,?,?)',[id,sku,supplier.supplier_id,qty,supplier.unit_cost_cents,'EUR','ALPHA',String(args.reason||'Stock por debajo del punto de reposición').slice(0,500),new Date().toISOString()]);this.db.run('INSERT INTO approval_queue(proposal_id,status) VALUES(?,?)',[id,'pendiente']);this.audit('ALPHA','propuesta_creada','purchase_proposal',id,{sku,quantity:qty});});await this.persist();this.render();return `Propuesta ${id} creada: ${qty} unidades de ${sku} por ${this.money(qty*supplier.unit_cost_cents)}. Pendiente de aprobación humana; no se ha efectuado compra.`;
+  },
+  // Único punto de conexión del modelo: cambiar endpoints, modelo o autenticación aquí.
+  async modelCall(messages,tools){
+    const body={model:this.model,messages,temperature:0.2,stream:false};if(tools)body.tools=tools;
+    let last;
+    for(const endpoint of this.endpoints){
+      const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),25000);
+      try{
+        const r=await fetch(endpoint+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer public'},body:JSON.stringify(body),signal:controller.signal});
+        if(!r.ok){last=new Error('Servicio no disponible (HTTP '+r.status+')');continue;}
+        const j=await r.json();if(!j.choices?.[0]?.message)throw Error('Respuesta vacía');return j.choices[0].message;
+      }catch(e){last=e;}finally{clearTimeout(timeout);}
+    }
+    throw last||Error('Servicio no disponible');
+  },
+  tab(which){document.getElementById('chatWindow').style.display='block';document.getElementById('ap-chat-panel').hidden=which!=='chat';document.getElementById('ap-supervision-panel').hidden=which!=='supervision';},
+  append(text,who){const el=document.createElement('div');el.className='chat-msg '+who;el.textContent=text;const body=document.querySelector('.chat-body');body.append(el);body.scrollTop=body.scrollHeight;},
+  async ask(text){if(this.busy||!this.db)return;this.busy=true;this.tab('chat');this.append(text,'user');this.note('Analizando con ALPHA...');
+    try{
+      const tools=[{type:'function',function:{name:'proponer_reposicion',description:'Crear una propuesta de reposición de inventario, siempre pendiente de aprobación humana. No compra ni cambia stock.',parameters:{type:'object',properties:{sku:{type:'string'},reason:{type:'string'}},required:['sku','reason']}}}];
+      const messages=[{role:'system',content:'Eres ALPHA, agente de inventario de AdaptaPro. Responde en español con hechos del contexto. Puedes proponer reposición con la herramienta si el stock está bajo. Nunca digas que has comprado, aprobado o recibido mercancía; solo un humano decide. No inventes datos ni afirmes que BETA/GAMMA ejecutaron acciones. No reveles proveedores de modelos.'},{role:'user',content:'Datos vigentes: '+JSON.stringify(this.context())+'\nSolicitud: '+text}];
+      let m=await this.modelCall(messages,tools);
+      if(m.tool_calls?.length){messages.push(m);for(const c of m.tool_calls.slice(0,2)){let result;try{if(c.function.name!=='proponer_reposicion')throw Error('Herramienta no admitida');result=await this.propose(JSON.parse(c.function.arguments));}catch(e){result='Error: '+e.message;}messages.push({role:'tool',tool_call_id:c.id,content:result});}m=await this.modelCall(messages);}
+      this.append(m.content||'No hubo respuesta del agente.','ai');this.note('Análisis finalizado · '+this.rows("SELECT count(*) AS n FROM approval_queue WHERE status='pendiente'")[0].n+' pendientes');
+    }catch(e){this.append('No se pudo contactar al agente. Tus datos y propuestas locales siguen disponibles.','ai');this.note('Agente no disponible: '+e.message,true);}finally{this.busy=false;}
+  }
+};
+window.AP=AP;
+function sendMessage(){const input=document.getElementById('chatInput');const text=input.value.trim();if(!text)return;input.value='';AP.ask(text);}
+document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendMessage();});
+document.getElementById('ap-analyze').addEventListener('click',()=>AP.ask('Revisa el stock disponible y los pedidos. Si hay riesgo de rotura, crea una propuesta de reposición pendiente de supervisión.'));
+document.getElementById('ap-reset').addEventListener('click',()=>AP.reset());
+document.getElementById('ap-tab-chat').addEventListener('click',()=>AP.tab('chat'));
+document.getElementById('ap-tab-supervision').addEventListener('click',()=>AP.tab('supervision'));
+document.querySelector('.ap-human').addEventListener('click',()=>AP.tab('supervision'));
+AP.init();
+
 </script>
 </body>
 </html>

@@ -507,23 +507,23 @@
   <div class="container">
     <aside class="sidebar">
       <div class="logo">
-        <div class="logo-icon">AI</div>
+        <div class="logo-icon">IA</div>
         <div class="logo-text">AdaptaPro</div>
       </div>
       <div class="nav-item active"><span class="icon">📊</span> Dashboard</div>
       <div class="nav-item"><span class="icon">💰</span> Finanzas</div>
       <div class="nav-item"><span class="icon">📦</span> Suministro</div>
-      <div class="nav-item"><span class="icon">🚚</span> Logística AI</div>
+      <div class="nav-item"><span class="icon">🚚</span> Logística IA</div>
       <div class="nav-item"><span class="icon">📋</span> Gestión de Stock</div>
       <div class="nav-item"><span class="icon">🛒</span> Ventas</div>
       <div class="nav-item"><span class="icon">🎯</span> CRM Predictivo</div>
       <div class="nav-item"><span class="icon">💲</span> Precios Dinámicos</div>
       <div class="nav-item"><span class="icon">👥</span> RRHH</div>
-      <div class="nav-item"><span class="icon">🧠</span> Talento AI</div>
+      <div class="nav-item"><span class="icon">🧠</span> Talento IA</div>
       <div class="nav-item"><span class="icon">📅</span> Planificación</div>
       <div class="nav-item"><span class="icon">🏭</span> Producción</div>
       <div class="nav-item"><span class="icon">📈</span> Reportes Avanzados</div>
-      <div class="nav-item"><span class="icon">🤖</span> Agentes AI</div>
+      <div class="nav-item"><span class="icon">🤖</span> Agentes IA</div>
     </aside>
 
     <main class="main">
@@ -595,21 +595,21 @@
             <div class="alert-icon">⚠️</div>
             <div class="alert-content">
               <div class="alert-title">Inventario Bajo</div>
-              <div class="alert-desc">Agent <strong>ALPHA</strong> optimizó pedido de materias primas para SKU-451 <span style="color:#f59e0b">(-15% costos)</span></div>
+              <div class="alert-desc">El agente <strong>ALPHA</strong> optimizó pedido de materias primas para SKU-451 <span style="color:#f59e0b">(-15% de costos)</span></div>
             </div>
           </div>
           <div class="alert-item anomaly">
             <div class="alert-icon">📉</div>
             <div class="alert-content">
               <div class="alert-title">Anomalía de Demanda</div>
-              <div class="alert-desc">Agent <strong>BETA</strong> ajustó pronóstico de ventas Q3 para Región LATAM <span style="color:#22c55e">(+12%)</span></div>
+              <div class="alert-desc">El agente <strong>BETA</strong> ajustó pronóstico de ventas del T3 para Región LATAM <span style="color:#22c55e">(+12%)</span></div>
             </div>
           </div>
           <div class="alert-item risk">
             <div class="alert-icon">🔗</div>
             <div class="alert-content">
               <div class="alert-title">Riesgo de Cadena de Suministro</div>
-              <div class="alert-desc">Ruta alterna activada por Agent <strong>GAMMA</strong> <span style="color:#22c55e">(Ahorro: 18h delay)</span></div>
+              <div class="alert-desc">Ruta alterna activada por el agente <strong>GAMMA</strong> <span style="color:#22c55e">(Ahorro: 18 h de retraso)</span></div>
             </div>
           </div>
         </div>
@@ -617,7 +617,7 @@
 
       <section class="charts-row">
         <div class="chart-card">
-          <h3>Demand Forecast Q3/Q4</h3>
+          <h3>Pronóstico de demanda T3/T4</h3>
           <div class="chart-container">
             <canvas id="demandChart"></canvas>
           </div>
@@ -635,15 +635,15 @@
   <!-- CHAT WINDOW MOVIBLE -->
   <div class="chat-window" id="chatWindow">
     <div class="chat-header" id="chatHeader">
-      <h4>💬 CHAT CON ADAPTAPRO AI</h4>
+      <h4>💬 CHAT CON ADAPTAPRO IA</h4>
       <div class="close" onclick="document.getElementById('chatWindow').style.display='none'">✕</div>
     </div>
     <div class="chat-body">
       <div class="chat-msg user">
-        ¿Cómo impactará la huelga en el puerto a nuestros pedidos de Q4?
+        ¿Cómo impactará la huelga en el puerto a nuestros pedidos del T4?
       </div>
       <div class="chat-msg ai">
-        Analizando fue huelga... Agente <span class="agent-tag">GAMMA</span> sugiere desviar envíos a Callao y ajustar plazos de entrega en 3 días.<br>
+        Analizando la huelga... Agente <span class="agent-tag">GAMMA</span> sugiere desviar envíos a Callao y ajustar plazos de entrega en 3 días.<br>
         Impacto estimado: <strong>2% costo operativo</strong>. ¿Implementar?
       </div>
     </div>
@@ -709,11 +709,11 @@
   new Chart(demandCtx, {
     type: 'bar',
     data: {
-      labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+      labels: ['T1', 'T2', 'T3', 'T4'],
       datasets: [
         {
           type: 'line',
-          label: 'Forecast',
+          label: 'Pronóstico',
           data: [320, 480, 620, 780],
           borderColor: '#60a5fa',
           backgroundColor: 'rgba(96, 165, 250, 0.1)',
@@ -725,7 +725,7 @@
         },
         {
           type: 'bar',
-          label: 'Actual',
+          label: 'Real',
           data: [280, 420, 580, 720],
           backgroundColor: [
             'rgba(59, 130, 246, 0.7)',
@@ -805,7 +805,7 @@
     setTimeout(() => {
       const aiMsg = document.createElement('div');
       aiMsg.className = 'chat-msg ai';
-      aiMsg.innerHTML = `Procesando con agentes AI... <span class="agent-tag">ALPHA</span> + <span class="agent-tag">GAMMA</span> están evaluando el impacto en tiempo real.`;
+      aiMsg.innerHTML = `Procesando con agentes IA... <span class="agent-tag">ALPHA</span> + <span class="agent-tag">GAMMA</span> están evaluando el impacto en tiempo real.`;
       body.appendChild(aiMsg);
       body.scrollTop = body.scrollHeight;
     }, 800);

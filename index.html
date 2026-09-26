@@ -1044,7 +1044,7 @@ const AP = {
       const close=v=>{box.hidden=true;box.innerHTML='';this.dialogReturnFocus?.focus();resolve(v);};
       box.querySelector('#ap-cancel').onclick=()=>close(null);box.onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();close(null)}};
       box.querySelector('form').onsubmit=e=>{e.preventDefault();close(confirmOnly?{}:{actor:box.querySelector('#ap-actor').value.trim(),reason:reasonRequired?box.querySelector('#ap-reason').value.trim():''});};
-      box.querySelector('input')?.focus();
+      (box.querySelector('input')||box.querySelector('#ap-cancel')).focus();
     });
   },
   audit(actor,action,type,id,details){this.db.run('INSERT INTO audit_log VALUES(?,?,?,?,?,?,?)',[crypto.randomUUID(),new Date().toISOString(),actor,action,type,id,JSON.stringify(details)]);},

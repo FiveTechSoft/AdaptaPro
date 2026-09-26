@@ -30,11 +30,10 @@
   .bg-city {
     position: fixed;
     inset: 0;
-    background: 
-      linear-gradient(to bottom, transparent 40%, rgba(10,14,23,0.85) 100%),
-      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="%230a1020"/><stop offset="100%" stop-color="%23060a12"/></linearGradient></defs><rect width="1200" height="800" fill="url(%23g)"/><g fill="%231a2a4a" opacity="0.6"><rect x="50" y="300" width="40" height="200"/><rect x="110" y="250" width="50" height="250"/><rect x="180" y="280" width="35" height="220"/><rect x="230" y="200" width="60" height="300"/><rect x="310" y="260" width="45" height="240"/><rect x="380" y="180" width="70" height="320"/><rect x="470" y="220" width="55" height="280"/><rect x="550" y="150" width="80" height="350"/><rect x="650" y="240" width="50" height="260"/><rect x="720" y="190" width="65" height="310"/><rect x="810" y="210" width="45" height="290"/><rect x="880" y="160" width="75" height="340"/><rect x="980" y="230" width="55" height="270"/><rect x="1060" y="180" width="70" height="320"/></g><g fill="%23ffcc66" opacity="0.15"><circle cx="80" cy="320" r="2"/><circle cx="140" cy="270" r="2"/><circle cx="260" cy="220" r="2"/><circle cx="420" cy="200" r="2"/><circle cx="600" cy="170" r="2"/><circle cx="750" cy="210" r="2"/><circle cx="920" cy="180" r="2"/><circle cx="1100" cy="200" r="2"/></g></svg>');
-    background-size: cover;
-    background-position: center bottom;
+    background:
+      radial-gradient(ellipse 65% 48% at 80% 8%, rgba(52, 82, 151, .23), transparent 74%),
+      radial-gradient(ellipse 50% 58% at 24% 82%, rgba(37, 80, 114, .14), transparent 72%),
+      linear-gradient(160deg, #090f1d 0%, #0c172b 54%, #080e19 100%);
     z-index: 0;
     pointer-events: none;
   }
@@ -366,6 +365,11 @@
   /* ===== CHAT WINDOW (MOVIBLE) ===== */
   .chat-window {
     position: fixed;
+    resize: both;
+    min-width: 320px;
+    min-height: 280px;
+    max-width: calc(100vw - 20px);
+    max-height: calc(100vh - 20px);
     bottom: 30px;
     left: 250px;
     width: 380px;
@@ -418,7 +422,8 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    max-height: 280px;
+    height: calc(100% - 150px);
+    min-height: 120px;
     overflow-y: auto;
     user-select: text; /* permite seleccionar texto en los mensajes */
   }
@@ -502,9 +507,13 @@
   }
   .ap-human { border: 1px solid rgba(96,165,250,.4); background: rgba(59,130,246,.17); border-radius:50%; width:36px; height:36px; font-size:20px; cursor:pointer; color:#fff; }
   .ap-human:hover { background:rgba(59,130,246,.38); }
+  .chat-window { height: 340px; }
+  #ap-chat-panel { height:calc(100% - 86px); display:flex; flex-direction:column; }
+  #ap-chat-panel .chat-body { flex:1; height:auto; min-height:80px; }
+  #ap-supervision-panel { height:calc(100% - 86px); }
   .ap-tabs { display:flex; border-bottom:1px solid #344361; }.ap-tabs button { flex:1; background:#17213a; color:#e0e6ed; border:0; padding:10px; cursor:pointer; }
   [hidden] { display:none !important; }
-  #ap-supervision-panel { padding:12px; max-height:400px; overflow:auto; user-select:text; }
+  #ap-supervision-panel { padding:12px; overflow:auto; user-select:text; }
   .ap-panel-title { font-size:12px; text-transform:uppercase; font-weight:700; color:#a5b4fc; margin:10px 0; }
   #ap-state { font-size:12px; margin:9px 0; color:#94a3b8; }
   #ap-stock,#ap-orders { max-height:92px; overflow:auto; margin:8px 0; }
@@ -515,6 +524,14 @@
   .ap-proposal { border-left:3px solid #4e95ec; padding:8px; margin:7px 0; background:#101e32; font-size:12px; line-height:1.5; }
   .ap-proposal small { color:#aabbd0; }.ap-status { color:#fbbf24; }
   @media (max-width: 800px) { .chat-window { max-width:calc(100vw - 20px); left:10px; } }
+  .ap-mode { padding:7px 10px; border:1px solid #4e75aa; background:#152743; color:#dbeafe; border-radius:10px; white-space:nowrap; cursor:pointer; font-size:12px; font-weight:600; }
+  .ap-mode[aria-pressed="true"] { border-color:#17a58a; background:#114237; color:#b8fce5; }
+  @media (max-width:800px) { .header-right { gap:5px; }.ap-mode { max-width:105px; overflow:hidden; text-overflow:ellipsis; } }
+  .ap-dialog { position:fixed; inset:0; z-index:999; background:rgba(4,8,17,.78); display:grid; place-items:center; padding:15px; }
+  .ap-dialog form { width:min(440px,100%); background:#15213a; border:1px solid #5471a1; border-radius:14px; padding:22px; box-shadow:0 20px 60px #0009; }
+  .ap-dialog h3 {font-size:17px; margin-bottom:9px;}.ap-dialog p {font-size:13px; color:#bdc8dc; line-height:1.5; margin-bottom:14px;}
+  .ap-dialog label {display:block; font-size:13px; margin:10px 0;}.ap-dialog input,.ap-dialog textarea {display:block; width:100%; padding:9px; margin-top:5px; background:#0c1428; border:1px solid #4e658b; color:#fff; border-radius:6px; font:inherit;}
+  .ap-dialog-buttons {display:flex; justify-content:flex-end; gap:8px; margin-top:15px;}.ap-dialog button {background:#24528e; color:white; border:1px solid #5780ba; border-radius:6px; padding:8px 12px; cursor:pointer;}
 </style>
 </head>
 <body>
@@ -548,6 +565,7 @@
           <h1>ERP | OPERACIONES INTELIGENTES 2030</h1>
         </div>
         <div class="header-right">
+          <button id="ap-mode" class="ap-mode" aria-label="Cambiar modo del ERP">👤 Supervisado</button>
           <button class="ap-human" title="Supervisión humana" aria-label="Supervisión humana" onclick="document.getElementById('chatWindow').style.display='block'">👤</button>
           <div class="notif">🔔</div>
           <div class="avatar">U</div>
@@ -656,6 +674,7 @@
     </div>
   </div>
 
+  <div id="ap-dialog" class="ap-dialog" hidden></div>
   <div class="projector"></div>
 
 <script>
@@ -805,7 +824,7 @@ const AP = {
   model: 'mimo-v2.6-flash-free',
   endpoints: ['https://api.fivetechsoft.com/zen/v1','https://api.fivetechsupport.com/zen/v1'],
   models: null,
-  db: null, busy: false, store: null,
+  db: null, busy: false, store: null, mode: localStorage.getItem('adaptapro-mode')==='autonomo'?'autonomo':'supervisado',
   money: n => new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'}).format(n/100),
   esc: s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),
   rows(sql,args=[]){ const q=this.db.prepare(sql); try {q.bind(args); const out=[]; while(q.step())out.push(q.getAsObject()); return out;} finally {q.free();} },
@@ -813,7 +832,7 @@ const AP = {
   async storage(){ return new Promise((resolve,reject)=>{const r=indexedDB.open('adaptapro-local-v1',1); r.onupgradeneeded=()=>r.result.createObjectStore('database');r.onerror=()=>reject(r.error);r.onsuccess=()=>resolve(r.result);}); },
   async loadBytes(){return new Promise((resolve,reject)=>{const t=this.store.transaction('database','readonly');const r=t.objectStore('database').get('main');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});},
   async persist(){const bytes=this.db.export();return new Promise((resolve,reject)=>{const t=this.store.transaction('database','readwrite');t.objectStore('database').put(bytes,'main');t.oncomplete=resolve;t.onerror=()=>reject(t.error);});},
-  async reset(){if(!confirm('¿Restablecer los datos locales de este navegador? Se borrarán decisiones y movimientos hechos aquí.'))return;await new Promise((resolve,reject)=>{const t=this.store.transaction('database','readwrite');t.objectStore('database').delete('main');t.oncomplete=resolve;t.onerror=()=>reject(t.error);});this.db?.close();this.db=null;await this.init();this.note('Datos locales restablecidos.');},
+  async reset(){if(!await this.confirmAction('Restablecer datos locales','Se borrarán decisiones y movimientos de este navegador.'))return;await new Promise((resolve,reject)=>{const t=this.store.transaction('database','readwrite');t.objectStore('database').delete('main');t.oncomplete=resolve;t.onerror=()=>reject(t.error);});this.db?.close();this.db=null;await this.init();this.note('Datos locales restablecidos.');},
   tx(fn){this.db.run('BEGIN IMMEDIATE');try{const v=fn();this.db.run('COMMIT');return v;}catch(e){this.db.run('ROLLBACK');throw e;}},
   async init(){
     try{
@@ -824,9 +843,11 @@ const AP = {
         this.db.run(schema);this.tx(()=>{for(const [table,items] of Object.entries(seed)){if(table==='meta')continue;for(const item of items){const keys=Object.keys(item);this.db.run(`INSERT INTO ${table} (${keys.join(',')}) VALUES (${keys.map(()=>'?').join(',')})`,keys.map(k=>item[k]));}}});
         await this.persist();
       }
-      this.render();this.note('Datos locales listos. Las decisiones requieren supervisión humana.');
+      this.render();this.updateMode();this.note('Datos locales listos. Modo '+this.mode+'.');
     }catch(e){this.note('No se pudieron cargar los datos: '+e.message,true);console.error(e);}
   },
+  updateMode(){const b=document.getElementById('ap-mode');b.textContent=this.mode==='autonomo'?'⚡ Autónomo':'👤 Supervisado';b.setAttribute('aria-pressed',this.mode==='autonomo');b.title=this.mode==='autonomo'?'Autónomo: nuevas propuestas se aprueban automáticamente; no se realizan compras ni recepciones. Las anteriores siguen pendientes.':'Supervisado: las propuestas esperan aprobación humana.';},
+  async toggleMode(){const next=this.mode==='autonomo'?'supervisado':'autonomo';if(next==='autonomo'&&!await this.confirmAction('Activar modo autónomo','Las nuevas propuestas se aprobarán al crearse. No se emiten compras ni se registra stock recibido. Las propuestas anteriores siguen pendientes.'))return;this.mode=next;localStorage.setItem('adaptapro-mode',next);this.updateMode();this.note('Modo '+next+' activado.');},
   note(text,error=false){const e=document.getElementById('ap-state');if(e){e.textContent=text;e.style.color=error?'#fca5a5':'#94a3b8';}},
   render(){
     if(!this.db)return;
@@ -851,17 +872,25 @@ const AP = {
     const metric=document.getElementById('ap-stock-metric');if(metric)metric.textContent=stock.length-low+'/'+stock.length;
   },
   async decide(id,status){
-    const actor=prompt('Nombre de quien supervisa esta decisión:');if(!actor?.trim())return;
-    const reason=prompt('Motivo de la decisión:');if(!reason?.trim())return;
     const p=this.one('SELECT * FROM purchase_proposals WHERE id=?',[id]);if(!p)return;
-    if(!confirm(`${status==='aprobada'?'¿Aprobar':'¿Rechazar'} ${id}: ${p.proposed_qty} unidades de ${p.sku} por ${this.money(p.proposed_qty*p.unit_cost_cents)}? Esta decisión queda registrada. Aprobar no registra una recepción ni efectúa una compra.`))return;
-    try{this.tx(()=>{this.db.run('UPDATE approval_queue SET status=?,decided_by=?,decided_at=?,decision_reason=? WHERE proposal_id=? AND status=?',[status,actor.trim(),new Date().toISOString(),reason.trim(),id,'pendiente']);if(!this.db.getRowsModified())throw Error('La propuesta ya se había decidido');this.audit(actor.trim(),'decision_'+status,'purchase_proposal',id,{reason:reason.trim()});});await this.persist();this.render();this.note('Decisión registrada: '+status+'.');}catch(e){this.note(e.message,true);}
+    const input=await this.decisionForm(`${status==='aprobada'?'Aprobar':'Rechazar'} ${id}`,`${p.proposed_qty} unidades de ${p.sku} · ${this.money(p.proposed_qty*p.unit_cost_cents)}. La decisión queda registrada; no efectúa una compra ni registra recepción.`,true);if(!input)return;
+    try{this.tx(()=>{this.db.run('UPDATE approval_queue SET status=?,decided_by=?,decided_at=?,decision_reason=? WHERE proposal_id=? AND status=?',[status,input.actor,new Date().toISOString(),input.reason,id,'pendiente']);if(!this.db.getRowsModified())throw Error('La propuesta ya se había decidido');this.audit(input.actor,'decision_'+status,'purchase_proposal',id,{reason:input.reason});});await this.persist();this.render();this.note('Decisión registrada: '+status+'.');}catch(e){this.note(e.message,true);}
   },
   async receive(id){
     const p=this.one(`SELECT p.* FROM purchase_proposals p JOIN approval_queue q ON q.proposal_id=p.id WHERE p.id=? AND q.status='aprobada'`,[id]);if(!p)return;
-    const actor=prompt('Nombre de quien registra la recepción:');if(!actor?.trim())return;
-    if(!confirm(`¿Registrar recepción de ${p.proposed_qty} unidades de ${p.sku}? Esto aumentará el stock local. Usa esta acción solo cuando la entrega se haya comprobado.`))return;
-    try{this.tx(()=>{if(this.one('SELECT id FROM stock_movements WHERE proposal_id=?',[id]))throw Error('Recepción ya registrada');const now=new Date().toISOString();this.db.run('UPDATE inventory SET on_hand=on_hand+?,updated_at=? WHERE sku=?',[p.proposed_qty,now,p.sku]);this.db.run('INSERT INTO stock_movements VALUES(?,?,?,?,?,?)',['MOV-'+id,p.sku,p.proposed_qty,'recepcion_registrada',id,now]);this.audit(actor.trim(),'recepcion_registrada','purchase_proposal',id,{sku:p.sku,quantity:p.proposed_qty});});await this.persist();this.render();this.note('Recepción registrada; existencias actualizadas.');}catch(e){this.note(e.message,true);}
+    const input=await this.decisionForm('Registrar recepción',`${p.proposed_qty} unidades de ${p.sku}. Esto aumentará el stock local; registra la recepción solo cuando la entrega se haya comprobado.`,false);if(!input)return;
+    try{this.tx(()=>{if(this.one('SELECT id FROM stock_movements WHERE proposal_id=?',[id]))throw Error('Recepción ya registrada');const now=new Date().toISOString();this.db.run('UPDATE inventory SET on_hand=on_hand+?,updated_at=? WHERE sku=?',[p.proposed_qty,now,p.sku]);this.db.run('INSERT INTO stock_movements VALUES(?,?,?,?,?,?)',['MOV-'+id,p.sku,p.proposed_qty,'recepcion_registrada',id,now]);this.audit(input.actor,'recepcion_registrada','purchase_proposal',id,{sku:p.sku,quantity:p.proposed_qty});});await this.persist();this.render();this.note('Recepción registrada; existencias actualizadas.');}catch(e){this.note(e.message,true);}
+  },
+  confirmAction(title,detail){return this.decisionForm(title,detail,false,true).then(Boolean);},
+  decisionForm(title,detail,reasonRequired,confirmOnly=false){
+    return new Promise(resolve=>{
+      const box=document.getElementById('ap-dialog');box.hidden=false;
+      box.innerHTML=`<form id="ap-decision-form"><h3>${this.esc(title)}</h3><p>${this.esc(detail)}</p>${confirmOnly?'':`<label>Responsable<input id="ap-actor" required maxlength="80" autocomplete="name"></label>${reasonRequired?'<label>Motivo<textarea id="ap-reason" required maxlength="500"></textarea></label>':''}`}<div class="ap-dialog-buttons"><button type="button" id="ap-cancel">Cancelar</button><button type="submit">Confirmar</button></div></form>`;
+      const close=v=>{box.hidden=true;box.innerHTML='';resolve(v);};
+      box.querySelector('#ap-cancel').onclick=()=>close(null);
+      box.querySelector('form').onsubmit=e=>{e.preventDefault();close(confirmOnly?{}:{actor:box.querySelector('#ap-actor').value.trim(),reason:reasonRequired?box.querySelector('#ap-reason').value.trim():''});};
+      box.querySelector('input')?.focus();
+    });
   },
   audit(actor,action,type,id,details){this.db.run('INSERT INTO audit_log VALUES(?,?,?,?,?,?,?)',[crypto.randomUUID(),new Date().toISOString(),actor,action,type,id,JSON.stringify(details)]);},
   context(){return {stock:this.rows('SELECT * FROM stock_status'),orders:this.rows("SELECT l.order_id,l.sku,l.quantity,o.status,o.region FROM sales_order_lines l JOIN sales_orders o ON o.id=l.order_id"),proposals:this.rows('SELECT p.id,p.sku,p.proposed_qty,p.rationale,q.status FROM purchase_proposals p JOIN approval_queue q ON p.id=q.proposal_id')};},
@@ -870,7 +899,7 @@ const AP = {
     if(this.one("SELECT p.id FROM purchase_proposals p JOIN approval_queue q ON q.proposal_id=p.id WHERE p.sku=? AND q.status='pendiente'",[sku]))return 'Ya hay una propuesta pendiente para '+sku;
     const supplier=this.one('SELECT sp.*,s.name FROM supplier_products sp JOIN suppliers s ON s.id=sp.supplier_id WHERE sp.sku=? AND s.active=1 ORDER BY sp.unit_cost_cents LIMIT 1',[sku]);if(!supplier)throw Error('No hay proveedor activo');
     const qty=Math.max(x.target_stock-x.available,supplier.min_order_qty);const id='PROP-'+Date.now();
-    this.tx(()=>{this.db.run('INSERT INTO purchase_proposals VALUES(?,?,?,?,?,?,?,?,?)',[id,sku,supplier.supplier_id,qty,supplier.unit_cost_cents,'EUR','ALPHA',String(args.reason||'Stock por debajo del punto de reposición').slice(0,500),new Date().toISOString()]);this.db.run('INSERT INTO approval_queue(proposal_id,status) VALUES(?,?)',[id,'pendiente']);this.audit('ALPHA','propuesta_creada','purchase_proposal',id,{sku,quantity:qty});});await this.persist();this.render();return `Propuesta ${id} creada: ${qty} unidades de ${sku} por ${this.money(qty*supplier.unit_cost_cents)}. Pendiente de aprobación humana; no se ha efectuado compra.`;
+    const auto=this.mode==='autonomo';this.tx(()=>{const now=new Date().toISOString();this.db.run('INSERT INTO purchase_proposals VALUES(?,?,?,?,?,?,?,?,?)',[id,sku,supplier.supplier_id,qty,supplier.unit_cost_cents,'EUR','ALPHA',String(args.reason||'Stock por debajo del punto de reposición').slice(0,500),now]);this.db.run('INSERT INTO approval_queue(proposal_id,status,decided_by,decided_at,decision_reason) VALUES(?,?,?,?,?)',[id,auto?'aprobada':'pendiente',auto?'modo_automatico':null,auto?now:null,auto?'Aprobación automática por modo autónomo':null]);this.audit('ALPHA','propuesta_creada','purchase_proposal',id,{sku,quantity:qty});if(auto)this.audit('modo_automatico','aprobacion_automatica','purchase_proposal',id,{sku,quantity:qty});});await this.persist();this.render();return `Propuesta ${id} creada: ${qty} unidades de ${sku} por ${this.money(qty*supplier.unit_cost_cents)}. ${auto?'Aprobada automáticamente en la base local.':'Pendiente de aprobación humana;'} No se ha efectuado compra ni recepción.`;
   },
   // Único punto de conexión del modelo: cambiar endpoints, modelo o autenticación aquí.
   async modelCall(messages,tools){
@@ -909,6 +938,9 @@ function sendMessage(){const input=document.getElementById('chatInput');const te
 document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendMessage();});
 document.getElementById('ap-analyze').addEventListener('click',()=>AP.ask('Revisa el stock disponible y los pedidos. Si hay riesgo de rotura, crea una propuesta de reposición pendiente de supervisión.'));
 document.getElementById('ap-reset').addEventListener('click',()=>AP.reset());
+document.getElementById('ap-mode').addEventListener('click',()=>AP.toggleMode());
+const apChat=document.getElementById('chatWindow');try{const saved=JSON.parse(localStorage.getItem('adaptapro-chat-size')||'null');if(saved?.width&&saved?.height){apChat.style.width=Math.min(saved.width,innerWidth-20)+'px';apChat.style.height=Math.min(saved.height,innerHeight-20)+'px';}}catch(e){}
+new ResizeObserver(()=>{localStorage.setItem('adaptapro-chat-size',JSON.stringify({width:apChat.offsetWidth,height:apChat.offsetHeight}));}).observe(apChat);
 document.getElementById('ap-tab-chat').addEventListener('click',()=>AP.tab('chat'));
 document.getElementById('ap-tab-supervision').addEventListener('click',()=>AP.tab('supervision'));
 document.querySelector('.ap-human').addEventListener('click',()=>AP.tab('supervision'));

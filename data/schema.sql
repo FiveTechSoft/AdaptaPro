@@ -62,3 +62,16 @@ CREATE VIEW IF NOT EXISTS stock_status AS
          p.reorder_point, p.target_stock,
          CASE WHEN i.on_hand - i.reserved <= p.reorder_point THEN 1 ELSE 0 END AS needs_restock
   FROM products p JOIN inventory i ON i.sku = p.sku;
+CREATE TABLE IF NOT EXISTS workforce (
+  id TEXT PRIMARY KEY, name TEXT NOT NULL, role TEXT NOT NULL, team TEXT NOT NULL,
+  capacity_hours INTEGER NOT NULL CHECK(capacity_hours >= 0), assigned_hours INTEGER NOT NULL CHECK(assigned_hours >= 0),
+  status TEXT NOT NULL CHECK(status IN ('disponible','ocupado','ausente'))
+);
+CREATE TABLE IF NOT EXISTS production_jobs (
+  id TEXT PRIMARY KEY, sku TEXT NOT NULL REFERENCES products(sku), quantity INTEGER NOT NULL CHECK(quantity > 0),
+  stage TEXT NOT NULL, due_at TEXT NOT NULL, owner TEXT NOT NULL, order_id TEXT REFERENCES sales_orders(id)
+);
+CREATE TABLE IF NOT EXISTS planning_tasks (
+  id TEXT PRIMARY KEY, title TEXT NOT NULL, due_at TEXT NOT NULL, team TEXT NOT NULL,
+  status TEXT NOT NULL CHECK(status IN ('pendiente','en_curso','hecho')), linked_order_id TEXT REFERENCES sales_orders(id)
+);

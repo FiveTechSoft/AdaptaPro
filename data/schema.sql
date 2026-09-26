@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS sales_order_lines (
 CREATE TABLE IF NOT EXISTS purchase_proposals (
   id TEXT PRIMARY KEY, sku TEXT NOT NULL, supplier_id TEXT NOT NULL,
   proposed_qty INTEGER NOT NULL CHECK (proposed_qty > 0), unit_cost_cents INTEGER NOT NULL CHECK (unit_cost_cents >= 0),
-  currency TEXT NOT NULL DEFAULT 'EUR' CHECK (length(currency) = 3),
+  currency TEXT NOT NULL DEFAULT 'USD' CHECK (length(currency) = 3),
   agent_id TEXT NOT NULL, rationale TEXT NOT NULL, created_at TEXT NOT NULL,
   FOREIGN KEY (supplier_id, sku) REFERENCES supplier_products(supplier_id, sku)
 );

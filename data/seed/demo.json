@@ -1,0 +1,41 @@
+{
+  "meta": {"name": "AdaptaPro - demo ficticia", "as_of": "2030-07-15T10:00:00Z", "currency": "EUR", "fictional": true},
+  "suppliers": [
+    {"id":"PROV-01","name":"Textiles Sierra S.L.","country":"España","contact_email":null,"lead_days":4,"active":1},
+    {"id":"PROV-02","name":"Componentes Delta Lda.","country":"Portugal","contact_email":null,"lead_days":7,"active":1}
+  ],
+  "products": [
+    {"sku":"SKU-451","name":"Tejido técnico azul, rollo","category":"Materia prima","unit":"rollo","sale_price_cents":6800,"reorder_point":20,"target_stock":80,"active":1},
+    {"sku":"SKU-208","name":"Cierre industrial, caja","category":"Componente","unit":"caja","sale_price_cents":4500,"reorder_point":15,"target_stock":50,"active":1},
+    {"sku":"SKU-713","name":"Forro reciclado, rollo","category":"Materia prima","unit":"rollo","sale_price_cents":5800,"reorder_point":12,"target_stock":40,"active":1}
+  ],
+  "supplier_products": [
+    {"supplier_id":"PROV-01","sku":"SKU-451","unit_cost_cents":3400,"min_order_qty":10},
+    {"supplier_id":"PROV-02","sku":"SKU-208","unit_cost_cents":2500,"min_order_qty":5},
+    {"supplier_id":"PROV-01","sku":"SKU-713","unit_cost_cents":3100,"min_order_qty":5}
+  ],
+  "inventory": [
+    {"sku":"SKU-451","on_hand":18,"reserved":12,"updated_at":"2030-07-15T09:00:00Z"},
+    {"sku":"SKU-208","on_hand":36,"reserved":5,"updated_at":"2030-07-15T09:00:00Z"},
+    {"sku":"SKU-713","on_hand":26,"reserved":2,"updated_at":"2030-07-15T09:00:00Z"}
+  ],
+  "sales_orders": [
+    {"id":"PED-1001","customer_name":"Distribuciones Norte S.L.","region":"España","placed_at":"2030-07-14T11:15:00Z","status":"confirmado"},
+    {"id":"PED-1002","customer_name":"Grupo Andino S.A.","region":"LATAM","placed_at":"2030-07-15T08:20:00Z","status":"pendiente"}
+  ],
+  "sales_order_lines": [
+    {"order_id":"PED-1001","line_no":1,"sku":"SKU-451","quantity":12,"unit_price_cents":6800},
+    {"order_id":"PED-1001","line_no":2,"sku":"SKU-208","quantity":5,"unit_price_cents":4500},
+    {"order_id":"PED-1002","line_no":1,"sku":"SKU-451","quantity":25,"unit_price_cents":6800}
+  ],
+  "purchase_proposals": [
+    {"id":"PROP-001","sku":"SKU-451","supplier_id":"PROV-01","proposed_qty":80,"unit_cost_cents":3400,"currency":"EUR","agent_id":"ALPHA","rationale":"Disponible: 6 rollos; punto de reposición: 20. El pedido PED-1002 solicita 25. Reposición para evitar rotura de stock.","created_at":"2030-07-15T09:30:00Z"}
+  ],
+  "approval_queue": [
+    {"proposal_id":"PROP-001","status":"pendiente","decided_by":null,"decided_at":null,"decision_reason":null}
+  ],
+  "stock_movements": [],
+  "audit_log": [
+    {"id":"AUD-001","occurred_at":"2030-07-15T09:30:00Z","actor":"ALPHA","action":"propuesta_creada","entity_type":"purchase_proposal","entity_id":"PROP-001","details_json":"{\"sku\":\"SKU-451\",\"cantidad\":80}"}
+  ]
+}

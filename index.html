@@ -804,6 +804,7 @@
 const AP = {
   model: 'mimo-v2.6-flash-free',
   endpoints: ['https://api.fivetechsoft.com/zen/v1','https://api.fivetechsupport.com/zen/v1'],
+  models: null,
   db: null, busy: false, store: null,
   money: n => new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'}).format(n/100),
   esc: s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),
@@ -873,15 +874,21 @@ const AP = {
   },
   // Único punto de conexión del modelo: cambiar endpoints, modelo o autenticación aquí.
   async modelCall(messages,tools){
-    const body={model:this.model,messages,temperature:0.2,stream:false};if(tools)body.tools=tools;
-    let last;
-    for(const endpoint of this.endpoints){
+    const request=async(endpoint,model)=>{
+      const body={model,messages,temperature:0.2,stream:false};if(tools)body.tools=tools;
       const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),25000);
       try{
         const r=await fetch(endpoint+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer public'},body:JSON.stringify(body),signal:controller.signal});
-        if(!r.ok){last=new Error('Servicio no disponible (HTTP '+r.status+')');continue;}
+        if(!r.ok)throw Error('Servicio no disponible (HTTP '+r.status+')');
         const j=await r.json();if(!j.choices?.[0]?.message)throw Error('Respuesta vacía');return j.choices[0].message;
-      }catch(e){last=e;}finally{clearTimeout(timeout);}
+      }finally{clearTimeout(timeout);}
+    };
+    let last;
+    for(const endpoint of this.endpoints){
+      let available=[];
+      try{const r=await fetch(endpoint+'/models',{headers:{'Authorization':'Bearer public'}});if(r.ok){const j=await r.json();available=(j.data||[]).map(x=>x.id).filter(x=>x.endsWith('-free'));}}catch(e){last=e;}
+      const candidates=this.activeModel?[this.activeModel,...available.filter(x=>x!==this.activeModel)]:[this.model,...available.filter(x=>x!==this.model)];
+      for(const model of candidates){try{const response=await request(endpoint,model);this.activeModel=model;return response;}catch(e){last=e;}}
     }
     throw last||Error('Servicio no disponible');
   },

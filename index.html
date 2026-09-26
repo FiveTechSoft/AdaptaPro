@@ -532,6 +532,13 @@
   .ap-dialog h3 {font-size:17px; margin-bottom:9px;}.ap-dialog p {font-size:13px; color:#bdc8dc; line-height:1.5; margin-bottom:14px;}
   .ap-dialog label {display:block; font-size:13px; margin:10px 0;}.ap-dialog input,.ap-dialog textarea {display:block; width:100%; padding:9px; margin-top:5px; background:#0c1428; border:1px solid #4e658b; color:#fff; border-radius:6px; font:inherit;}
   .ap-dialog-buttons {display:flex; justify-content:flex-end; gap:8px; margin-top:15px;}.ap-dialog button {background:#24528e; color:white; border:1px solid #5780ba; border-radius:6px; padding:8px 12px; cursor:pointer;}
+  #ap-cycle { color:#8ba6c9; font-size:11px; margin:5px 0; }
+  #ap-feed { max-height:135px; overflow:auto; border-top:1px solid #30415a; }
+  .ap-feed-item { display:flex; align-items:baseline; gap:7px; border-bottom:1px solid #273952; padding:5px 1px; font-size:11px; }
+  .ap-feed-item time { color:#75a7ed; }.ap-feed-item strong { color:#c4b5fd; }.ap-feed-item small { color:#8199b8; margin-left:auto; }
+  .agent-status.ap-working::before { animation:ap-heartbeat 1s ease-in-out infinite; box-shadow:0 0 10px #52b8f8; }
+  @keyframes ap-heartbeat { 50% { transform:scale(1.65);opacity:.45; } }
+  @media (prefers-reduced-motion:reduce) { .agent-status.ap-working::before {animation:none;} }
 </style>
 </head>
 <body>
@@ -604,7 +611,7 @@
               <div class="agent-name">ALPHA</div>
               <div class="agent-role">Inventario</div>
             </div>
-            <div class="agent-status">Conexión pendiente</div>
+            <div class="agent-status" id="ap-agent-alpha">Disponible</div>
           </div>
           <div class="agent-item">
             <div class="agent-badge b">B</div>
@@ -612,7 +619,7 @@
               <div class="agent-name">BETA</div>
               <div class="agent-role">Ventas</div>
             </div>
-            <div class="agent-status">Próximamente</div>
+            <div class="agent-status" id="ap-agent-beta">En espera</div>
           </div>
           <div class="agent-item">
             <div class="agent-badge g">G</div>
@@ -620,7 +627,7 @@
               <div class="agent-name">GAMMA</div>
               <div class="agent-role">Logística</div>
             </div>
-            <div class="agent-status">Próximamente</div>
+            <div class="agent-status" id="ap-agent-gamma">Proveedores</div>
           </div>
         </div>
 
@@ -631,6 +638,9 @@
           <button class="ap-action" id="ap-analyze">Analizar inventario con ALPHA</button>
           <div class="section-title" style="margin-top:16px">Pedidos</div>
           <div id="ap-orders"></div>
+          <div class="section-title" style="margin-top:12px">Actividad en vivo</div>
+          <div id="ap-cycle"></div>
+          <div id="ap-feed"></div>
         </div>
       </section>
 
@@ -824,7 +834,7 @@ const AP = {
   model: 'mimo-v2.6-flash-free',
   endpoints: ['https://api.fivetechsoft.com/zen/v1','https://api.fivetechsupport.com/zen/v1'],
   models: null,
-  db: null, busy: false, store: null, mode: localStorage.getItem('adaptapro-mode')==='autonomo'?'autonomo':'supervisado',
+  db: null, busy: false, store: null, cycleBusy:false, cycleTimer:null, cycleIntervalMs:30000, lastModelCycleAt:0, mode: localStorage.getItem('adaptapro-mode')==='autonomo'?'autonomo':'supervisado',
   money: n => new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'}).format(n/100),
   esc: s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),
   rows(sql,args=[]){ const q=this.db.prepare(sql); try {q.bind(args); const out=[]; while(q.step())out.push(q.getAsObject()); return out;} finally {q.free();} },
@@ -843,7 +853,7 @@ const AP = {
         this.db.run(schema);this.tx(()=>{for(const [table,items] of Object.entries(seed)){if(table==='meta')continue;for(const item of items){const keys=Object.keys(item);this.db.run(`INSERT INTO ${table} (${keys.join(',')}) VALUES (${keys.map(()=>'?').join(',')})`,keys.map(k=>item[k]));}}});
         await this.persist();
       }
-      this.render();this.updateMode();this.note('Datos locales listos. Modo '+this.mode+'.');
+      this.render();this.updateMode();this.note('Datos locales listos. Modo '+this.mode+'.');this.startCycle();
     }catch(e){this.note('No se pudieron cargar los datos: '+e.message,true);console.error(e);}
   },
   updateMode(){const b=document.getElementById('ap-mode');b.textContent=this.mode==='autonomo'?'⚡ Autónomo':'👤 Supervisado';b.setAttribute('aria-pressed',this.mode==='autonomo');b.title=this.mode==='autonomo'?'Autónomo: nuevas propuestas se aprueban automáticamente; no se realizan compras ni recepciones. Las anteriores siguen pendientes.':'Supervisado: las propuestas esperan aprobación humana.';},
@@ -865,6 +875,7 @@ const AP = {
     const reservations=this.one('SELECT coalesce(sum(reserved),0) AS n FROM inventory');
     document.getElementById('ap-reservations').textContent=reservations.n;
     document.getElementById('ap-audit').innerHTML=this.rows('SELECT actor,action,entity_id,occurred_at FROM audit_log ORDER BY occurred_at DESC LIMIT 6').map(e=>`<div class="ap-line">${this.esc(e.actor)} · ${this.esc(e.action)} · ${this.esc(e.entity_id)}</div>`).join('');
+    const feed=document.getElementById('ap-feed');feed.innerHTML=this.rows('SELECT actor,action,entity_id,occurred_at FROM audit_log ORDER BY occurred_at DESC LIMIT 7').map(e=>`<div class="ap-feed-item"><time>${this.esc(new Date(e.occurred_at).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}))}</time><strong>${this.esc(e.actor)}</strong> · ${this.esc(e.action.replaceAll('_',' '))}<small>${this.esc(e.entity_id)}</small></div>`).join('');
     document.getElementById('ap-orders').innerHTML=this.rows('SELECT id,customer_name,region,status FROM sales_orders ORDER BY placed_at DESC LIMIT 8').map(e=>`<div class="ap-line"><b>${this.esc(e.id)}</b> · ${this.esc(e.customer_name)} · ${this.esc(e.region)} · ${this.esc(e.status)}</div>`).join('');
     document.querySelectorAll('[data-decision]').forEach(b=>b.onclick=()=>this.decide(b.dataset.id,b.dataset.decision));
     document.querySelectorAll('[data-receive]').forEach(b=>b.onclick=()=>this.receive(b.dataset.receive));
@@ -897,9 +908,10 @@ const AP = {
   async propose(args){
     const sku=String(args.sku||'');const x=this.one('SELECT * FROM stock_status WHERE sku=?',[sku]);if(!x||!x.needs_restock)throw Error('SKU inexistente o sin necesidad de reposición');
     if(this.one("SELECT p.id FROM purchase_proposals p JOIN approval_queue q ON q.proposal_id=p.id WHERE p.sku=? AND q.status='pendiente'",[sku]))return 'Ya hay una propuesta pendiente para '+sku;
-    const supplier=this.one('SELECT sp.*,s.name FROM supplier_products sp JOIN suppliers s ON s.id=sp.supplier_id WHERE sp.sku=? AND s.active=1 ORDER BY sp.unit_cost_cents LIMIT 1',[sku]);if(!supplier)throw Error('No hay proveedor activo');
+    this.setAgentState('gamma','Comparando proveedores',true);
+    const supplier=this.one('SELECT sp.*,s.name,s.lead_days FROM supplier_products sp JOIN suppliers s ON s.id=sp.supplier_id WHERE sp.sku=? AND s.active=1 ORDER BY s.lead_days ASC,sp.unit_cost_cents ASC LIMIT 1',[sku]);this.setAgentState('gamma',supplier?`Plazo ${supplier.lead_days} días`:'Sin proveedor',false);if(!supplier)throw Error('No hay proveedor activo');
     const qty=Math.max(x.target_stock-x.available,supplier.min_order_qty);const id='PROP-'+Date.now();
-    const auto=this.mode==='autonomo';this.tx(()=>{const now=new Date().toISOString();this.db.run('INSERT INTO purchase_proposals VALUES(?,?,?,?,?,?,?,?,?)',[id,sku,supplier.supplier_id,qty,supplier.unit_cost_cents,'EUR','ALPHA',String(args.reason||'Stock por debajo del punto de reposición').slice(0,500),now]);this.db.run('INSERT INTO approval_queue(proposal_id,status,decided_by,decided_at,decision_reason) VALUES(?,?,?,?,?)',[id,auto?'aprobada':'pendiente',auto?'modo_automatico':null,auto?now:null,auto?'Aprobación automática por modo autónomo':null]);this.audit('ALPHA','propuesta_creada','purchase_proposal',id,{sku,quantity:qty});if(auto)this.audit('modo_automatico','aprobacion_automatica','purchase_proposal',id,{sku,quantity:qty});});await this.persist();this.render();return `Propuesta ${id} creada: ${qty} unidades de ${sku} por ${this.money(qty*supplier.unit_cost_cents)}. ${auto?'Aprobada automáticamente en la base local.':'Pendiente de aprobación humana;'} No se ha efectuado compra ni recepción.`;
+    const auto=this.mode==='autonomo';this.tx(()=>{const now=new Date().toISOString();this.db.run('INSERT INTO purchase_proposals VALUES(?,?,?,?,?,?,?,?,?)',[id,sku,supplier.supplier_id,qty,supplier.unit_cost_cents,'EUR','ALPHA',String(args.reason||'Stock por debajo del punto de reposición').slice(0,500),now]);this.db.run('INSERT INTO approval_queue(proposal_id,status,decided_by,decided_at,decision_reason) VALUES(?,?,?,?,?)',[id,auto?'aprobada':'pendiente',auto?'modo_automatico':null,auto?now:null,auto?'Aprobación automática por modo autónomo':null]);this.audit('GAMMA','proveedor_seleccionado','supplier',supplier.supplier_id,{sku,lead_days:supplier.lead_days,unit_cost_cents:supplier.unit_cost_cents});this.audit('ALPHA','propuesta_creada','purchase_proposal',id,{sku,quantity:qty});if(auto)this.audit('modo_automatico','aprobacion_automatica','purchase_proposal',id,{sku,quantity:qty});});await this.persist();this.render();return `Propuesta ${id} creada: ${qty} unidades de ${sku} por ${this.money(qty*supplier.unit_cost_cents)}. ${auto?'Aprobada automáticamente en la base local.':'Pendiente de aprobación humana;'} No se ha efectuado compra ni recepción.`;
   },
   // Único punto de conexión del modelo: cambiar endpoints, modelo o autenticación aquí.
   async modelCall(messages,tools){
@@ -923,14 +935,37 @@ const AP = {
   },
   tab(which){document.getElementById('chatWindow').style.display='block';document.getElementById('ap-chat-panel').hidden=which!=='chat';document.getElementById('ap-supervision-panel').hidden=which!=='supervision';},
   append(text,who){const el=document.createElement('div');el.className='chat-msg '+who;el.textContent=text;const body=document.querySelector('.chat-body');body.append(el);body.scrollTop=body.scrollHeight;},
-  async ask(text){if(this.busy||!this.db)return;this.busy=true;this.tab('chat');this.append(text,'user');this.note('Analizando con ALPHA...');
+  setAgentState(agent,label,working){const el=document.getElementById('ap-agent-'+agent);if(el){el.textContent=label;el.classList.toggle('ap-working',working);}},
+  startCycle(){
+    if(this.cycleTimer)clearInterval(this.cycleTimer);
+    this.cycleTimer=setInterval(()=>this.cycle().catch(e=>this.note('Motor de eventos: '+e.message,true)),this.cycleIntervalMs);
+    document.getElementById('ap-cycle').textContent='Motor de eventos activo · con la página abierta';
+  },
+  async cycle(){
+    if(!this.db||this.cycleBusy||this.busy||document.hidden)return;
+    const count=this.one("SELECT count(*) AS n FROM audit_log WHERE action='pedido_generado'").n;
+    this.cycleBusy=true;this.setAgentState('beta','Registrando pedido',true);
+    try{
+      const sku=count%2?'SKU-713':'SKU-451',qty=2+(count%3),id='PED-AUTO-'+Date.now(),at=new Date().toISOString();
+      const product=this.one('SELECT sale_price_cents FROM products WHERE sku=?',[sku]);
+      this.tx(()=>{this.db.run('INSERT INTO sales_orders VALUES(?,?,?,?,?)',[id,'Canal digital','España',at,'pendiente']);this.db.run('INSERT INTO sales_order_lines VALUES(?,?,?,?,?)',[id,1,sku,qty,product.sale_price_cents]);this.audit('BETA','pedido_generado','sales_order',id,{sku,quantity:qty,source:'motor_local'});});
+      await this.persist();this.render();this.setAgentState('beta','Pedido registrado',false);
+      if(this.one('SELECT needs_restock FROM stock_status WHERE sku=?',[sku]).needs_restock){
+        this.setAgentState('alpha','Revisando pedido',true);
+        const pending=this.one("SELECT p.id FROM purchase_proposals p JOIN approval_queue q ON q.proposal_id=p.id WHERE p.sku=? AND q.status IN ('pendiente','aprobada') LIMIT 1",[sku]);
+        if(!pending&&Date.now()-this.lastModelCycleAt>=60000){this.lastModelCycleAt=Date.now();await this.ask(`Nuevo pedido ${id}: ${qty} unidades de ${sku}. Revisa stock y decide si hace falta propuesta de reposición.`,true);}
+        else this.setAgentState('alpha',pending?'Propuesta en seguimiento':'En espera',false);
+      }
+    }finally{this.cycleBusy=false;}
+  },
+  async ask(text,quiet=false){if(this.busy||!this.db)return;this.busy=true;if(!quiet){this.tab('chat');this.append(text,'user');}this.setAgentState('alpha','Analizando',true);this.note('Analizando con ALPHA...');
     try{
       const tools=[{type:'function',function:{name:'proponer_reposicion',description:'Crear una propuesta de reposición de inventario, siempre pendiente de aprobación humana. No compra ni cambia stock.',parameters:{type:'object',properties:{sku:{type:'string'},reason:{type:'string'}},required:['sku','reason']}}}];
       const messages=[{role:'system',content:'Eres ALPHA, agente de inventario de AdaptaPro. Responde en español con hechos del contexto. Puedes proponer reposición con la herramienta si el stock está bajo. Nunca digas que has comprado, aprobado o recibido mercancía; solo un humano decide. No inventes datos ni afirmes que BETA/GAMMA ejecutaron acciones. No reveles proveedores de modelos.'},{role:'user',content:'Datos vigentes: '+JSON.stringify(this.context())+'\nSolicitud: '+text}];
       let m=await this.modelCall(messages,tools);
       if(m.tool_calls?.length){messages.push(m);for(const c of m.tool_calls.slice(0,2)){let result;try{if(c.function.name!=='proponer_reposicion')throw Error('Herramienta no admitida');result=await this.propose(JSON.parse(c.function.arguments));}catch(e){result='Error: '+e.message;}messages.push({role:'tool',tool_call_id:c.id,content:result});}m=await this.modelCall(messages);}
-      this.append(m.content||'No hubo respuesta del agente.','ai');this.note('Análisis finalizado · '+this.rows("SELECT count(*) AS n FROM approval_queue WHERE status='pendiente'")[0].n+' pendientes');
-    }catch(e){this.append('No se pudo contactar al agente. Tus datos y propuestas locales siguen disponibles.','ai');this.note('Agente no disponible: '+e.message,true);}finally{this.busy=false;}
+      if(!quiet)this.append(m.content||'No hubo respuesta del agente.','ai');this.audit('ALPHA','analisis_completado','agent','ALPHA',{model:this.activeModel||this.model});await this.persist();this.render();this.setAgentState('alpha','Disponible',false);this.note('Análisis finalizado · '+this.rows("SELECT count(*) AS n FROM approval_queue WHERE status='pendiente'")[0].n+' pendientes');
+    }catch(e){if(!quiet)this.append('No se pudo contactar al agente. Tus datos y propuestas locales siguen disponibles.','ai');this.setAgentState('alpha','Sin respuesta',false);this.note('Agente no disponible: '+e.message,true);}finally{this.busy=false;}
   }
 };
 window.AP=AP;

@@ -477,6 +477,9 @@
     color: #64748b;
   }
 
+  .chat-footer button.ap-mic.is-listening {background:#dc315c;box-shadow:0 0 0 4px rgba(220,49,92,.19);animation:ap-mic-pulse 1.3s ease-in-out infinite;}
+  @keyframes ap-mic-pulse {50%{box-shadow:0 0 0 9px rgba(220,49,92,.04)}}
+  @media(prefers-reduced-motion:reduce){.chat-footer button.ap-mic.is-listening{animation:none}}
   .chat-footer button {
     background: linear-gradient(135deg, #6366f1, #8b5cf6);
     border: none;
@@ -622,6 +625,7 @@
         </div>
         <div class="header-right">
           <button id="ap-tv-toggle" class="ap-theme" aria-label="Modo TV" title="Modo TV">📺</button>
+          <button id="ap-fullscreen" class="ap-theme" type="button" aria-label="Entrar en pantalla completa" title="Entrar en pantalla completa" aria-pressed="false">⛶</button>
           <button id="ap-ticker-toggle" class="ap-theme" aria-label="Mostrar u ocultar mercados" title="Mostrar u ocultar mercados">📈</button>
           <button id="ap-sound" class="ap-theme" aria-label="Silenciar efectos" title="Silenciar efectos">🔊</button>
           <button id="ap-theme" class="ap-theme" aria-label="Cambiar tema" title="Cambiar tema">☀️</button>
@@ -730,6 +734,7 @@
       <div class="chat-body"><div class="chat-msg ai">Consulta el inventario con ALPHA. Las propuestas requieren tu aprobación.</div></div>
       <div class="chat-footer">
         <input type="text" placeholder="Escribe un mensaje..." id="chatInput">
+        <button id="ap-mic" class="ap-mic" type="button" aria-label="Dictar mensaje" title="Dictar mensaje" aria-pressed="false">🎙️</button>
         <button onclick="sendMessage()" aria-label="Enviar mensaje">➤</button>
       </div>
     </div>
@@ -1034,6 +1039,7 @@ const AP = {
   }
 };
 window.AP=AP;
+const APMic={button:document.getElementById('ap-mic'),recognition:null,active:false,start(){const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Speech){this.button.disabled=true;this.button.title='Dictado no disponible en este navegador. Prueba Chrome.';this.button.setAttribute('aria-label',this.button.title);document.getElementById('chatInput').placeholder='Dictado no disponible aquí; escribe o prueba Chrome';return}if(this.active){this.recognition.stop();return}const input=document.getElementById('chatInput'),recognition=new Speech();this.recognition=recognition;recognition.lang='es-ES';recognition.continuous=false;recognition.interimResults=true;const prefix=input.value.trim();recognition.onstart=()=>{this.active=true;this.button.classList.add('is-listening');this.button.textContent='⏹';this.button.title='Detener dictado';this.button.setAttribute('aria-label','Detener dictado');this.button.setAttribute('aria-pressed','true')};recognition.onresult=e=>{let words='';for(let i=0;i<e.results.length;i++)words+=e.results[i][0].transcript;input.value=(prefix?prefix+' ':'')+words;input.focus()};recognition.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed')input.placeholder='Permite el micrófono en el navegador para dictar';else if(e.error!=='no-speech'&&e.error!=='aborted')input.placeholder='No se pudo dictar; puedes escribir el mensaje'};recognition.onend=()=>{this.active=false;this.button.classList.remove('is-listening');this.button.textContent='🎙️';this.button.title='Dictar mensaje';this.button.setAttribute('aria-label','Dictar mensaje');this.button.setAttribute('aria-pressed','false')};try{recognition.start()}catch(e){recognition.onend();input.placeholder='No se pudo iniciar el dictado; escribe el mensaje'}}};document.getElementById('ap-mic').addEventListener('click',()=>APMic.start());
 function sendMessage(){const input=document.getElementById('chatInput');const text=input.value.trim();if(!text)return;input.value='';AP.ask(text);}
 document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendMessage();});
 document.getElementById('ap-analyze').addEventListener('click',()=>AP.ask('Revisa el stock disponible y los pedidos. Si hay riesgo de rotura, crea una propuesta de reposición pendiente de supervisión.'));
@@ -1077,6 +1083,7 @@ const APViews = {
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>APViews.show(b.dataset.view)));
 function applyTheme(){const light=localStorage.getItem('adaptapro-theme')==='light';document.body.dataset.theme=light?'light':'dark';document.getElementById('ap-theme').textContent=light?'🌙':'☀️';document.getElementById('ap-theme').title=light?'Activar modo oscuro':'Activar modo claro';const color=light?'#536781':'#94a3b8';for(const chart of Object.values(Chart.instances)){for(const axis of Object.values(chart.options.scales||{})){axis.ticks.color=color;axis.grid.color=light?'#dde7f2':'rgba(80, 140, 255, 0.08)';}chart.update('none');}}
 document.getElementById('ap-theme').addEventListener('click',()=>{localStorage.setItem('adaptapro-theme',document.body.dataset.theme==='light'?'dark':'light');applyTheme()});applyTheme();
+const APFullscreen={button:document.getElementById('ap-fullscreen'),update(){const active=!!document.fullscreenElement;this.button.textContent=active?'⤡':'⛶';this.button.setAttribute('aria-pressed',String(active));this.button.setAttribute('aria-label',active?'Salir de pantalla completa':'Entrar en pantalla completa');this.button.title=active?'Salir de pantalla completa':'Entrar en pantalla completa'},async toggle(){try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}catch(e){this.button.title='Pantalla completa no disponible en este navegador'}this.update()}};APFullscreen.button.addEventListener('click',()=>APFullscreen.toggle());document.addEventListener('fullscreenchange',()=>APFullscreen.update());APFullscreen.update();
 function updateTicker(){const shown=localStorage.getItem('adaptapro-ticker')!=='false';document.getElementById('ap-ticker').hidden=!shown;const b=document.getElementById('ap-ticker-toggle');b.title=shown?'Ocultar mercados':'Mostrar mercados';b.setAttribute('aria-label',b.title);b.setAttribute('aria-pressed',String(shown))};document.getElementById('ap-ticker-toggle').addEventListener('click',()=>{localStorage.setItem('adaptapro-ticker',String(document.getElementById('ap-ticker').hidden));updateTicker()});updateTicker();setInterval(()=>{const clock=document.getElementById('ap-broadcast-clock');if(clock)clock.textContent=new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'})},1000);
 const APHeadlines={update(){if(!AP.db)return;const notices=APNotices.items(),last=AP.one('SELECT actor,action,entity_id FROM audit_log ORDER BY rowid DESC LIMIT 1'),arr=[];for(const n of notices.slice(0,3))arr.push(n.agent+' · '+n.title+' · '+n.detail);if(last)arr.push(last.actor+' · '+last.action.replaceAll('_',' ')+' · '+last.entity_id);document.getElementById('ap-headlines-text').textContent=arr.join('     ◆     ')||'Operaciones en curso · sin alertas activas';}};
 const APTV={active:false,index:0,lastRotate:0,
@@ -1120,4 +1127,3 @@ window.onYouTubeIframeAPIReady=function(){try{new YT.Player('ap-news-player',{ev
 <script async src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
-

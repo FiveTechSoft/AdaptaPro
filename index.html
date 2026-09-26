@@ -499,6 +499,8 @@
     .charts-row { grid-template-columns: 1fr; }
     .chat-window { left: 20px; width: 340px; }
   }
+  .ap-human { border: 1px solid rgba(96,165,250,.4); background: rgba(59,130,246,.17); border-radius:50%; width:36px; height:36px; font-size:20px; cursor:pointer; color:#fff; }
+  .ap-human:hover { background:rgba(59,130,246,.38); }
 </style>
 </head>
 <body>
@@ -532,6 +534,7 @@
           <h1>ERP | OPERACIONES INTELIGENTES 2030</h1>
         </div>
         <div class="header-right">
+          <button class="ap-human" title="Supervisión humana" aria-label="Supervisión humana" onclick="document.getElementById('chatWindow').style.display='block'">👤</button>
           <div class="notif">🔔</div>
           <div class="avatar">U</div>
         </div>

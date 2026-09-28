@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "country": "CO",
+  "name": "Colombia - referencia de la demo",
+  "status": "borrador",
+  "runtime_enabled": false,
+  "maintainer": "FiveTechSoft",
+  "scope": ["Jerarquía de cumplimiento demostrativa", "Vista de nómina Colombia demostrativa"],
+  "sources": [],
+  "notes": "Índice del ejemplo existente en index.html (APCompliance). No importa ni ejecuta reglas; consultar las fuentes allí citadas y revisar vigencia antes de cualquier uso real."
+}

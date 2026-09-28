@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a1a2b"/>
+      <stop offset="0.55" stop-color="#081523"/>
+      <stop offset="1" stop-color="#050d17"/>
+    </linearGradient>
+    <radialGradient id="glowCore" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#1fb9a6" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#1fb9a6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowProv" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#3a6ea8" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#3a6ea8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="corePanel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0f3340"/>
+      <stop offset="1" stop-color="#0a212f"/>
+    </linearGradient>
+    <linearGradient id="provPanel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#12293d"/>
+      <stop offset="1" stop-color="#0c1b2c"/>
+    </linearGradient>
+    <linearGradient id="prBand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0e3b3c"/>
+      <stop offset="1" stop-color="#0b2b33"/>
+    </linearGradient>
+    <linearGradient id="tealStroke" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8ff0e3"/>
+      <stop offset="1" stop-color="#2fbfae"/>
+    </linearGradient>
+    <linearGradient id="cardCO" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#11443f"/>
+      <stop offset="1" stop-color="#0d2a2c"/>
+    </linearGradient>
+    <linearGradient id="cardVE" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2f2a18"/>
+      <stop offset="1" stop-color="#221d12"/>
+    </linearGradient>
+    <pattern id="dots" width="42" height="42" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.4" fill="#ffffff" opacity="0.045"/>
+    </pattern>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="14" stdDeviation="22" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+    <filter id="shadowSoft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    <marker id="arrTeal" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="13" refY="7" orient="auto">
+      <path d="M0,0 L14,7 L0,14 Z" fill="#4fd8c8"/>
+    </marker>
+    <marker id="arrAmber" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="13" refY="7" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#e8b45f"/>
+    </marker>
+    <style>
+      text{font-family:'Helvetica Neue',Arial,'Liberation Sans',sans-serif;fill:#f2f7fb}
+      .eyebrow{font-size:19px;font-weight:700;letter-spacing:6px;fill:#63d8cb}
+      .title{font-size:56px;font-weight:700;fill:#f4f9fc}
+      .subtitle{font-size:23px;fill:#9fbccd}
+      .badge{font-size:14px;font-weight:700;letter-spacing:2.5px}
+      .h1{font-size:33px;font-weight:700}
+      .h2{font-size:19px;fill:#a9c6d4}
+      .body{font-size:20px;fill:#d7e6ee}
+      .small{font-size:16px;fill:#8fa9ba}
+      .tiny{font-size:14px;fill:#7d95a6}
+      .micro{font-size:13px;font-weight:700;letter-spacing:3px;fill:#5f7b8d}
+      .steplbl{font-size:16px;font-weight:700;letter-spacing:1.5px;fill:#bfe9e1}
+      .stepnum{font-size:17px;font-weight:700;fill:#062a2b}
+    </style>
+  <linearGradient id="titleGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f6fbfd"/><stop offset="1" stop-color="#9fe8dd"/></linearGradient>
+  </defs>
+
+  <!-- background -->
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <rect width="1920" height="1080" fill="url(#dots)"/>
+  <ellipse cx="380" cy="560" rx="520" ry="430" fill="url(#glowCore)"/>
+  <ellipse cx="1420" cy="450" rx="640" ry="400" fill="url(#glowProv)"/>
+
+  <!-- header -->
+  <text class="eyebrow" x="80" y="80">FIVETECHSOFT · MODELO DE COLABORACIÓN</text>
+  <g>
+    <rect x="1566" y="56" width="274" height="36" rx="18" fill="#0d2233" stroke="#2c4a5f" stroke-width="1.5"/>
+    <text x="1703" y="80" text-anchor="middle" font-size="14" font-weight="700" letter-spacing="2.5" fill="#e8b45f">ARQUITECTURA OBJETIVO</text>
+  </g>
+  <text class="title" x="80" y="152" fill="url(#titleGrad)">AdaptaPro · red de proveedores</text>
+  <text class="subtitle" x="80" y="198">Un núcleo estable. Adaptaciones por país construidas por agentes. Retorno controlado por PR.</text>
+  <line x1="80" y1="232" x2="1840" y2="232" stroke="#1b3547" stroke-width="1.5"/>
+
+  <!-- CORE card -->
+  <g filter="url(#shadow)">
+    <rect x="80" y="272" width="580" height="556" rx="22" fill="url(#corePanel)" stroke="#2fbfae" stroke-opacity="0.55" stroke-width="1.5"/>
+  </g>
+  <rect x="80" y="272" width="580" height="6" rx="3" fill="url(#tealStroke)"/>
+  <!-- badge -->
+  <rect x="116" y="310" width="152" height="34" rx="17" fill="#0c3f3c" stroke="#2fbfae" stroke-width="1.2"/>
+  <text class="badge" x="192" y="332" text-anchor="middle" fill="#7de9db">DEMO ACTUAL</text>
+  <!-- hex glyph -->
+  <g transform="translate(604,318)" opacity="0.9">
+    <path d="M0,-20 L17,-10 L17,10 L0,20 L-17,10 L-17,-10 Z" fill="none" stroke="#4fd8c8" stroke-width="2"/>
+    <path d="M0,-9 L8,-4.5 L8,4.5 L0,9 L-8,4.5 L-8,-4.5 Z" fill="#4fd8c8" opacity="0.35"/>
+  </g>
+  <text class="h1" x="116" y="398">AdaptaPro · núcleo</text>
+  <text class="h2" x="116" y="434">La base compartida que nadie bifurca</text>
+  <line x1="116" y1="462" x2="624" y2="462" stroke="#2a4a55" stroke-width="1.2"/>
+
+  <!-- core bullets -->
+  <g>
+    <circle cx="128" cy="498" r="10" fill="none" stroke="#4fd8c8" stroke-width="2"/>
+    <path d="M123.5,498.5 L127,502 L132.5,494.5" fill="none" stroke="#4fd8c8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text class="body" x="152" y="505">Agentes ALPHA / BETA / GAMMA</text>
+
+    <circle cx="128" cy="550" r="10" fill="none" stroke="#4fd8c8" stroke-width="2"/>
+    <path d="M123.5,550.5 L127,554 L132.5,546.5" fill="none" stroke="#4fd8c8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text class="body" x="152" y="557">Aprobaciones y auditoría local</text>
+
+    <circle cx="128" cy="602" r="10" fill="none" stroke="#4fd8c8" stroke-width="2"/>
+    <path d="M123.5,602.5 L127,606 L132.5,598.5" fill="none" stroke="#4fd8c8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text class="body" x="152" y="609">Modo Supervisado / Autónomo</text>
+
+    <circle cx="128" cy="654" r="10" fill="none" stroke="#4fd8c8" stroke-width="2"/>
+    <path d="M123.5,654.5 L127,658 L132.5,650.5" fill="none" stroke="#4fd8c8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text class="body" x="152" y="661">Selector jurídico CO / VE</text>
+  </g>
+
+  <line x1="116" y1="712" x2="624" y2="712" stroke="#2a4a55" stroke-width="1.2"/>
+  <text class="small" x="116" y="750">SQLite en navegador · IndexedDB · datos de demo</text>
+  <text class="small" x="116" y="782">Sin backend multiusuario ni packs ejecutables</text>
+  <text class="tiny" x="116" y="808" fill="#5f7b8d">github.com/FiveTechSoft/AdaptaPro</text>
+
+  <!-- arrow 1: fork -->
+  <path d="M678,512 C745,474 855,474 922,502" fill="none" stroke="#4fd8c8" stroke-width="5" stroke-linecap="round" marker-end="url(#arrTeal)"/>
+  <circle cx="802" cy="402" r="15" fill="#4fd8c8"/>
+  <text class="stepnum" x="802" y="408" text-anchor="middle">1</text>
+  <rect x="706" y="428" width="192" height="34" rx="17" fill="#0c2f33" stroke="#2fbfae" stroke-width="1.2"/>
+  <text x="802" y="450" text-anchor="middle" font-size="16" font-weight="700" fill="#8fe6da">fork + agente</text>
+
+  <!-- PROVIDERS panel -->
+  <g filter="url(#shadow)">
+    <rect x="960" y="272" width="880" height="396" rx="22" fill="url(#provPanel)" stroke="#35576f" stroke-width="1.5"/>
+  </g>
+  <rect x="960" y="272" width="880" height="6" rx="3" fill="#3a6ea8" opacity="0.8"/>
+  <rect x="996" y="310" width="196" height="34" rx="17" fill="#33270f" stroke="#c98f3d" stroke-width="1.2"/>
+  <text class="badge" x="1094" y="332" text-anchor="middle" fill="#eec27c">FLUJO PROPUESTO</text>
+  <text class="h1" font-size="29" x="996" y="390">Proveedores · ramas de trabajo</text>
+  <text class="h2" x="996" y="424">Cada país evoluciona en su fork, con un agente al teclado</text>
+
+  <!-- step 2 label -->
+  <circle cx="1010" cy="466" r="13" fill="#e8b45f"/>
+  <text x="1010" y="471" text-anchor="middle" font-size="15" font-weight="700" fill="#3a2a08">2</text>
+  <text x="1034" y="472" font-size="15" font-weight="700" letter-spacing="1.5" fill="#d9b06a">PACK POR PAÍS</text>
+
+  <!-- country cards -->
+  <g filter="url(#shadowSoft)">
+    <rect x="996" y="492" width="260" height="140" rx="16" fill="url(#cardCO)" stroke="#2fbfae" stroke-opacity="0.7" stroke-width="1.4"/>
+  </g>
+  <rect x="996" y="492" width="5" height="140" rx="2.5" fill="#4fd8c8"/>
+  <rect x="1024" y="516" width="44" height="44" rx="11" fill="#4fd8c8"/>
+  <text x="1046" y="545" text-anchor="middle" font-size="19" font-weight="700" fill="#06302c">CO</text>
+  <text x="1082" y="534" font-size="21" font-weight="700" fill="#f2f7fb">Colombia</text>
+  <text x="1082" y="556" font-size="14" fill="#7de9db">Ejemplo actual</text>
+  <g transform="translate(1024,586)">
+    <circle cx="8" cy="8" r="7" fill="none" stroke="#4fd8c8" stroke-width="1.6"/>
+    <path d="M4.8,8.4 L7.2,10.8 L11.4,5.6" fill="none" stroke="#4fd8c8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="24" y="13" font-size="15" fill="#c4dcd9">Manifiesto validado en CI</text>
+  </g>
+
+  <g filter="url(#shadowSoft)">
+    <rect x="1270" y="492" width="260" height="140" rx="16" fill="url(#cardVE)" stroke="#c98f3d" stroke-opacity="0.55" stroke-width="1.4"/>
+  </g>
+  <rect x="1270" y="492" width="5" height="140" rx="2.5" fill="#e8b45f"/>
+  <rect x="1298" y="516" width="44" height="44" rx="11" fill="#e8b45f"/>
+  <text x="1320" y="545" text-anchor="middle" font-size="19" font-weight="700" fill="#3a2a08">VE</text>
+  <text x="1356" y="534" font-size="21" font-weight="700" fill="#f2f7fb">Venezuela</text>
+  <text x="1356" y="556" font-size="14" fill="#eec27c">Selector en la demo</text>
+  <text x="1298" y="599" font-size="15" fill="#b3a68a">Pack documental pendiente</text>
+
+  <g filter="url(#shadowSoft)">
+    <rect x="1544" y="492" width="260" height="140" rx="16" fill="#101f2c" stroke="#5a7488" stroke-width="1.6" stroke-dasharray="7 6"/>
+  </g>
+  <rect x="1572" y="516" width="44" height="44" rx="11" fill="none" stroke="#7d95a6" stroke-width="1.8"/>
+  <text x="1594" y="545" text-anchor="middle" font-size="19" font-weight="700" fill="#9fb4c2">XX</text>
+  <text x="1630" y="534" font-size="21" font-weight="700" fill="#c9d8e0">Otro país</text>
+  <text x="1630" y="556" font-size="14" fill="#8fa3b1">Nuevo fork</text>
+  <text x="1572" y="599" font-size="15" fill="#7d95a6">Plantilla lista para adaptar</text>
+
+  <!-- down arrow providers -> PR band -->
+  <path d="M1400,672 L1400,706" fill="none" stroke="#4fd8c8" stroke-width="4" marker-end="url(#arrTeal)"/>
+
+  <!-- PR band -->
+  <g filter="url(#shadow)">
+    <rect x="960" y="718" width="880" height="110" rx="18" fill="url(#prBand)" stroke="#2fbfae" stroke-opacity="0.6" stroke-width="1.5"/>
+  </g>
+  <circle cx="1004" cy="773" r="17" fill="#4fd8c8"/>
+  <text x="1004" y="779" text-anchor="middle" font-size="18" font-weight="700" fill="#062a2b">3</text>
+  <text x="1040" y="766" font-size="25" font-weight="700" fill="#f2f7fb">PR → CI en verde → revisión humana → integración</text>
+  <text x="1040" y="798" font-size="16.5" fill="#a9c6bd">Las mejoras reutilizables vuelven al núcleo; lo específico del país puede quedar en el fork</text>
+
+  <!-- return arrow to core -->
+  <path d="M942,776 C835,782 770,762 680,744" fill="none" stroke="#4fd8c8" stroke-width="5" stroke-linecap="round" marker-end="url(#arrTeal)"/>
+  <rect x="688" y="778" width="190" height="32" rx="16" fill="#0c2f33" stroke="#2fbfae" stroke-width="1.2"/>
+  <text x="783" y="799" text-anchor="middle" font-size="14.5" font-weight="700" fill="#8fe6da">retorno de mejoras</text>
+
+  <!-- governance strip -->
+  <g filter="url(#shadowSoft)">
+    <rect x="80" y="878" width="1760" height="104" rx="16" fill="#0c1f2e" stroke="#23404f" stroke-width="1.5"/>
+  </g>
+  <text class="micro" x="116" y="916">GOBERNANZA</text>
+  <text x="116" y="954" font-size="23" font-weight="700" fill="#e9f3f8">AGENTS.md<tspan fill="#4fd8c8"> · </tspan>guía de contribución<tspan fill="#4fd8c8"> · </tspan>validador de manifiestos</text>
+  <line x1="1080" y1="900" x2="1080" y2="960" stroke="#23404f" stroke-width="1.5"/>
+  <text class="micro" x="1116" y="916">QUIÉN HACE QUÉ</text>
+  <text x="1116" y="952" font-size="17" fill="#a9c2d1">El agente propone y prueba — el proveedor valida su país —</text>
+  <text x="1116" y="972" font-size="17" fill="#a9c2d1">FiveTechSoft revisa los cambios del núcleo</text>
+
+  <!-- bottom bar -->
+  <line x1="80" y1="1020" x2="1840" y2="1020" stroke="#16293a" stroke-width="1.5"/>
+  <text x="80" y="1052" font-size="15" fill="#7f97a8">Los packs son manifiestos de diseño: aún no ejecutan reglas en la demo. No equivalen a certificación normativa.</text>
+  <text x="1840" y="1052" text-anchor="end" font-size="15" font-weight="700" letter-spacing="5" fill="#63d8cb">ADAPTAPRO</text>
+</svg>

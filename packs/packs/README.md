@@ -1,0 +1,7 @@
+# Packs por país - contrato propuesto, no conexión activa
+
+Esta carpeta prepara la colaboración federada. En la versión actual `index.html` no importa estos archivos. La demo CO/VE y las reglas de Colombia existentes permanecen en el núcleo; `CO/manifest.json` es un **índice de referencia**, no una segunda fuente de reglas que ejecute la aplicación.
+
+Un pack empieza con `XX/manifest.json`, donde XX es ISO 3166-1 alfa-2. Campos obligatorios: `schema_version` (1), `country`, `name`, `status` (`borrador`, `en_revision`, `validado`), `runtime_enabled` (false en esta fase), `maintainer` (nombre u organización, nunca un secreto), `scope` (lista de funciones), `sources` (lista de objetos con `title`, `url`, `checked_on`, `effective_on`, `review_status`), `notes`. Las fechas usan AAAA-MM-DD cuando se conocen; campos `effective_on` desconocidos quedan como `null`. `review_status` admite `pendiente` o `revisada`. `validado` documenta una revisión humana, no certifica cumplimiento normativo. No hay un loader de packs, aislamiento por tenant ni cálculo normativo certificado.
+
+Para integrarlo en el futuro: API versionada de reglas, validación JSON Schema y firmas/procedencia, registro por jurisdicción y vigencia, pruebas de contrato, migración de datos por cliente, desactivación segura, auditoría y revisión jurídica. Esa evolución requiere diseño y PR aparte; no actives packs por copiar ficheros. El ejemplo colombiano solo apunta a la demo actual, cuya vigencia normativa debe comprobarse antes de usarla fuera de una presentación.

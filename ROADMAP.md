@@ -8,12 +8,12 @@ Actualizado: 30 septiembre 2026. Plan aprobado: ALPHA/BETA/GAMMA del ERP ↔ ema
 - [x] Módulo navegador `instinct-gmail.mjs`: llamadas Gmail API, OAuth GIS, perfil de cuenta, scopes mínimos para enviar/leer, MIME, firma/verificación WebCrypto, minimización y límites, correlación de respuestas, bloqueo de reenvío ambiguo.
 - [x] Biblioteca de log localStorage y resumen por ventana con anomalías, límites y pérdida de retención declarada.
 - [x] 27 comprobaciones locales en `instinct-gmail-test.mjs`, solo fixtures. Ejecutar `node instinct-gmail-test.mjs` (Node 22).
-- [ ] Integrar controles visibles de configuración, OAuth, revisión/envío y respuesta en el chat ERP. El módulo no se carga aún desde index.html y no cambia la interfaz actual.
+- [x] Panel UI `instinct-ui.mjs` cargado por index.html: configuración pública, OAuth, selector ALPHA/BETA/GAMMA, revisión del cuerpo/destino, chat cableado al activar el puente, respuesta firmada inerte y vista de log. Pruebas locales de controles y revisión visual; no OAuth real aún.
 - [ ] Crear/configurar OAuth client Google y habilitar Gmail API.
 - [ ] Autorizar y verificar cuenta ERP elegida por el dueño (Gmail). Confirmar destino de Instinct antes del primer envío. Las direcciones se configuran en sesión, no se incrustan en código.
 - [ ] Provisión segura de HMAC en ambos extremos y respondedor real que valide solicitudes y firme respuestas.
 - [ ] Primer correo real, respuesta inteligente, diálogo multiturno, captura del chat y timings reales. NO realizados todavía.
-- [ ] Cablear todos los eventos del transporte y agentes al log y la verificación periódica a respuestas reales de Instinct. Existe biblioteca, no un monitor conectado.
+- [ ] Completar cobertura de todos los eventos y verificación periódica con respuestas reales de Instinct. UI registra modo, OAuth, preparación/envío, comprobación y respuesta válida. Resumen local configurable; no autoenvío ni monitor verificado.
 
 ## Fase 1: Pages + Gmail OAuth, navegador abierto
 

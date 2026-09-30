@@ -21,7 +21,7 @@ El ERP sigue en GitHub Pages. El navegador obtiene consentimiento OAuth y llama 
 
 Token de acceso solo en memoria. Caduca; para renovarlo hace falta gesto del usuario. Cerrar pestaña detiene actividad; los temporizadores pueden retrasarse en segundo plano. La cola actual del módulo es volátil: pendientes y resultados no sobreviven recarga. Persistencia local de cola y recuperación de envíos inciertos por Gmail Sent quedan pendientes; nunca reenviar automáticamente tras timeout.
 
-Cuenta de correo del ERP: la elegida por el usuario para esta prueba. Confirmar perfil exacto tras OAuth. Antes de enviar, revisar cuenta, destinatario y cuerpo final. OAuth concede acceso técnico, no autorización general para mandar correos.
+Cuenta de correo del ERP: `fivetech2@gmail.com`, elegida por el usuario para esta prueba. Confirmar perfil exacto tras OAuth. Antes de enviar, revisar cuenta, destinatario y cuerpo final. OAuth concede acceso técnico, no autorización general para mandar correos.
 
 ### Configurar Google Cloud
 

@@ -1,7 +1,7 @@
 import {CentralBridge} from './instinct-central-client.mjs';
 import {CENTRAL_CONFIG} from './instinct-central-config.mjs';
 export function mountCentralUI(AP){
- const prior=AP.ask.bind(AP);let client=null,enabled=false,draft=null,proof=null,timer=null,busy=false,widget=null;
+ const shown=new Set();const prior=AP.ask.bind(AP);let client=null,enabled=false,draft=null,proof=null,timer=null,busy=false,widget=null;
  const button=document.createElement('button');button.className='nav-item';button.id='central-open';button.textContent='☁ Instinct · puente de pruebas';document.getElementById('ap-sidebar').append(button);
  const panel=document.createElement('section');panel.id='central-panel';panel.hidden=true;panel.setAttribute('aria-label','Puente central de pruebas');
  const style=document.createElement('style');style.textContent='#central-panel{position:fixed;inset:8%;z-index:100001;background:var(--bg,#0b1220);color:var(--text,#edf3ff);border:1px solid #677b91;border-radius:16px;padding:22px;overflow:auto}#central-panel label{display:block;margin:12px 0}#central-panel button,#central-panel select{padding:8px;margin:4px;font:inherit}#central-panel pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:32vh;overflow:auto;background:#101a2e;color:#e9f1ff;padding:12px}#central-open{margin-top:8px}';document.head.append(style);
@@ -34,9 +34,9 @@ export function mountCentralUI(AP){
   el('ic-preview').textContent='Desde: fivetech2@gmail.com\nDestino: 3xdy4j@mail.instinct.com\nNO AUTENTICADA · solo análisis demo\n\n'+JSON.stringify(draft,null,2);el('ic-send').disabled=false;status('Revisa cuenta, destinatario, pregunta y snapshot. Nada enviado.');show();
  }catch(e){status(e.message);show();}};
  el('ic-send').onclick=async()=>{if(busy)return;busy=true;el('ic-send').disabled=true;try{if(!enabled||!draft||!el('ic-consent').checked)throw Error('Revisión/consentimiento pendiente');const r=await client.submit(draft);AP.tab('chat');AP.append(draft.question,'user');draft=null;status('Cola aceptó '+r.id+' ('+r.mode+'). No prueba envío ni entrega.');}catch(e){draft=null;status('Resultado de cola pendiente de verificar: '+e.message+'. Comprueba estado; no reenvíes a ciegas.');}finally{busy=false;}};
- async function check(){if(!client)return;try{const x=await client.check();let seen;try{seen=new Set(JSON.parse(localStorage.getItem(client.key+':shown')||'[]'));}catch{seen=new Set();}for(const j of x.jobs||[]){if(j.status==='answered'&&typeof j.text==='string'&&!seen.has(j.id)){
+ async function check(){if(!client)return;try{const x=await client.check();const seen=shown;for(const j of x.jobs||[]){if(j.status==='answered'&&typeof j.text==='string'&&!seen.has(j.id)){
    AP.tab('chat');const node=document.createElement('div');node.className='chat-msg ai';node.textContent='[NO AUTENTICADA · prueba central] '+j.agent+': '+j.text;document.querySelector('.chat-body').append(node);seen.add(j.id);}}
-   localStorage.setItem(client.key+':shown',JSON.stringify([...seen].slice(-100)));status('Estado: '+(x.jobs||[]).map(j=>j.agent+' '+j.id.slice(0,8)+' '+j.status).join('; '));
+   status('Estado: '+(x.jobs||[]).map(j=>j.agent+' '+j.id.slice(0,8)+' '+j.status).join('; '));
   }catch(e){status(e.message);}}
  el('ic-check').onclick=check;el('ic-clear').onclick=async()=>{if(!confirm('Borrar consulta/respuesta de esta sesión de la cola? No borra las copias de correo.'))return;try{await client.clear();pause();el('ic-check').disabled=true;el('ic-clear').disabled=true;status('Sesión de cola borrada. Copias de correo no borradas.');}catch(e){status(e.message);}};
  globalThis.AdaptaProCentral={show,check,getState:()=>({enabled,configured:ready(),prepared:!!draft})};

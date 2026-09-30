@@ -6,5 +6,7 @@ export class CentralBridge {
  async start({consent=false,turnstileToken}){if(!consent)throw Error('Explain temporary message storage and mailbox copies before consent');const x=await this.call('/sessions','POST',{consent,turnstileToken});this.storage.setItem(this.key,x.capability);return {session:x.session,expires_at:x.expires_at};}
  async submit({agent,question,context,reviewed=false,consent=false}){return this.call('/jobs','POST',{agent,question,context,reviewed,consent});}
  async check(){return this.call('/jobs');}
+ async run(id){return this.call('/run','POST',{id,reviewed:true});}
+ async collect(id){return this.call('/check','POST',{id});}
  async clear(){const r=await this.call('/session','DELETE');this.storage.removeItem(this.key);return r;}
 }

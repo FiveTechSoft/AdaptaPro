@@ -2,6 +2,10 @@
 
 Actualizado: 30 septiembre 2026. Plan aprobado: ALPHA/BETA/GAMMA del ERP ↔ email firmado ↔ Instinct como cerebro. No confundir este transporte de aplicación con una API pública oficial ni con el relay de pruebas local.
 
+## Prueba manual temporal
+
+[Quickstart de ida y vuelta](docs/quickstart.md): modo SIN firma, NO AUTENTICADO, opt-in explícito antes de OAuth, revisión de cuenta/destinatario/cuerpo por turno y respuesta inerte rotulada. No autoenvíos, no compras ni herramientas. El test real aún está pendiente; la firma HMAC no está lista. Acceso al panel movido al final del menú lateral.
+
 ## Estado real
 
 - [x] Diseño por agente, IDs, nonce, conversación, secuencia y respuesta inerte.
@@ -47,7 +51,7 @@ Instinct recibe la pregunta y datos del ERP para analizar, no una autorización 
 
 HMAC-SHA256 con JSON canónico. En fase 1 el módulo exige CryptoKey no extraíble suministrado privadamente por sesión. No incluye mecanismo de provisión de clave: queda pendiente. NO colocar HMAC en JavaScript publicado, repo, localStorage, URL o email. Una CryptoKey no extraíble evita exportar sus bytes, pero un XSS puede usarla para firmar: Pages no tiene el aislamiento de un servidor. Hay que revisar scripts externos y reducir superficie antes de usar datos privados.
 
-Una dirección From y el ID no prueban identidad. Gmail OAuth autentica acceso a la cuenta, no autoría de todo correo que contiene. Firma válida autentica posesión de clave, no permiso para actuar. Respuestas sin firma permanecen rechazadas. HMAC no cifra el contenido de email ni lo oculta a proveedores de correo.
+Una dirección From y el ID no prueban identidad. Gmail OAuth autentica acceso a la cuenta, no autoría de todo correo que contiene. Firma válida autentica posesión de clave, no permiso para actuar. En modo firmado se rechazan respuestas sin firma. La prueba manual temporal, elegida explícitamente, acepta solo respuestas con marcador none-manual-test y IDs/fechas válidos, pero no autentica al autor. HMAC no cifra el contenido de email ni lo oculta a proveedores de correo.
 
 ## Log y revisión periódica
 

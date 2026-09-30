@@ -1,0 +1,19 @@
+{
+  "name": "adaptapro-bridge",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-09-30",
+  "workers_dev": true,
+  "vars": {
+    "PAGES_ORIGIN": "https://fivetechsoft.github.io",
+    "ERP_MAILBOX": "fivetech2@gmail.com",
+    "INSTINCT_MAILBOX": "3xdy4j@mail.instinct.com",
+    "SEND_ENABLED": "false",
+    "TEST_JOB_ID": "",
+    "RESPONSE_MODE": "disabled",
+    "TURNSTILE_HOSTNAME": "fivetechsoft.github.io"
+  },
+  "durable_objects": {"bindings": [{"name": "QUEUE", "class_name": "BridgeQueue"}]},
+  "migrations": [{"tag": "v1", "new_sqlite_classes": ["BridgeQueue"]}],
+  "triggers": {"crons": []},
+  "observability": {"enabled": false}
+}

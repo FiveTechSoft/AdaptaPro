@@ -9,20 +9,22 @@ El tester no configura Google ni Cloudflare. Eso lo prepara una sola vez quien m
 ## El viaje de una pregunta
 
 ```mermaid
-flowchart TB
-    A["1 · TESTER<br/>Escribe una pregunta en el chat"]
-    B["2 · ERP<br/>Prepara los datos de prueba<br/>El tester revisa y acepta"]
-    C["3 · PUENTE<br/>Guarda el mensaje por poco tiempo<br/>y lo manda por Gmail"]
-    D["4 · INSTINCT<br/>Recibe la pregunta y los datos<br/>Devuelve su análisis por correo"]
-    E["5 · PUENTE<br/>Recoge la respuesta de Gmail"]
-    F["6 · CHAT DEL ERP<br/>Muestra el análisis al tester<br/>NO AUTENTICADA · sin acciones"]
-    A --> B --> C --> D --> E --> F
+flowchart LR
+    A["TESTER<br/>Escribe y revisa<br/>su pregunta"]
+    B["CHAT DEL ERP<br/>Añade los datos<br/>de prueba"]
+    C["PUENTE + GMAIL<br/>Lleva y trae<br/>los mensajes"]
+    D["INSTINCT<br/>Analiza los datos<br/>y responde"]
+    A -->|pregunta| B
+    B -->|consulta| C
+    C -->|correo| D
+    D -.->|respuesta| C
+    C -.->|análisis| B
     classDef person fill:#edf5ff,stroke:#4679b5,color:#16385e,stroke-width:2px
     classDef erp fill:#f3efff,stroke:#8462bf,color:#38215c,stroke-width:2px
     classDef bridge fill:#eaf8f1,stroke:#438663,color:#173e2b,stroke-width:2px
     class A,D person
-    class B,F erp
-    class C,E bridge
+    class B erp
+    class C bridge
 ```
 
 **Por ejemplo:** "ALPHA, ¿por qué SKU-451 necesita reposición?" Instinct debe explicar su respuesta usando los números que recibió. No debe inventar datos ni decir que ha comprado nada.

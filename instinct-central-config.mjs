@@ -1,3 +1,2 @@
-// Public settings only. Fill with the observed deployment URL and public site key.
-// Empty until the owner reviews deployment. Never put OAuth/token secrets here.
-export const CENTRAL_CONFIG=Object.freeze({workerURL:'',turnstileSiteKey:''});
+// Public deployment settings only. No OAuth/token secrets.
+export const CENTRAL_CONFIG=Object.freeze({workerURL:'https://adaptapro-bridge.antonio-fivetech.workers.dev',turnstileSiteKey:'0x4AAAAAAFJ9uDOlaQsLn2O5'});

@@ -34,7 +34,7 @@ PROP-001, por 80 unidades, seguía pendiente. Alcanzar el objetivo de 80 física
 
 Tras el test: guardar SEND_ENABLED="false" en wrangler.jsonc y desplegar. Comprobar que el resultado del deploy muestra false. Mantener crons=[]; RESPONSE_MODE="unverified-test" permite recoger manualmente la respuesta sin activar envíos.
 
-Al redactar este registro aún se esperaba evidencia del último deploy con SEND_ENABLED=false. La prueba funcional completa no demuestra que el envío esté desactivado.
+Cierre confirmado en la conversación de prueba: el deploy final del dueño mostró SEND_ENABLED="false", RESPONSE_MODE="unverified-test", TEST_JOB_ID intacto y crons vacíos. Versión final: e3e161c1-750e-4050-b34e-cb97bdeb8f17. El archivo local tenía dos entradas SEND_ENABLED; se eliminó la duplicada. No se debe repetir una clave JSON: algunos parsers conservan el último valor.
 
 ## Comprobaciones locales
 

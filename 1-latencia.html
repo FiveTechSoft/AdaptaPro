@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AdaptaPro &harr; Instinct · Registro de latencias</title>
+<style>
+  :root {
+    --bg: #0d1117; --panel: #161b22; --border: #30363d; --fg: #e6edf3;
+    --muted: #8b949e; --accent: #58a6ff; --ok: #3fb950; --warn: #d29922;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+         font: 15px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 960px; margin: 0 auto; padding: 32px 20px 64px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 17px; margin: 36px 0 12px; }
+  .sub { color: var(--muted); margin: 0 0 24px; }
+  .banner { background: rgba(210,153,34,.12); border: 1px solid var(--warn);
+            border-radius: 8px; padding: 12px 16px; margin: 20px 0; font-size: 14px; }
+  .cards { display: flex; gap: 14px; flex-wrap: wrap; margin: 24px 0 8px; }
+  .card { flex: 1 1 200px; background: var(--panel); border: 1px solid var(--border);
+          border-radius: 10px; padding: 14px 18px; }
+  .card .num { font-size: 26px; font-weight: 700; color: var(--ok); }
+  .card .lbl { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  table { width: 100%; border-collapse: collapse; background: var(--panel);
+          border: 1px solid var(--border); border-radius: 10px; overflow: hidden; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border);
+           vertical-align: top; }
+  th { background: #1c2129; color: var(--muted); font-weight: 600; font-size: 13px; }
+  tr:last-child td { border-bottom: none; }
+  td.t { white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--accent); }
+  td.src { color: var(--muted); font-size: 12.5px; }
+  .tag { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px;
+         border: 1px solid var(--border); }
+  .tag.humano { color: var(--warn); border-color: var(--warn); }
+  .tag.auto { color: var(--ok); border-color: var(--ok); }
+  ul.notes { color: var(--muted); font-size: 14px; padding-left: 20px; }
+  ul.notes li { margin: 6px 0; }
+  code { background: #1c2129; border: 1px solid var(--border); border-radius: 5px;
+         padding: 1px 6px; font-size: 13px; }
+  footer { margin-top: 40px; color: var(--muted); font-size: 13px;
+           border-top: 1px solid var(--border); padding-top: 16px; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>AdaptaPro &harr; Instinct · Registro de latencias</h1>
+  <p class="sub">Vista de solo lectura. Solo metadatos y tiempos: sin snapshots ERP, sin nonces, sin capabilities, sin tokens, sin contenido de correos.</p>
+
+  <div class="banner">
+    <strong>Instantánea estática verificada.</strong> Datos de la prueba de roundtrip del 30-09-2026,
+    contrastados con los registros de Agent Mail (buzón Instinct), las salidas de <code>wrangler deploy</code>
+    y las capturas del panel ERP. La alimentación en vivo está pendiente: requiere un endpoint de estado
+    de solo lectura en el worker (sin secretos) y un deploy manual.
+  </div>
+
+  <div class="cards">
+    <div class="card"><div class="num" id="kpi-ida">—</div><div class="lbl">Transporte ida (botón &rarr; buzón Instinct)</div></div>
+    <div class="card"><div class="num" id="kpi-vuelta">—</div><div class="lbl">Transporte vuelta (respuesta &rarr; Gmail)</div></div>
+    <div class="card"><div class="num" id="kpi-total">—</div><div class="lbl">Roundtrip total (botón &rarr; ERP actualizado)</div></div>
+  </div>
+
+  <h2>Prueba del 30-09-2026 · turno <code>ALPHA 367b167612514d67925cdbec7593927e</code></h2>
+  <table>
+    <thead>
+      <tr><th>Hora (CEST)</th><th>Evento</th><th>Tipo</th><th>Fuente del dato</th></tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+
+  <h2>Desglose del roundtrip total (~5 min)</h2>
+  <table>
+    <thead><tr><th>Tramo</th><th>Duración</th><th>Observación</th></tr></thead>
+    <tbody>
+      <tr><td>Transporte ida (UI &rarr; Cloudflare &rarr; Gmail &rarr; Instinct)</td><td class="t">&le; ~30 s</td><td>Cota superior: entre el deploy (10:44:24) y la recepción (10:44:57). El botón se pulsó dentro de esa ventana.</td></tr>
+      <tr><td>Análisis del agente Instinct (lectura + respuesta)</td><td class="t">~1 min 49 s</td><td>10:44:57 &rarr; 10:46:46. Paso automático, pero depende del agente, no del transporte.</td></tr>
+      <tr><td>Transporte vuelta (SMTP a Gmail)</td><td class="t">~1 s</td><td>10:46:46 &rarr; 10:46:47, confirmación SMTP 250 OK.</td></tr>
+      <tr><td>Espera hasta el check manual en el panel ERP</td><td class="t">~3 min</td><td>10:46:47 &rarr; 10:49:47. La respuesta ya estaba entregada; el panel no la consulta solo.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Notas</h2>
+  <ul class="notes">
+    <li>"Transporte ida" es una cota superior: la pulsación del botón no quedó registrada con timestamp; el límite es el deploy de las 10:44:24.</li>
+    <li>SMTP 250 OK significa que Gmail aceptó el mensaje para entrega, no que nadie lo haya leído.</li>
+    <li>El tiempo lo dominan los pasos humanos y de agente (revisión, análisis, check manual), no el transporte.</li>
+    <li>Esta página no expone el contenido de los correos ni el snapshot ERP: solo horas, estados e identificadores de turno.</li>
+    <li>El worker guarda estos metadatos por turno (estado, <code>sentAt</code>, recepción de respuesta); para que esta vista se actualice sola falta exponerlos en un endpoint público de solo lectura.</li>
+  </ul>
+
+  <footer>
+    Generada el 30-09-2026 · Fuentes: registros de Agent Mail (recepción 10:44:57, entrega 10:46:47),
+    salidas de <code>wrangler deploy</code> pegadas por el operador (10:44:24 y 10:54:08) y captura del panel ERP (10:49:47).
+    Sin conexión a datos en vivo.
+  </footer>
+</main>
+<script>
+const LOG = {
+  test: "2026-09-30",
+  job: "ALPHA 367b167612514d67925cdbec7593927e",
+  kpis: { ida: "≤ ~30 s", vuelta: "~1 s", total: "~5 min" },
+  events: [
+    { t: "10:44:24", ev: "Deploy del worker con SEND_ENABLED=true (versión 39b6d5f5)", tipo: "humano", src: "Salida wrangler pegada por el operador" },
+    { t: "~10:44:5x", ev: "Botón «Ejecutar turno» en el panel ERP (UI → Cloudflare → Gmail API)", tipo: "humano", src: "Hora aproximada (sin registro de la pulsación)" },
+    { t: "10:44:57", ev: "Email del turno recibido en el buzón Instinct (3xdy4j@mail.instinct.com)", tipo: "auto", src: "Registro de recepción de Agent Mail" },
+    { t: "10:46:46", ev: "Respuesta (análisis ERP) enviada por el agente Instinct", tipo: "auto", src: "Registro de envío de Agent Mail (submission 3bf7c550…)" },
+    { t: "10:46:47", ev: "Entrega SMTP confirmada en Gmail (250 OK)", tipo: "auto", src: "Notificación delivery.delivered de Agent Mail" },
+    { t: "10:49:47", ev: "«Comprobar respuestas» en el panel ERP → estado «answered» (roundtrip completo)", tipo: "humano", src: "Captura del panel ERP" },
+    { t: "10:54:08", ev: "Deploy final con SEND_ENABLED=false (versión e3e161c1) — envío desactivado", tipo: "humano", src: "Salida wrangler pegada por el operador" }
+  ]
+};
+document.getElementById('kpi-ida').textContent = LOG.kpis.ida;
+document.getElementById('kpi-vuelta').textContent = LOG.kpis.vuelta;
+document.getElementById('kpi-total').textContent = LOG.kpis.total;
+const tbody = document.getElementById('rows');
+for (const e of LOG.events) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = '<td class="t"></td><td></td><td></td><td class="src"></td>';
+  tr.children[0].textContent = e.t;
+  tr.children[1].textContent = e.ev;
+  const tag = document.createElement('span');
+  tag.className = 'tag ' + (e.tipo === 'auto' ? 'auto' : 'humano');
+  tag.textContent = e.tipo === 'auto' ? 'automático' : 'manual';
+  tr.children[2].appendChild(tag);
+  tr.children[3].textContent = e.src;
+  tbody.appendChild(tr);
+}
+</script>
+</body>
+</html>

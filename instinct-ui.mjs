@@ -1,3 +1,4 @@
+import {mountCentralUI} from './instinct-central-ui.mjs';
 import {GmailBridge,ActivityLog,makeRequest,sign} from './instinct-gmail.mjs';
 export function mountInstinctUI(AP){
  let key=null,bridge=null,timer=null,reviewTimer=null,prepared=null,originalAsk=AP.ask.bind(AP),enabled=false;
@@ -24,4 +25,4 @@ export function mountInstinctUI(AP){
  // Provisioning is intentionally separate from public config. Never expose raw secrets in the UI.
  window.AdaptaProInstinct={setSigningKey(cryptoKey){if(!cryptoKey||cryptoKey.type!=='secret'||cryptoKey.extractable||cryptoKey.algorithm.name!=='HMAC'||!cryptoKey.usages.includes('sign')||!cryptoKey.usages.includes('verify'))throw Error('Nonextractable HMAC signing/verification CryptoKey required');key=cryptoKey;if(bridge)bridge.key=key;el('ig-key').textContent='Firma privada disponible en memoria para esta sesión.';},show,check,prepare,summary:()=>log?.summary(),getState:()=>({enabled,authorized:!!bridge?.token,signingReady:!!key,pending:bridge?[...bridge.jobs.values()].map(j=>({id:j.request.id,agent:j.request.agent,status:j.status})):[]})};
 }
-if(globalThis.document&&globalThis.AP)mountInstinctUI(globalThis.AP);
+if(globalThis.document&&globalThis.AP){mountInstinctUI(globalThis.AP);mountCentralUI(globalThis.AP);}

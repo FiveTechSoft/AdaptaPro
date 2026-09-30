@@ -25,6 +25,8 @@ Cuenta de correo del ERP: `fivetech2@gmail.com`, elegida por el usuario para est
 
 ### Configurar Google Cloud
 
+Guía paso a paso: [Configurar Gmail OAuth para Pages](docs/setup-gmail-oauth.md). Incluye permisos, cuenta de prueba, Client ID, autorización y límites antes del primer envío real.
+
 1. Crear/elegir proyecto propio.
 2. Biblioteca de APIs: habilitar Gmail API.
 3. Google Auth Platform: Branding (nombre/contacto), Audience (External para Gmail personal), Testing y test user con el buzón ERP.

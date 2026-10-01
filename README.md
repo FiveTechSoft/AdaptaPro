@@ -1,6 +1,6 @@
-# AdaptaPro
+# FiveTech
 
-**AdaptaPro: ERP Agéntico y Autónomo, con supervisión humana.**
+**FiveTech: ERP Agéntico y Autónomo, con supervisión humana.**
 
 ## El concepto
 
@@ -29,3 +29,7 @@ Abre `index.html` en cualquier navegador, o publica el repositorio con GitHub Pa
 ## Estado
 
 Prototipo en desarrollo inicial.
+
+## Trabajo de los agentes y pruebas
+
+Consulta [funciones exactas, límites y verificación local](docs/agentes-erp.md). ALPHA usa el modelo; BETA y GAMMA son reglas locales. Los subagentes jurídicos son diseño, no ejecutores.

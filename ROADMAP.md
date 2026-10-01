@@ -1,6 +1,28 @@
 # ROADMAP: agentes FiveTech con Instinct
 
-Actualizado: 30 septiembre 2026. Plan aprobado: ALPHA/BETA/GAMMA del ERP ↔ email firmado ↔ Instinct como cerebro. No confundir este transporte de aplicación con una API pública oficial ni con el relay de pruebas local.
+Actualizado: 1 octubre 2026. Plan aprobado: ALPHA/BETA/GAMMA del ERP ↔ email firmado ↔ Instinct como cerebro. No confundir este transporte de aplicación con una API pública oficial ni con el relay de pruebas local.
+
+## Transición: del monolito a un core extensible
+
+[Diagrama de la arquitectura objetivo](docs/diagrama-core.svg). Todo el ERP (datos, vistas, agentes, modos) vive hoy en `index.html` (163 KB) con SQL crudo en la UI y migraciones ad-hoc en JS. Un pack no puede entrar sin tocar el núcleo, y un PR no es revisable porque no hay dónde separar. La transición tiene tres entregables y un orden fijo: cada paso deja el sistema funcionando.
+
+**Las dos misiones de los agentes, que no se mezclan:**
+
+- *Operativa (A)* — ALPHA, BETA y GAMMA **leen, calculan y proponen** dentro del ERP, siempre pasando por la misma puerta de comandos que el humano. Supervisado deja la propuesta pendiente; Autónomo puede aprobar propuestas locales con auditoría, pero no emite compras ni recibe mercancía. Los subagentes jurídicos siguen siendo diseño, no ejecutores.
+- *Evolución (B)* — el agente **propone cambios en el sistema** mediante issues y pull requests: detecta, escribe la especificación, redacta el pack declarativo y abre el PR argumentando qué se comparte con el núcleo y qué queda localizado. **Nunca hace merge**, nunca modifica `index.html`, `data/schema.sql` ni `data/seed/demo.json` para añadir un pack, y nunca marca `runtime_enabled: true` en su propio pack.
+
+**Arquitectura objetivo:** kernel estable (esquema versionado, transacciones, políticas, registro de extensiones) + una superficie única `AP.exec({cmd, payload, actor, mode})` por la que pasan UI y agentes (validar → autorizar según modo → efectos en `tx()` → `audit_log`) + packs **declarativos** sin JS arbitrario. El feedback entra por issues (especificación) y PRs (humanos y agentes proponen), y la CI es la puerta: `node scripts/validate-packs.mjs` en verde antes de integrar.
+
+**Fases:**
+
+- [x] **Paso 0 · diagrama** — `docs/diagrama-core.svg` con las tres capas, el ciclo de PR/issues y los límites de un pack.
+- [ ] **Paso 1 · esquema versionado** — `PRAGMA user_version`, `data/migrations/` numeradas y acumulativas, y `APCompliance.migrate()` (creación de tablas en JS, `index.html:951`) movida a migración SQL. Sustituye la migración ad-hoc por una pista ordenada.
+- [ ] **Paso 2 · extraer `AP` a módulos ES** — `core/data.mjs`, `core/policy.mjs`, `core/commands.mjs`, `core/views.mjs`. Ya existe el precedente: `index.html:1220` importa `./instinct-ui.mjs`.
+- [ ] **Paso 3 · unificar el SQL de la UI en `AP.exec`/`AP.query`** — `APViews.render()` (`index.html:1139-1164`) hace ~15 `SELECT` inline; deben pasar por la superficie única con validación y auditoría.
+- [ ] **Paso 4 · loader de packs** — registro en el kernel, aislamiento y habilitación condicionada a migración y pruebas adjuntas. Hoy no existe: `runtime_enabled` es siempre `false` y nada lo importa en runtime.
+- [ ] **Paso 5 · CI completa** — añadir `scripts/test-agents.cjs` (17 casos Playwright) y `cloudflare/worker.test.mjs` al workflow, para que un PR de agente se verifique y no solo se valide estructuralmente.
+
+**Reglas que no cambian durante la transición:** ningún pack se salta cola, auditoría o confirmaciones; el modo Supervisado sigue dejando propuestas pendientes; Autónomo no compra ni recibe; los límites de `AGENTS.md` sobre núcleo y packs siguen vigentes. El kernel se cambia en un PR aparte, con responsable del núcleo.
 
 ## Prueba manual temporal
 

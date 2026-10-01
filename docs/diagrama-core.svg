@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-labelledby="t d">
+  <title id="t">FiveTech - Arquitectura objetivo: core estable, agentes que administran, packs que amplían</title>
+  <desc id="d">Tres columnas: ciclo de feedback con issues y pull requests, núcleo ejecutable con superficie única de comandos AP.exec y kernel estable, y extensiones declarativas mediante packs sin código arbitrario.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a1a2b"/>
+      <stop offset="0.55" stop-color="#081523"/>
+      <stop offset="1" stop-color="#050d17"/>
+    </linearGradient>
+    <linearGradient id="corePanel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0f3340"/>
+      <stop offset="1" stop-color="#0a212f"/>
+    </linearGradient>
+    <linearGradient id="fbPanel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#12293d"/>
+      <stop offset="1" stop-color="#0c1b2c"/>
+    </linearGradient>
+    <linearGradient id="pkPanel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#11443f"/>
+      <stop offset="1" stop-color="#0d2a2c"/>
+    </linearGradient>
+    <radialGradient id="glowCore" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#1fb9a6" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#1fb9a6" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="dots" width="42" height="42" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.2" fill="#1d3d52" opacity="0.55"/>
+    </pattern>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8ff0e3"/>
+    </marker>
+    <marker id="arA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#d99a2b"/>
+    </marker>
+    <marker id="arG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5ad19a"/>
+    </marker>
+  </defs>
+
+  <style>
+    .h1{font:700 34px "Segoe UI",Helvetica,Arial,sans-serif;fill:#e6edf3}
+    .h2{font:400 16px "Segoe UI",Helvetica,Arial,sans-serif;fill:#8b949e}
+    .col{font:700 15px "Segoe UI",Helvetica,Arial,sans-serif;fill:#8ff0e3;letter-spacing:1.4px}
+    .bt{font:700 17px "Segoe UI",Helvetica,Arial,sans-serif;fill:#e6edf3}
+    .btg{font:700 17px "Segoe UI",Helvetica,Arial,sans-serif;fill:#5ad19a}
+    .bta{font:700 17px "Segoe UI",Helvetica,Arial,sans-serif;fill:#e8b45a}
+    .btw{font:700 17px "Segoe UI",Helvetica,Arial,sans-serif;fill:#ffd479}
+    .li{font:400 14.5px "Segoe UI",Helvetica,Arial,sans-serif;fill:#c9d6e0}
+    .sm{font:400 13px "Segoe UI",Helvetica,Arial,sans-serif;fill:#8b949e}
+    .mono{font:400 14px Consolas,"Courier New",monospace;fill:#9fe8dc}
+    .lbl{font:700 13px "Segoe UI",Helvetica,Arial,sans-serif;fill:#7fd7ff}
+    .foot{font:400 13.5px "Segoe UI",Helvetica,Arial,sans-serif;fill:#7d8b99}
+  </style>
+
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <rect width="1920" height="1080" fill="url(#dots)"/>
+
+  <text class="h1" x="60" y="62">FiveTech · Arquitectura objetivo: core estable, agentes que administran, packs que amplían</text>
+  <text class="h2" x="60" y="94">Transición desde el monolito actual: todo el ERP vive hoy en index.html (163 KB) con SQL crudo en la UI. Tres capas, una sola puerta de comandos y extensiones declarativas.</text>
+  <text class="h2" x="60" y="118">Documentación: README.md · ROADMAP.md · paso 1 en data/migrations/ · diagrama: docs/diagrama-core.svg</text>
+
+  <!-- ================= COLUMNA 1 · FEEDBACK ================= -->
+  <text class="col" x="60" y="156">1 · CICLO DE FEEDBACK · ISSUES Y PULL REQUESTS</text>
+  <rect x="60" y="170" width="430" height="810" rx="14" fill="url(#fbPanel)" stroke="#2f5266" stroke-width="1.5"/>
+
+  <rect x="85" y="200" width="380" height="80" rx="10" fill="#0e2133" stroke="#39607a"/>
+  <text class="bt" x="105" y="230">Issue · especificación</text>
+  <text class="li" x="105" y="253">El pedido de mejora vive como incidencia,</text>
+  <text class="li" x="105" y="272">no como código incrustado en la demo.</text>
+
+  <line x1="275" y1="280" x2="275" y2="303" stroke="#8ff0e3" stroke-width="2" marker-end="url(#ar)"/>
+
+  <rect x="85" y="305" width="380" height="105" rx="10" fill="#0e2133" stroke="#39607a"/>
+  <text class="bt" x="105" y="334">Pull request</text>
+  <text class="li" x="105" y="357">Lo proponen humanos y agentes por igual.</text>
+  <text class="li" x="105" y="377">El agente escribe el PR y explica el cambio;</text>
+  <text class="li" x="105" y="397">una persona decide la integración.</text>
+
+  <line x1="275" y1="410" x2="275" y2="433" stroke="#8ff0e3" stroke-width="2" marker-end="url(#ar)"/>
+
+  <rect x="85" y="435" width="380" height="140" rx="10" fill="#0e2133" stroke="#39607a"/>
+  <text class="bt" x="105" y="464">CI en cada PR</text>
+  <text class="mono" x="105" y="489">node scripts/validate-packs.mjs</text>
+  <text class="mono" x="105" y="513">node scripts/test-agents.cjs</text>
+  <text class="mono" x="105" y="537">node cloudflare/worker.test.mjs</text>
+  <text class="sm" x="105" y="560">El primero ya corre en CI; los otros dos faltan.</text>
+
+  <line x1="275" y1="575" x2="275" y2="598" stroke="#8ff0e3" stroke-width="2" marker-end="url(#ar)"/>
+
+  <rect x="85" y="600" width="380" height="95" rx="10" fill="#0e2133" stroke="#39607a"/>
+  <text class="bt" x="105" y="630">Revisión humana</text>
+  <text class="li" x="105" y="653">Persona del proveedor y mantenedor.</text>
+  <text class="li" x="105" y="673">El núcleo exige responsable asignado.</text>
+
+  <line x1="275" y1="695" x2="275" y2="718" stroke="#8ff0e3" stroke-width="2" marker-end="url(#ar)"/>
+
+  <rect x="85" y="720" width="380" height="90" rx="10" fill="#0e2133" stroke="#5ad19a"/>
+  <text class="btg" x="105" y="750">Merge a main</text>
+  <text class="li" x="105" y="773">Entra el pack; el kernel no cambia</text>
+  <text class="li" x="105" y="793">por la petición de un país.</text>
+
+  <rect x="85" y="830" width="380" height="135" rx="10" fill="#131b17" stroke="#3d6b52"/>
+  <text class="btg" x="105" y="858">Reglas del ciclo</text>
+  <text class="li" x="105" y="882">· Los agentes proponen; deciden personas.</text>
+  <text class="li" x="105" y="904">· Nadie hace merge sin CI en verde.</text>
+  <text class="li" x="105" y="926">· Un pack que rompe la cola o los modos</text>
+  <text class="li" x="105" y="946">  falla en CI, no en producción.</text>
+
+  <!-- ================= COLUMNA 2 · NÚCLEO ================= -->
+  <text class="col" x="545" y="156">2 · NÚCLEO EJECUTABLE · ESTABLE E INVOLABLE</text>
+  <ellipse cx="960" cy="685" rx="470" ry="300" fill="url(#glowCore)"/>
+  <rect x="545" y="170" width="830" height="810" rx="14" fill="url(#corePanel)" stroke="#2a6f74" stroke-width="1.8"/>
+
+  <rect x="575" y="200" width="770" height="125" rx="10" fill="#0d2b33" stroke="#3f8f8a"/>
+  <text class="bt" x="597" y="230">Quién pide el cambio · interfaz y agentes</text>
+  <text class="li" x="597" y="256">Panel humano: botones, chat, colas de aprobación, recepción.</text>
+  <text class="li" x="597" y="278">Agentes ALPHA (inventario), BETA (ciclo de pedidos), GAMMA (proveedor).</text>
+  <text class="li" x="597" y="300">Ninguno escribe SQL directo: ambos llamadores usan la misma puerta.</text>
+
+  <line x1="960" y1="325" x2="960" y2="353" stroke="#8ff0e3" stroke-width="2.4" marker-end="url(#ar)"/>
+
+  <rect x="575" y="355" width="770" height="180" rx="10" fill="#0d3a3f" stroke="#39c4b2" stroke-width="1.6"/>
+  <text class="btg" x="597" y="385">Superficie única de comandos</text>
+  <text class="mono" x="597" y="411">AP.exec({ cmd, payload, actor, mode })</text>
+  <text class="li" x="597" y="438">1 · Validar la petición contra el esquema versionado.</text>
+  <text class="li" x="597" y="461">2 · Autorizar según modo: Supervisado deja pendiente; Autónomo aprueba con auditoría.</text>
+  <text class="li" x="597" y="484">3 · Aplicar efectos dentro de una transacción (nunca a medias).</text>
+  <text class="li" x="597" y="507">4 · Registrar actor, acción, entidad y resultado en audit_log.</text>
+  <text class="sm" x="597" y="526">Ya existen los gérmenes: AP.decide, AP.receive, AP.audit y tx() en index.html.</text>
+
+  <line x1="960" y1="535" x2="960" y2="563" stroke="#8ff0e3" stroke-width="2.4" marker-end="url(#ar)"/>
+
+  <rect x="575" y="565" width="770" height="240" rx="10" fill="#0b2f3a" stroke="#5ad19a" stroke-width="2"/>
+  <text class="btw" x="597" y="596">KERNEL · lo único que no cambia por un pack</text>
+  <text class="li" x="597" y="624">· Esquema versionado: PRAGMA user_version + migraciones numeradas en data/migrations/.</text>
+  <text class="li" x="597" y="648">· Transacciones: BEGIN IMMEDIATE / COMMIT / ROLLBACK (AP.tx).</text>
+  <text class="li" x="597" y="672">· Políticas: modos de operación, approval_queue, permisos, audit_log.</text>
+  <text class="li" x="597" y="696">· Registro de extensiones: qué pack está activo, a qué versión y con qué alcance.</text>
+  <text class="li" x="597" y="720">· Nada de esto lo decide el pack: el pack solo se declara y se registra aquí.</text>
+  <rect x="597" y="740" width="726" height="50" rx="8" fill="#09222b" stroke="#2a6f74"/>
+  <text class="sm" x="613" y="762">El kernel no contiene vistas, ni reglas de negocio, ni textos de país:</text>
+  <text class="sm" x="613" y="781">eso vive en el registro de extensiones y se compone en tiempo de carga.</text>
+
+  <line x1="960" y1="805" x2="960" y2="833" stroke="#8ff0e3" stroke-width="2.4" marker-end="url(#ar)"/>
+
+  <rect x="575" y="835" width="770" height="120" rx="10" fill="#0d2b33" stroke="#3f8f8a"/>
+  <text class="bt" x="597" y="865">Datos</text>
+  <text class="li" x="597" y="891">sql.js (SQLite WASM) dentro del navegador · persistencia de bytes en IndexedDB.</text>
+  <text class="li" x="597" y="913">Sin backend multiusuario, sin permisos de servidor, sin conciliación central.</text>
+  <text class="sm" x="597" y="938">Restablecer borra la copia local y vuelve a la semilla ficticia.</text>
+
+  <!-- ================= COLUMNA 3 · PACKS ================= -->
+  <text class="col" x="1430" y="156">3 · EXTENSIONES · PACKS DECLARATIVOS</text>
+  <rect x="1430" y="170" width="430" height="810" rx="14" fill="url(#pkPanel)" stroke="#2f7a6a" stroke-width="1.5"/>
+
+  <rect x="1455" y="200" width="380" height="70" rx="10" fill="#0e2f2c" stroke="#3f9b85"/>
+  <text class="btg" x="1475" y="228">packs/XX/manifest.json</text>
+  <text class="li" x="1475" y="252">Código ISO, estado, alcance y fuentes con fecha.</text>
+
+  <rect x="1455" y="290" width="380" height="95" rx="10" fill="#0e2f2c" stroke="#3f9b85"/>
+  <text class="bt" x="1475" y="318">Tablas y migración</text>
+  <text class="li" x="1475" y="342">SQL declarativo numerado y acumulativo.</text>
+  <text class="li" x="1475" y="364">Nunca reescribe el esquema base.</text>
+
+  <rect x="1455" y="405" width="380" height="95" rx="10" fill="#0e2f2c" stroke="#3f9b85"/>
+  <text class="bt" x="1475" y="433">Vistas y consultas</text>
+  <text class="li" x="1475" y="457">Allowlist de tablas y campos, con límites</text>
+  <text class="li" x="1475" y="479">de filas: criterio ya usado en el worker.</text>
+
+  <rect x="1455" y="520" width="380" height="95" rx="10" fill="#0e2f2c" stroke="#3f9b85"/>
+  <text class="bt" x="1475" y="548">Reglas de cumplimiento</text>
+  <text class="li" x="1475" y="572">CO y VE, con organismo, URL, fecha de</text>
+  <text class="li" x="1475" y="594">consulta y vigencia por verificar.</text>
+
+  <rect x="1455" y="635" width="380" height="95" rx="10" fill="#0e2f2c" stroke="#3f9b85"/>
+  <text class="bt" x="1475" y="663">Tools y prompts de agente</text>
+  <text class="li" x="1475" y="687">Qué puede consultar y proponer.</text>
+  <text class="li" x="1475" y="709">Cómo se ejecuta lo decide el kernel.</text>
+
+  <rect x="1455" y="750" width="380" height="95" rx="10" fill="#2c1d10" stroke="#c98a2b"/>
+  <text class="bta" x="1475" y="778">Prohibido en un pack</text>
+  <text class="li" x="1475" y="802">JS, HTML, llamadas de red, claves, y saltarse</text>
+  <text class="li" x="1475" y="824">cola, auditoría o confirmaciones.</text>
+
+  <rect x="1455" y="865" width="380" height="100" rx="10" fill="#0e2f2c" stroke="#3f9b85"/>
+  <text class="bt" x="1475" y="893">Carga en runtime</text>
+  <text class="li" x="1475" y="917">Loader + registro en el kernel. Hoy no existe:</text>
+  <text class="li" x="1475" y="939">runtime_enabled es false y nada lo importa.</text>
+
+  <!-- conector packs → kernel -->
+  <line x1="1430" y1="567" x2="1378" y2="567" stroke="#5ad19a" stroke-width="2.4" marker-end="url(#arG)"/>
+  <text class="lbl" x="1330" y="556" text-anchor="end">se declara · se valida · se registra</text>
+
+  <!-- conector CI → packs (ruta inferior) -->
+  <path d="M465,505 L512,505 L512,996 L1645,996 L1645,968" fill="none" stroke="#d99a2b" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#arA)"/>
+  <text class="lbl" x="1080" y="988" text-anchor="middle" fill="#e8b45a">CI valida el pack antes de que entre en el registro</text>
+
+  <text class="foot" x="60" y="1032">Estado actual → objetivo · paso 1: versionado de esquema y migraciones numeradas. Siguiente: extraer AP de index.html a módulos ES, unificar el SQL de la UI en AP.exec y añadir el loader de packs.</text>
+  <text class="foot" x="60" y="1056">Los límites de AGENTS.md no cambian: supervisado deja propuestas pendientes; autónomo puede aprobar propuestas locales con auditoría, pero no emite compras ni recibe mercancía.</text>
+</svg>

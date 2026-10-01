@@ -4,7 +4,7 @@ Modo temporal SIN firma, NO AUTENTICADO. Verifica transporte, correlación y tex
 
 ## Preparar navegador
 
-1. Si no hay mensajes pendientes, recarga AdaptaPro después de la publicación. Recargar elimina OAuth y cola en memoria: no recargues con un envío pendiente o incierto.
+1. Si no hay mensajes pendientes, recarga FiveTech después de la publicación. Recargar elimina OAuth y cola en memoria: no recargues con un envío pendiente o incierto.
 2. En menú izquierdo, desplázate al final y pulsa **⚙ Instinct · Gmail**. Ya no hay botón flotante.
 3. Pega tu Client ID en **Client ID público OAuth**. Comprueba **Buzón ERP** y **Destino confirmado de Instinct**. Usa solo las direcciones que has revisado para la prueba.
 4. Marca **Prueba manual SIN firma: no autenticada** ANTES de autorizar. Es un modo separado; una sesión previamente autorizada como firmada necesita recargar sin pendientes para elegirlo.
@@ -59,11 +59,11 @@ Responder antes de caducidad (15 minutos). Destinatario exactamente el buzón ER
 El snapshot del ERP sigue siendo la base demo local. El test prueba análisis y transporte, no conexión a un negocio real ni autonomía 24/7. No activar envío periódico de resúmenes: todavía es solo preparación local. Cuando haya firmador privado y provisión segura, volver al modo firmado en sesión nueva.
 
 
-## Roadmap: evolución del puente AdaptaPro-Instinct
+## Roadmap: evolución del puente FiveTech-Instinct
 
 Idea futura, sin compromiso ni fecha. Hoy el puente funciona por email: el roundtrip de ida y vuelta quedó verificado el 2026-09-30 (ver [prueba del 2026-09-30](prueba-puente-2026-09-30.md)). La evolución natural es pasar del email a un canal de suscripción directa, near-real-time. Dos opciones en estudio:
 
 1. **Endpoint HTTPS directo con firma HMAC.** Comunicación de extremo a extremo entre el worker Cloudflare e Instinct: Instinct expone un endpoint suscrito, el worker publica los turnos firmados con HMAC y la respuesta llega en segundos en vez de minutos. Depende del firmador privado y la provisión segura de secretos, pendientes también para volver al modo firmado por email.
-2. **Canal WhatsApp vía FiveAgent.** Reutilizar el puente TWhatsApp de FiveAgent (ya en progreso en ese proyecto): AdaptaPro consultaría y recibiría la respuesta por WhatsApp, aprovechando la infraestructura de mensajería existente en vez de montar un endpoint propio.
+2. **Canal WhatsApp vía FiveAgent.** Reutilizar el puente TWhatsApp de FiveAgent (ya en progreso en ese proyecto): FiveTech consultaría y recibiría la respuesta por WhatsApp, aprovechando la infraestructura de mensajería existente en vez de montar un endpoint propio.
 
 Mientras tanto, el camino soportado sigue siendo el email con revisión humana previa a cada envío.

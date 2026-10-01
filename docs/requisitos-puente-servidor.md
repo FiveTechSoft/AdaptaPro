@@ -1,4 +1,4 @@
-# Requisitos para alojar el puente AdaptaPro en servidor
+# Requisitos para alojar el puente FiveTech en servidor
 
 Fecha: 2026-09-30. Propuesta técnica, sin despliegue ni envío de correo.
 

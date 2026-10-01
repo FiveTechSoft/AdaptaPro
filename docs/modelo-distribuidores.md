@@ -1,4 +1,4 @@
-# AdaptaPro: un núcleo, distribuidores por país y usuarios sin forks
+# FiveTech: un núcleo, distribuidores por país y usuarios sin forks
 
 **Sí, conviene separar estas tres cosas.** El código común se mantiene una vez. Cada distribuidor adapta su país. El usuario final solo abre la web.
 
@@ -6,7 +6,7 @@
 
 ```mermaid
 flowchart TB
-    C["ADAPTAPRO PRINCIPAL<br/>Núcleo común · repo privado"]
+    C["FIVETECH PRINCIPAL<br/>Núcleo común · repo privado"]
     D1["DISTRIBUIDOR COLOMBIA<br/>Su fork + su pack de país"]
     D2["DISTRIBUIDOR OTRO PAÍS<br/>Su fork + su pack de país"]
     U1["USUARIOS<br/>Abren la web del distribuidor<br/>No hacen fork"]
@@ -37,7 +37,7 @@ flowchart TB
 
 | Quién | Qué mantiene | Qué no necesita hacer |
 |---|---|---|
-| **AdaptaPro principal** | El núcleo común y sus mejoras. Decide quién accede al repo privado. | Hacer una copia distinta del núcleo por cada usuario. |
+| **FiveTech principal** | El núcleo común y sus mejoras. Decide quién accede al repo privado. | Hacer una copia distinta del núcleo por cada usuario. |
 | **Distribuidor por país** | Su copia conectada al principal (fork), su pack de país y su web. | Reescribir todas las mejoras del núcleo a mano. |
 | **Usuario final** | En esta demo, sus datos en su propio navegador. | Crear cuenta GitHub, hacer fork o instalar el puente. |
 
@@ -56,7 +56,7 @@ Los forks privados siguen siendo privados y tienen reglas de permisos heredadas.
 
 ## Cómo llegan las mejoras sin romper el país
 
-1. AdaptaPro publica una mejora del núcleo.
+1. FiveTech publica una mejora del núcleo.
 2. El distribuidor trae esa mejora a una rama de prueba de su fork.
 3. Se comprueba que el pack de país sigue funcionando.
 4. Si hay un choque entre cambios, se revisa antes de publicar.

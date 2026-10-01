@@ -1,5 +1,5 @@
 /*
-TInstinct JS para AdaptaPro. Node 22, sin npm ni Harbour.
+TInstinct JS para FiveTech. Node 22, sin npm ni Harbour.
 Ejecutar tests: node tinstinct.mjs --test
 Demo local: ERP_ROOT=/ruta/AdaptaPro node tinstinct.mjs
 Solo fixtures, no email real ni API oficial. Sin cola durable/autenticidad.
@@ -188,7 +188,7 @@ export async function fixtures({concise=false}={}){
  }
  return {smtp:servers[0].address().port,reject:servers[1].address().port,pop:servers[2].address().port,boxes,setFault(x){fault=x;},close:()=>Promise.all(servers.map(s=>new Promise(r=>s.close(r))))};
 }
-const ERP_ADAPTER="/* Local AdaptaPro integration. Replies are inert text, never tool calls. */\n(() => {\n  if (location.hostname !== '127.0.0.1' || location.protocol !== 'http:') throw Error('Local bridge only');\n  if (typeof AP === 'undefined') throw Error('AdaptaPro AP interface missing');\n  // Stop automatic mail generation. Local ERP proposals and approvals are unchanged.\n  clearInterval(AP.cycleTimer);\n  AP.startCycle = function () { clearInterval(this.cycleTimer); const label=document.getElementById('ap-cycle'); if(label) label.textContent='Transporte de correo local de prueba \u00b7 ciclo autom\u00e1tico detenido'; };\n  AP.modelCall = async function (messages) {\n    const text = messages.map(m => `[${m.role}]\\n${m.content || ''}`).join('\\n\\n');\n    if (text.length > 20000) throw Error('Mensaje demasiado grande');\n    if (!window.confirm('Transporte de correo local de prueba. Se enviar\u00e1 el texto y el contexto del ERP al destino configurado en el servidor. Rev\u00edsalo antes de continuar:\\n\\n'+text)) throw Error('Env\u00edo cancelado');\n    const response = await fetch('/api/instinct/messages', {\n      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text})\n    });\n    const result = await response.json();\n    if (!response.ok || result.status !== 'answered' || typeof result.text !== 'string')\n      throw Error('Sin respuesta confirmada. No reintentes a ciegas; revisa el relay.');\n    this.activeModel = 'transporte-correo-local';\n    return {role:'assistant',content:result.text};\n  };\n})();\n";
+const ERP_ADAPTER="/* Local FiveTech integration. Replies are inert text, never tool calls. */\n(() => {\n  if (location.hostname !== '127.0.0.1' || location.protocol !== 'http:') throw Error('Local bridge only');\n  if (typeof AP === 'undefined') throw Error('AdaptaPro AP interface missing');\n  // Stop automatic mail generation. Local ERP proposals and approvals are unchanged.\n  clearInterval(AP.cycleTimer);\n  AP.startCycle = function () { clearInterval(this.cycleTimer); const label=document.getElementById('ap-cycle'); if(label) label.textContent='Transporte de correo local de prueba \u00b7 ciclo autom\u00e1tico detenido'; };\n  AP.modelCall = async function (messages) {\n    const text = messages.map(m => `[${m.role}]\\n${m.content || ''}`).join('\\n\\n');\n    if (text.length > 20000) throw Error('Mensaje demasiado grande');\n    if (!window.confirm('Transporte de correo local de prueba. Se enviar\u00e1 el texto y el contexto del ERP al destino configurado en el servidor. Rev\u00edsalo antes de continuar:\\n\\n'+text)) throw Error('Env\u00edo cancelado');\n    const response = await fetch('/api/instinct/messages', {\n      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text})\n    });\n    const result = await response.json();\n    if (!response.ok || result.status !== 'answered' || typeof result.text !== 'string')\n      throw Error('Sin respuesta confirmada. No reintentes a ciegas; revisa el relay.');\n    this.activeModel = 'transporte-correo-local';\n    return {role:'assistant',content:result.text};\n  };\n})();\n";
 
 async function testTransport(){
 const f=await fixtures(),dir=fs.mkdtempSync(path.join(os.tmpdir(),'tinstinct-'));let checks=0;
@@ -233,11 +233,11 @@ try{
 if(process.argv[1] && path.resolve(process.argv[1])===fileURLToPath(import.meta.url)) {
  if(process.argv.includes('--test')) { await testTransport();await testHTTP(); }
  else {
-  if(!process.env.ERP_ROOT)throw Error('Set ERP_ROOT to a local AdaptaPro checkout');
+  if(!process.env.ERP_ROOT)throw Error('Set ERP_ROOT to a local FiveTech checkout');
   process.env.INSTINCT_MODE='local-fixture';const dir=fs.mkdtempSync(path.join(os.tmpdir(),'adaptapro-mail-'));
   const f=await fixtures({concise:process.env.INSTINCT_TEST_CONCISE==='1'});const b=await createBridge({root:process.env.ERP_ROOT,transport:{nSmtpPort:f.smtp,nPopPort:f.pop,cPopUser:'local-user',cPopPassword:'local-password',cUidlFile:path.join(dir,'seen')}});
   console.log('Local fixture ERP: '+b.url+' (no real mail)');
   async function close(){await b.close();await f.close();fs.rmSync(dir,{recursive:true,force:true});process.exit();}
   process.on('SIGINT',close);process.on('SIGTERM',close);
  }
-}
+                                                                                                                                                                                                                                                              }

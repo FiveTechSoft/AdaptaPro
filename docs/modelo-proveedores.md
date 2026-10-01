@@ -1,4 +1,4 @@
-# AdaptaPro: núcleo común, adaptación local
+# FiveTech: núcleo común, adaptación local
 
 Documento de apoyo para presentación a proveedores · 28 de septiembre de 2026
 
@@ -6,7 +6,7 @@ Documento de apoyo para presentación a proveedores · 28 de septiembre de 2026
 
 ## Tesis comercial
 
-Una empresa de cada país necesita procesos, fuentes normativas y lenguaje propios. Proponemos que los proveedores partan de un mismo AdaptaPro, trabajen en un fork con ayuda de un agente y devuelvan mejoras generales mediante pull requests revisados. El núcleo no se bifurca por contrato: las diferencias locales se documentan en packs versionados. El proveedor conserva control sobre su propuesta y responsabilidad sobre su validación local.
+Una empresa de cada país necesita procesos, fuentes normativas y lenguaje propios. Proponemos que los proveedores partan de un mismo FiveTech, trabajen en un fork con ayuda de un agente y devuelvan mejoras generales mediante pull requests revisados. El núcleo no se bifurca por contrato: las diferencias locales se documentan en packs versionados. El proveedor conserva control sobre su propuesta y responsabilidad sobre su validación local.
 
 **Mensaje para la presentación:** «Una base compartida; adaptaciones por país bajo responsabilidad local; mejoras comunes que regresan al núcleo tras revisión humana». No afirmar que ya existe una plataforma multiempresa o un motor legal validado.
 

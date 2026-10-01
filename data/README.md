@@ -1,4 +1,4 @@
-# Datos locales de AdaptaPro
+# Datos locales de FiveTech
 
 La aplicación carga `schema.sql` y `seed/demo.json` en una base SQLite (sql.js) y guarda sus bytes en IndexedDB al confirmar operaciones. Cada navegador o perfil mantiene su propia copia; no existe sincronización multiusuario ni backend de compras. La semilla es ficticia y usa céntimos de USD. El panel muestra USD de forma consistente; no convierte importes históricos de otra moneda mediante tipo de cambio.
 

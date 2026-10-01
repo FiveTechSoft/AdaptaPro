@@ -1,0 +1,387 @@
+{
+  "date": "2026-10-01T04:45:58.878Z",
+  "scope": "Chromium local; dependencies local; external network blocked; ALPHA model mocked",
+  "results": [
+    {
+      "name": "Carga limpia y tres agentes",
+      "pass": true,
+      "result": {
+        "stock": [
+          {
+            "sku": "SKU-451",
+            "name": "Tejido técnico azul, rollo",
+            "on_hand": 18,
+            "reserved": 12,
+            "available": 6,
+            "reorder_point": 20,
+            "target_stock": 80,
+            "needs_restock": 1
+          },
+          {
+            "sku": "SKU-208",
+            "name": "Cierre industrial, caja",
+            "on_hand": 36,
+            "reserved": 5,
+            "available": 31,
+            "reorder_point": 15,
+            "target_stock": 50,
+            "needs_restock": 0
+          },
+          {
+            "sku": "SKU-713",
+            "name": "Forro reciclado, rollo",
+            "on_hand": 26,
+            "reserved": 2,
+            "available": 24,
+            "reorder_point": 12,
+            "target_stock": 40,
+            "needs_restock": 0
+          }
+        ],
+        "agents": [
+          "ALPHA",
+          "BETA",
+          "GAMMA"
+        ]
+      }
+    },
+    {
+      "name": "BETA crea pedido ficticio sin reservar stock",
+      "pass": true,
+      "result": {
+        "delta": 1,
+        "before": [
+          {
+            "sku": "SKU-451",
+            "on_hand": 18,
+            "reserved": 12,
+            "updated_at": "2030-07-15T09:00:00Z"
+          },
+          {
+            "sku": "SKU-208",
+            "on_hand": 36,
+            "reserved": 5,
+            "updated_at": "2030-07-15T09:00:00Z"
+          },
+          {
+            "sku": "SKU-713",
+            "on_hand": 26,
+            "reserved": 2,
+            "updated_at": "2030-07-15T09:00:00Z"
+          }
+        ],
+        "after": [
+          {
+            "sku": "SKU-451",
+            "on_hand": 18,
+            "reserved": 12,
+            "updated_at": "2030-07-15T09:00:00Z"
+          },
+          {
+            "sku": "SKU-208",
+            "on_hand": 36,
+            "reserved": 5,
+            "updated_at": "2030-07-15T09:00:00Z"
+          },
+          {
+            "sku": "SKU-713",
+            "on_hand": 26,
+            "reserved": 2,
+            "updated_at": "2030-07-15T09:00:00Z"
+          }
+        ],
+        "event": {
+          "id": "f9a32654-c375-4080-8d0f-4e9d08ac878a",
+          "occurred_at": "2026-10-01T04:45:56.388Z",
+          "actor": "BETA",
+          "action": "pedido_generado",
+          "entity_type": "sales_order",
+          "entity_id": "PED-1003",
+          "details_json": "{\"sku\":\"SKU-451\",\"quantity\":2,\"source\":\"motor_local\"}"
+        }
+      }
+    },
+    {
+      "name": "ALPHA propone y GAMMA elige proveedor; supervisado pendiente",
+      "pass": true,
+      "result": {
+        "before": [
+          {
+            "sku": "SKU-451",
+            "on_hand": 18,
+            "reserved": 12,
+            "updated_at": "2030-07-15T09:00:00Z"
+          },
+          {
+            "sku": "SKU-208",
+            "on_hand": 36,
+            "reserved": 5,
+            "updated_at": "2030-07-15T09:00:00Z"
+          },
+          {
+            "sku": "SKU-713",
+            "on_hand": 10,
+            "reserved": 0,
+            "updated_at": "2030-07-15T09:00:00Z"
+          }
+        ],
+        "after": [
+          {
+            "sku": "SKU-451",
+            "on_hand": 18,
+            "reserved": 12,
+            "updated_at": "2030-07-15T09:00:00Z"
+          },
+          {
+            "sku": "SKU-208",
+            "on_hand": 36,
+            "reserved": 5,
+            "updated_at": "2030-07-15T09:00:00Z"
+          },
+          {
+            "sku": "SKU-713",
+            "on_hand": 10,
+            "reserved": 0,
+            "updated_at": "2030-07-15T09:00:00Z"
+          }
+        ],
+        "proposal": {
+          "id": "PROP-1790829956455",
+          "sku": "SKU-451",
+          "supplier_id": "PROV-01",
+          "proposed_qty": 74,
+          "unit_cost_cents": 3400,
+          "currency": "USD",
+          "agent_id": "ALPHA",
+          "rationale": "Caso sintético",
+          "created_at": "2026-10-01T04:45:56.456Z",
+          "status": "pendiente"
+        },
+        "supplier": {
+          "supplier_id": "PROV-01",
+          "sku": "SKU-451",
+          "unit_cost_cents": 3400,
+          "min_order_qty": 10,
+          "lead_days": 4
+        },
+        "check": {
+          "proposal_id": "PROP-1790829956455",
+          "status": "review",
+          "norm_id": "DEMO-constitucion",
+          "reason": "Faltan fuentes jurídicas vigentes para Constitución; requiere evaluación humana",
+          "checked_at": "2026-10-01T04:45:56.456Z"
+        }
+      }
+    },
+    {
+      "name": "Duplicado pendiente no crea nueva propuesta",
+      "pass": true,
+      "result": {
+        "delta": 0,
+        "text": "Ya hay una propuesta pendiente para SKU-451"
+      }
+    },
+    {
+      "name": "SKU desconocido y stock suficiente rechazados",
+      "pass": true,
+      "result": [
+        "SKU inexistente o sin necesidad de reposición",
+        "SKU inexistente o sin necesidad de reposición"
+      ]
+    },
+    {
+      "name": "Autónomo sigue pendiente con cumplimiento review",
+      "pass": true,
+      "result": {
+        "id": "PROP-1790829956495",
+        "sku": "SKU-713",
+        "supplier_id": "PROV-01",
+        "proposed_qty": 30,
+        "unit_cost_cents": 3100,
+        "currency": "USD",
+        "agent_id": "ALPHA",
+        "rationale": "Autónomo sintético",
+        "created_at": "2026-10-01T04:45:56.495Z",
+        "status": "pendiente"
+      }
+    },
+    {
+      "name": "Sin proveedor activo no propone",
+      "pass": true,
+      "result": "No hay proveedor activo"
+    },
+    {
+      "name": "ALPHA ask: herramienta simulada y texto inerte",
+      "pass": true,
+      "result": {
+        "calls": 2,
+        "pwned": false,
+        "text": "Consulta el inventario con ALPHA. Las propuestas requieren tu aprobación.\nCaso local de reposición\n\nPropuesta local <script>window.pwned=true</script>",
+        "check": {
+          "status": "review"
+        }
+      }
+    },
+    {
+      "name": "Botón BETA sigue invocando ALPHA",
+      "pass": true,
+      "result": "Eres ALPHA, agente de inventario de FiveTech. Responde en español con hechos del contexto. Puedes proponer reposición con la herramienta si el stock está bajo. Nunca digas que has comprado ni recibido mercancía. Describe exactamente el estado de la propuesta en SQLite y el modo actual. No inventes datos ni atribuyas acciones a BETA/GAMMA si no constan en la auditoría. En modo Autónomo el cumplimiento actual exige revisión humana de toda propuesta local nueva; nunca se compra ni se recibe mercancía. No reveles proveedores de modelos."
+    },
+    {
+      "name": "Botón GAMMA también invoca ALPHA",
+      "pass": true,
+      "result": "Eres ALPHA, agente de inventario de FiveTech. Responde en español con hechos del contexto. Puedes proponer reposición con la herramienta si el stock está bajo. Nunca digas que has comprado ni recibido mercancía. Describe exactamente el estado de la propuesta en SQLite y el modo actual. No inventes datos ni atribuyas acciones a BETA/GAMMA si no constan en la auditoría. En modo Autónomo el cumplimiento actual exige revisión humana de toda propuesta local nueva; nunca se compra ni se recibe mercancía. No reveles proveedores de modelos."
+    },
+    {
+      "name": "Fallo de modelo conserva datos y muestra Sin respuesta",
+      "pass": true,
+      "result": {
+        "before": 3,
+        "after": 3,
+        "status": "Sin respuesta"
+      }
+    },
+    {
+      "name": "Siete subagentes jurídicos son configuración, no ejecución",
+      "pass": true,
+      "result": {
+        "rows": [
+          {
+            "id": "mercantil",
+            "status": "unconfigured"
+          },
+          {
+            "id": "laboral",
+            "status": "demo"
+          },
+          {
+            "id": "civil",
+            "status": "unconfigured"
+          },
+          {
+            "id": "tributario-nacional",
+            "status": "unconfigured"
+          },
+          {
+            "id": "tributario-regional",
+            "status": "unconfigured"
+          },
+          {
+            "id": "tributario-local",
+            "status": "unconfigured"
+          },
+          {
+            "id": "administrativo",
+            "status": "unconfigured"
+          }
+        ],
+        "cards": 7,
+        "text": "País para la vista jurídica\nColombia\nVenezuela\nSelector de análisis local; no convierte normas de un país en reglas de otro.\nORQUESTACIÓN JURÍDICA · DISEÑO LOCAL\nSubagentes jurídicos\n\nSiete ámbitos de revisión y un enrutamiento propuesto por tipo de operación. La jerarquía de cada ámbito es un esquema, no un conjunto de normas vigentes: sin país, territorio, sector y reglas verificadas, estos subagentes no emiten dictámenes ni aprueban propuestas.\n\nRuta de una propuesta\nTipo de operación → país y territorio → ámbitos competentes → fuentes y vigencia → revisión humana → decisión registrada. Hoy solo existe el estado local de cumplimiento general; esta ruta jurídica no ejecuta revisiones automáticas ni envía declaraciones.\nÁmbitos y cobertura\nSUBAGENTE · MERCANTIL\nMercantil\nPor configurar\n\nCompras, proveedores, operaciones comerciales y sociedades\n\nRevisaría: Propuestas de compra y contratos comerciales\n\nPirámide de referencia:\n\nConstitución\nlegislación mercantil\nreglamentos aplicables\nactos y decisiones\npolítica interna\n\nSin fuentes ni reglas de jurisdicción cargadas\n\nSUBAGENTE · LABORAL\nLaboral\nDemo de fuentes\n\nVínculos de trabajo, jornada, remuneración y seguridad social\n\nRevisaría: Alta y cambios de personal, nómina, jornada\n\nPirámide de referencia:\n\nConstitución\nleyes y código laboral\nreglamentos\njurisprudencia aplicable\npolítica interna\n\nCaso Colombia disponible solo como demo de fuentes; Venezuela sin fuentes laborales cargadas\n\nSUBAGENTE · CIVIL\nCivil · contratación\nPor configurar\n\nFormación, ejecución, garantías y terminación de contratos civiles\n\nRevisaría: Borradores de contrato, renovaciones y cláusulas\n\nPirámide de referencia:\n\nConstitución\nlegislación civil\nreglamentos aplicables\njurisprudencia\ncláusulas y política interna\n\nSin análisis de cláusulas implementado\n\nSUBAGENTE · TRIBUTARIO-NACIONAL\nTributario · nacional\nPor configurar\n\nTributos nacionales: IVA, renta, parafiscales patronales y sectoriales, sujetos al régimen aplicable.\n\nRevisaría: Operaciones gravadas, facturación, nómina patronal y declaraciones\n\nPirámide de referencia:\n\nConstitución\nleyes tributarias\nreglamentos\nactos administrativos y jurisprudencia\ncontrol interno\n\nPaís y régimen por definir; no se calcula ni declara\n\nSUBAGENTE · TRIBUTARIO-REGIONAL\nTributario · regional\nPor configurar\n\nTributos de región, estado o departamento según territorio aplicable\n\nRevisaría: Operaciones, establecimientos e inmuebles con nexo regional\n\nPirámide de referencia:\n\nConstitución\nley nacional habilitante\nnorma regional\ndecisiones aplicables\ncontrol interno\n\nRegión y competencia por definir\n\nSUBAGENTE · TRIBUTARIO-LOCAL\nTributario · local\nPor configurar\n\nTributos municipales o distritales según domicilio y actividad\n\nRevisaría: Establecimientos, actividades, inmuebles y permisos locales\n\nPirámide de referencia:\n\nConstitución\nley habilitante\nordenanza o acuerdo local\ndecisiones aplicables\ncontrol interno\n\nMunicipio y competencia por definir\n\nSUBAGENTE · ADMINISTRATIVO\nAdministrativo\nPor configurar\n\nInteracciones con entidades públicas y posibles faltas en la actuación de funcionarios, con revisión de hechos y competencia\n\nRevisaría: Quejas o reclamos, peticiones, recursos frente a actos administrativos y eventual responsabilidad estatal\n\nPirámide de referencia:\n\nConstitución\nprocedimiento administrativo y leyes aplicables\nreglamentos\nacto y expediente\nprecedentes pertinentes\n\nPaís, entidad, hechos, plazos y vía competente por verificar; no presenta escritos ni acusa a personas\n\nPropuestas locales · ruta sugerida\n\nLas propuestas de compra del ERP son candidatas a revisión mercantil. Un análisis tributario dependerá del país, el territorio, el tipo de operación y el régimen fiscal; no se infiere la aplicabilidad de IVA, ISLR ni tributos regionales/locales. Esto es clasificación visual, no revisión efectuada.\n\nPropuesta\tSKU\tÁmbito candidato\tEstado jurídico\nPROP-1790829956564\tSKU-713\tMercantil · tributario por determinar\tSin revisión de subagentes\nPROP-1790829956495\tSKU-713\tMercantil · tributario por determinar\tSin revisión de subagentes\nPROP-1790829956455\tSKU-451\tMercantil · tributario por determinar\tSin revisión de subagentes\n\nAdministrativo ayuda a ordenar posibles reclamaciones ante entidades públicas; una queja, petición, recurso o acción exige identificar país, entidad, hechos, acto, plazos y cauce competente. No genera ni presenta denuncias, no atribuye faltas a funcionarios y no sustituye asesoría jurídica.\n\nCivil y Laboral se activarán para contratos o actos de personal cuando existan documentos y datos con ámbito definido. No se han creado subagentes ejecutores ni obligaciones fiscales. Ninguna propuesta es aprobada por esta vista."
+      }
+    },
+    {
+      "name": "Selector Venezuela no activa normas",
+      "pass": true,
+      "result": {
+        "country": "VE",
+        "text": "País para la vista jurídica\nColombia\nVenezuela\nSelector de análisis local; no convierte normas de un país en reglas de otro.\nORQUESTACIÓN JURÍDICA · DISEÑO LOCAL\nSubagentes jurídicos\n\nSiete ámbitos de revisión y un enrutamiento propuesto por tipo de operación. La jerarquía de cada ámbito es un esquema, no un conjunto de normas vigentes: sin país, territorio, sector y reglas verificadas, estos subagentes no emiten dictámenes ni aprueban propuestas.\n\nRuta de una propuesta\nTipo de operación → país y territorio → ámbitos competentes → fuentes y vigencia → revisión humana → decisión registrada. Hoy solo existe el estado local de cumplimiento general; esta ruta jurídica no ejecuta revisiones automáticas ni envía declaraciones.\nÁmbitos y cobertura\nSUBAGENTE · MERCANTIL\nMercantil\nPor configurar\n\nCompras, proveedores, operaciones comerciales y sociedades\n\nRevisaría: Propuestas de compra y contratos comerciales\n\nPirámide de referencia:\n\nConstitución\nlegislación mercantil\nreglamentos aplicables\nactos y decisiones\npolítica interna\n\nSin fuentes ni reglas de jurisdicción cargadas\n\nSUBAGENTE · LABORAL\nLaboral\nPor configurar\n\nVínculos de trabajo, jornada, remuneración y seguridad social\n\nRevisaría: Alta y cambios de personal, nómina, jornada\n\nPirámide de referencia:\n\nConstitución\nleyes y código laboral\nreglamentos\njurisprudencia aplicable\npolítica interna\n\nCaso Colombia disponible solo como demo de fuentes; Venezuela sin fuentes laborales cargadas\n\nSUBAGENTE · CIVIL\nCivil · contratación\nPor configurar\n\nFormación, ejecución, garantías y terminación de contratos civiles\n\nRevisaría: Borradores de contrato, renovaciones y cláusulas\n\nPirámide de referencia:\n\nConstitución\nlegislación civil\nreglamentos aplicables\njurisprudencia\ncláusulas y política interna\n\nSin análisis de cláusulas implementado\n\nSUBAGENTE · TRIBUTARIO-NACIONAL\nTributario · nacional\nPor configurar\n\nTributos nacionales: IVA, ISLR, parafiscales patronales y sectoriales, sujetos al régimen aplicable.\n\nRevisaría: Operaciones gravadas, facturación, nómina patronal y declaraciones\n\nPirámide de referencia:\n\nConstitución\nleyes tributarias\nreglamentos\nactos administrativos y jurisprudencia\ncontrol interno\n\nPaís y régimen por definir; no se calcula ni declara\n\nSUBAGENTE · TRIBUTARIO-REGIONAL\nTributario · regional\nPor configurar\n\nTributos de región, estado o departamento según territorio aplicable\n\nRevisaría: Operaciones, establecimientos e inmuebles con nexo regional\n\nPirámide de referencia:\n\nConstitución\nley nacional habilitante\nnorma regional\ndecisiones aplicables\ncontrol interno\n\nRegión y competencia por definir\n\nSUBAGENTE · TRIBUTARIO-LOCAL\nTributario · local\nPor configurar\n\nTributos municipales o distritales según domicilio y actividad\n\nRevisaría: Establecimientos, actividades, inmuebles y permisos locales\n\nPirámide de referencia:\n\nConstitución\nley habilitante\nordenanza o acuerdo local\ndecisiones aplicables\ncontrol interno\n\nMunicipio y competencia por definir\n\nSUBAGENTE · ADMINISTRATIVO\nAdministrativo\nPor configurar\n\nInteracciones con entidades públicas y posibles faltas en la actuación de funcionarios, con revisión de hechos y competencia\n\nRevisaría: Quejas o reclamos, peticiones, recursos frente a actos administrativos y eventual responsabilidad estatal\n\nPirámide de referencia:\n\nConstitución\nprocedimiento administrativo y leyes aplicables\nreglamentos\nacto y expediente\nprecedentes pertinentes\n\nPaís, entidad, hechos, plazos y vía competente por verificar; no presenta escritos ni acusa a personas\n\nPropuestas locales · ruta sugerida\n\nLas propuestas de compra del ERP son candidatas a revisión mercantil. Un análisis tributario dependerá del país, el territorio, el tipo de operación y el régimen fiscal; no se infiere la aplicabilidad de IVA, ISLR ni tributos regionales/locales. Esto es clasificación visual, no revisión efectuada.\n\nPropuesta\tSKU\tÁmbito candidato\tEstado jurídico\nPROP-1790829956564\tSKU-713\tMercantil · tributario por determinar\tSin revisión de subagentes\nPROP-1790829956495\tSKU-713\tMercantil · tributario por determinar\tSin revisión de subagentes\nPROP-1790829956455\tSKU-451\tMercantil · tributario por determinar\tSin revisión de subagentes\n\nAdministrativo ayuda a ordenar posibles reclamaciones ante entidades públicas; una queja, petición, recurso o acción exige identificar país, entidad, hechos, acto, plazos y cauce competente. No genera ni presenta denuncias, no atribuye faltas a funcionarios y no sustituye asesoría jurídica.\n\nCivil y Laboral se activarán para contratos o actos de personal cuando existan documentos y datos con ámbito definido. No se han creado subagentes ejecutores ni obligaciones fiscales. Ninguna propuesta es aprobada por esta vista.",
+        "check": {
+          "status": "review",
+          "norm_id": "DEMO-constitucion",
+          "reason": "Faltan fuentes jurídicas vigentes para Constitución; requiere evaluación humana"
+        }
+      }
+    },
+    {
+      "name": "RRHH puntuación textual: 0 y 80, nunca aprobación",
+      "pass": true,
+      "result": [
+        {
+          "score": 0,
+          "explanation": "Señales textuales encontradas: ninguna. Falta un ejemplo o resultado específico; pide evidencia antes de avanzar. Revisión humana necesaria: las palabras clave no prueban ajuste cultural.",
+          "status": "needs_evidence"
+        },
+        {
+          "score": 80,
+          "explanation": "Señales textuales encontradas: colaboración, aprendizaje, responsabilidad. Incluye ejemplo o resultado específico. Revisión humana necesaria: las palabras clave no prueban ajuste cultural.",
+          "status": "review"
+        }
+      ]
+    },
+    {
+      "name": "Nómina solo prorratea salario",
+      "pass": true,
+      "result": "Salario ordinario prorrateado (simulación): 1.500.000 COP\nAuxilio, extras/recargos, prestaciones y seguridad social: pendientes de reglas validadas.\nNorma de referencia: CO-CST; revisión jurídica obligatoria. No es neto a pagar."
+    },
+    {
+      "name": "Aprobación humana no aumenta stock",
+      "pass": true,
+      "result": {
+        "id": "PROP-1790829956455",
+        "status": "aprobada",
+        "stock": "sin cambios"
+      }
+    },
+    {
+      "name": "Persistencia IndexedDB tras recarga",
+      "pass": true,
+      "result": {
+        "before": 3,
+        "after": 3
+      }
+    }
+  ],
+  "externalRequestsBlocked": [
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
+      "method": "GET",
+      "blocked": true
+    },
+    {
+      "url": "https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js",
+      "method": "GET",
+      "blocked": true
+    },
+    {
+      "url": "https://www.youtube.com/iframe_api",
+      "method": "GET",
+      "blocked": true
+    },
+    {
+      "url": "https://accounts.google.com/gsi/client",
+      "method": "GET",
+      "blocked": true
+    },
+    {
+      "url": "https://www.youtube-nocookie.com/embed/HvZt-nh9sGg?autoplay=1&mute=1&cc_load_policy=1&playsinline=1&enablejsapi=1",
+      "method": "GET",
+      "blocked": true
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
+      "method": "GET",
+      "blocked": true
+    },
+    {
+      "url": "https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js",
+      "method": "GET",
+      "blocked": true
+    },
+    {
+      "url": "https://www.youtube.com/iframe_api",
+      "method": "GET",
+      "blocked": true
+    },
+    {
+      "url": "https://accounts.google.com/gsi/client",
+      "method": "GET",
+      "blocked": true
+    },
+    {
+      "url": "https://www.youtube-nocookie.com/embed/HvZt-nh9sGg?autoplay=1&mute=1&cc_load_policy=1&playsinline=1&enablejsapi=1",
+      "method": "GET",
+      "blocked": true
+    }
+  ],
+  "pageErrors": []
+}

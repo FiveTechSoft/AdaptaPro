@@ -1,4 +1,4 @@
-# Guía para agentes que contribuyen a AdaptaPro
+# Guía para agentes que contribuyen a FiveTech
 
 Lee este archivo y `CONTRIBUTING.md` antes de modificar el repositorio. Objetivo: permitir adaptaciones por país sin convertir cada fork en un producto incompatible. Las normas de este documento son convenciones de contribución, no una garantía de conformidad legal.
 

@@ -117,9 +117,9 @@ Además: `node instinct-gmail-test.mjs` (27 fixtures), `node cloudflare/worker.t
 
 - [Resultados detallados](evidencia-agentes/resultados-agentes.json)
 - [Ensayo reproducible](../scripts/test-agents.cjs): necesita Node, Google Chrome y `npm install --no-save playwright sql.js@1.13.0 chart.js@4.4.8` en la raíz. Ejecutar `node scripts/test-agents.cjs`. Solo usa 127.0.0.1; aborta red externa y simula modelo.
-- [Agentes / auditoría local](evidencia-agentes/agentes.png)
-- [Subagentes jurídicos](evidencia-agentes/juridicos.png)
-- [RRHH](evidencia-agentes/rrhh.png)
+- [Agentes / auditoría local](evidencia-agentes/3-agentes.png)
+- [Subagentes jurídicos](evidencia-agentes/4-juridicos.png)
+- [RRHH](evidencia-agentes/5-rrhh.png)
 
 Las capturas muestran datos de fixture, no operaciones reales. Los detalles son de una ejecución aislada fechada, no logs de producción.
 

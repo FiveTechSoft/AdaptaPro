@@ -660,6 +660,7 @@
           <button id="ap-sound" class="ap-theme" aria-label="Silenciar efectos" title="Silenciar efectos">🔊</button>
           <button id="ap-theme" class="ap-theme" aria-label="Cambiar tema" title="Cambiar tema">☀️</button>
           <button id="ap-mode" class="ap-mode" aria-label="Cambiar modo del ERP">👤 Supervisado</button>
+          <button id="ap-agents" class="ap-mode" aria-label="Activar o detener el motor automático de agentes" aria-pressed="true">🤖 Agentes</button>
           <button class="ap-human" title="Supervisión humana" aria-label="Supervisión humana" onclick="AP.tab('supervision')">👤</button>
           <button type="button" id="ap-bell" class="notif" aria-label="Avisos" aria-expanded="false">🔔<span id="ap-bell-count" hidden></span></button>
           <div class="avatar">U</div>
@@ -978,7 +979,7 @@ const AP = {
   model: 'mimo-v2.6-flash-free',
   endpoints: ['https://api.fivetechsoft.com/zen/v1','https://api.fivetechsupport.com/zen/v1'],
   models: null,
-  db: null, busy: false, store: null, cycleBusy:false, cycleTimer:null, cycleIntervalMs:30000, lastModelCycleAt:0, mode: localStorage.getItem('adaptapro-mode')==='autonomo'?'autonomo':'supervisado',
+  db: null, busy: false, store: null, cycleBusy:false, cycleTimer:null, cycleIntervalMs:30000, lastModelCycleAt:0, mode: localStorage.getItem('adaptapro-mode')==='autonomo'?'autonomo':'supervisado', agentsOn: localStorage.getItem('adaptapro-agents')!=='off',
   money: n => 'USD '+new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n/100),
   esc: s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),
   rows(sql,args=[]){ const q=this.db.prepare(sql); try {q.bind(args); const out=[]; while(q.step())out.push(q.getAsObject()); return out;} finally {q.free();} },
@@ -998,9 +999,11 @@ const AP = {
         await this.persist();
       }
       if(saved){const [schema,seed]=await Promise.all(['data/schema.sql','data/seed/demo.json'].map(async p=>{const r=await fetch(p);if(!r.ok)throw Error('No se pudo cargar '+p);return p.endsWith('.json')?r.json():r.text()}));this.db.run(schema);this.tx(()=>{for(const table of ['workforce','production_jobs','planning_tasks'])for(const item of seed[table]||[]){const keys=Object.keys(item);this.db.run('INSERT OR IGNORE INTO '+table+' ('+keys.join(',')+') VALUES ('+keys.map(()=>'?').join(',')+')',keys.map(k=>item[k]));}});this.db.run("UPDATE purchase_proposals SET currency='USD' WHERE currency='EUR'");await this.persist();}
-      APCompliance.migrate(this);await this.persist();this.render();this.updateMode();this.note('Demo local ficticia (semilla de julio de 2030). Modo '+this.mode+'.');this.startCycle();
+      APCompliance.migrate(this);await this.persist();this.render();this.updateMode();this.updateAgents();this.note('Demo local ficticia (semilla de julio de 2030). Modo '+this.mode+'.');this.startCycle();
     }catch(e){this.note('No se pudieron cargar los datos: '+e.message,true);console.error(e);}
   },
+  updateAgents(){const b=document.getElementById('ap-agents');if(b){b.textContent=this.agentsOn?'🤖 Agentes':'⏸ Agentes';b.setAttribute('aria-pressed',String(this.agentsOn));b.title=this.agentsOn?'Motor automático activo: analiza y propone con el modelo cuando hace falta. Deténlo para no consumir cuota; el chat sigue respondiendo si escribes.':'Motor automático detenido: ninguna llamada automática al modelo. El chat sigue respondiendo si escribes.';}const c=document.getElementById('ap-cycle');if(c)c.textContent=this.agentsOn?'Motor de eventos demo · cada 30 s con la pestaña visible':'Motor de agentes detenido · sin consumo automático';},
+  toggleAgents(){this.agentsOn=!this.agentsOn;localStorage.setItem('adaptapro-agents',this.agentsOn?'on':'off');this.startCycle();this.updateAgents();this.note(this.agentsOn?'Motor de agentes activado.':'Motor de agentes detenido. El chat sigue disponible.');},
   updateMode(){const b=document.getElementById('ap-mode');b.textContent=this.mode==='autonomo'?'⚡ Autónomo':'👤 Supervisado';b.setAttribute('aria-pressed',this.mode==='autonomo');b.title=this.mode==='autonomo'?'Autónomo: analiza y crea propuestas locales nuevas; la capa de cumplimiento actual exige revisión y no las autoaprueba. No compra ni recibe mercancía.':'Supervisado: las propuestas esperan revisión humana.';},
   async toggleMode(){const next=this.mode==='autonomo'?'supervisado':'autonomo';if(next==='autonomo'&&!await this.confirmAction('Activar modo autónomo','El modo autónomo ejecuta análisis y crea propuestas locales nuevas, pero la capa de cumplimiento actual exige revisión y no las aprueba automáticamente. No compra ni registra recepciones; las propuestas anteriores siguen pendientes.'))return;const prev=this.mode;this.mode=next;localStorage.setItem('adaptapro-mode',next);this.audit('SISTEMA','modo_cambiado','settings','mode',{from:prev,to:next});this.updateMode();this.note('Modo '+next+' activado.');},
   note(text,error=false){const e=document.getElementById('ap-state');if(e){e.textContent=text;e.style.color=error?'#fca5a5':'#94a3b8';}},
@@ -1085,11 +1088,13 @@ const AP = {
   setAgentState(agent,label,working){const el=document.getElementById('ap-agent-'+agent);if(el){el.textContent=label;el.classList.toggle('ap-working',working);}},
   startCycle(){
     if(this.cycleTimer)clearInterval(this.cycleTimer);
+    const el=document.getElementById('ap-cycle');
+    if(!this.agentsOn){this.cycleTimer=null;if(el)el.textContent='Motor de agentes detenido · sin consumo automático';return;}
     this.cycleTimer=setInterval(()=>this.cycle().catch(e=>this.note('Motor de eventos: '+e.message,true)),this.cycleIntervalMs);
-    document.getElementById('ap-cycle').textContent='Motor de eventos demo · cada 30 s con la pestaña visible';
+    if(el)el.textContent='Motor de eventos demo · cada 30 s con la pestaña visible';
   },
   async cycle(){
-    if(!this.db||this.cycleBusy||this.busy||document.hidden)return;
+    if(!this.db||this.cycleBusy||this.busy||document.hidden||!this.agentsOn)return;
     const count=this.one("SELECT count(*) AS n FROM audit_log WHERE action='pedido_generado'").n;
     this.cycleBusy=true;this.setAgentState('beta','Registrando pedido',true);
     try{
@@ -1122,6 +1127,7 @@ document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='
 document.getElementById('ap-analyze').addEventListener('click',()=>AP.ask('Revisa el stock disponible y los pedidos. Si hay riesgo de rotura, crea una propuesta de reposición pendiente de supervisión.'));
 document.getElementById('ap-reset').addEventListener('click',()=>AP.reset());
 document.getElementById('ap-mode').addEventListener('click',()=>AP.toggleMode());
+document.getElementById('ap-agents').addEventListener('click',()=>AP.toggleAgents());
 const apChat=document.getElementById('chatWindow');if(localStorage.getItem('adaptapro-chat-open')==='true'){apChat.hidden=false;apChat.style.display='block'}try{const saved=JSON.parse(localStorage.getItem('adaptapro-chat-size')||'null');if(saved?.width&&saved?.height){apChat.style.width=Math.min(saved.width,innerWidth-20)+'px';apChat.style.height=Math.min(saved.height,innerHeight-20)+'px';}}catch(e){}
 new ResizeObserver(()=>{localStorage.setItem('adaptapro-chat-size',JSON.stringify({width:apChat.offsetWidth,height:apChat.offsetHeight}));}).observe(apChat);
 document.getElementById('ap-tab-chat').addEventListener('click',()=>AP.tab('chat'));

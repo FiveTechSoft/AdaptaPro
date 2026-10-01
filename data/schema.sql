@@ -1,4 +1,4 @@
--- AdaptaPro: esquema SQLite WASM/sql.js. Ejecutar PRAGMA foreign_keys=ON en cada conexión.
+-- FiveTech: esquema SQLite WASM/sql.js. Ejecutar PRAGMA foreign_keys=ON en cada conexión.
 PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS suppliers (
   id TEXT PRIMARY KEY, name TEXT NOT NULL, country TEXT NOT NULL,

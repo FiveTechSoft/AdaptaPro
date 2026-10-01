@@ -1,4 +1,4 @@
-# ROADMAP: agentes AdaptaPro con Instinct
+# ROADMAP: agentes FiveTech con Instinct
 
 Actualizado: 30 septiembre 2026. Plan aprobado: ALPHA/BETA/GAMMA del ERP ↔ email firmado ↔ Instinct como cerebro. No confundir este transporte de aplicación con una API pública oficial ni con el relay de pruebas local.
 

@@ -1,4 +1,4 @@
-# Configurar Gmail OAuth para AdaptaPro en GitHub Pages
+# Configurar Gmail OAuth para FiveTech en GitHub Pages
 
 Guía de la fase 1, 30 septiembre 2026. Configura acceso a Gmail desde el navegador; no crea por sí sola el respondedor de Instinct ni la firma privada. Autorizar Gmail no envía correo.
 
@@ -40,7 +40,7 @@ En **Data Access** / **Acceso a datos**, añade:
 
 No añadas `https://mail.google.com/`, `gmail.modify` ni `gmail.compose`: el puente no necesita borrar correo ni modificar mensajes.
 
-Aviso de alcance: `gmail.readonly` permite leer el buzón, no solo el hilo de AdaptaPro. La aplicación limita sus búsquedas, pero el permiso concedido sigue siendo amplio. Un buzón dedicado reduce exposición. `gmail.send` es sensible y `gmail.readonly` restringido; publicar para más usuarios puede requerir verificación de Google y, según tratamiento de datos, evaluación adicional. No presentes la prueba en Testing como una aplicación ya verificada.
+Aviso de alcance: `gmail.readonly` permite leer el buzón, no solo el hilo de FiveTech. La aplicación limita sus búsquedas, pero el permiso concedido sigue siendo amplio. Un buzón dedicado reduce exposición. `gmail.send` es sensible y `gmail.readonly` restringido; publicar para más usuarios puede requerir verificación de Google y, según tratamiento de datos, evaluación adicional. No presentes la prueba en Testing como una aplicación ya verificada.
 
 ## 5. Crear cliente OAuth web
 
@@ -62,7 +62,7 @@ Copia el **Client ID**, cuyo nombre termina en `.apps.googleusercontent.com`. Es
 
 No copies ni compartas **Client Secret**, una contraseña, token o JSON de credenciales completo. El ID del proyecto no sustituye al Client ID OAuth.
 
-## 7. Autorizar desde AdaptaPro
+## 7. Autorizar desde FiveTech
 
 Abre https://fivetechsoft.github.io/AdaptaPro/ y pulsa **Instinct · Gmail**.
 

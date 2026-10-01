@@ -5,7 +5,33 @@
   "status": "borrador",
   "runtime_enabled": false,
   "maintainer": "FiveTechSoft",
-  "scope": ["Jerarquía de cumplimiento demostrativa", "Vista de nómina Colombia demostrativa"],
-  "sources": [],
-  "notes": "Índice del ejemplo existente en index.html (APCompliance). No importa ni ejecuta reglas; consultar las fuentes allí citadas y revisar vigencia antes de cualquier uso real."
+  "scope": [
+    "Jerarquia de cumplimiento demostrativa",
+    "Vista de nomina Colombia demostrativa",
+    "Reglas de nomina de ejemplo con fecha de verificacion"
+  ],
+  "sources": [
+    {
+      "title": "Codigo Sustantivo del Trabajo",
+      "url": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=199983",
+      "checked_on": "2026-09-26",
+      "effective_on": null,
+      "review_status": "pendiente"
+    },
+    {
+      "title": "Decreto 159 de 2026",
+      "url": "https://www.cancilleria.gov.co/normograma/compilacion/docs/decreto_0159_2026.htm",
+      "checked_on": "2026-09-26",
+      "effective_on": null,
+      "review_status": "pendiente"
+    },
+    {
+      "title": "Decreto 1470 de 2025",
+      "url": "https://cancilleria.gov.co/normograma/compilacion/docs/decreto_1470_2025.htm",
+      "checked_on": "2026-09-26",
+      "effective_on": null,
+      "review_status": "pendiente"
+    }
+  ],
+  "notes": "Indice del ejemplo existente en index.html (APCompliance). No importa ni ejecuta reglas; consultar las fuentes alli citadas y revisar vigencia antes de cualquier uso real. Las tres fuentes usan la fecha que payroll_rules.verified_on declara en el nucleo; el resto de normas se citan en data/compliance-norms.json con checked_on null."
 }

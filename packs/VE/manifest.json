@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "country": "VE",
+  "name": "Venezuela - indice inicial",
+  "status": "borrador",
+  "runtime_enabled": false,
+  "maintainer": "FiveTechSoft",
+  "scope": [
+    "Selector juridico CO/VE de la demo",
+    "Jurisdiccion y etiqueta fiscal ISLR declaradas en el nucleo"
+  ],
+  "sources": [],
+  "notes": "El nucleo solo declara la jurisdiccion y la etiqueta ISLR; no hay normas, fuentes ni datos locales cargados para Venezuela. Sin fecha de consulta no se listan fuentes: no se rellena sources por completar el campo."
+}

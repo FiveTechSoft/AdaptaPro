@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "country": "CO",
+  "kind": "example",
+  "note": "Copia declarativa de las filas de payroll_rules que siembra APCompliance.migrate en index.html. Son valores orientativos de la demo con su fecha de verificacion; no liquidan, no pagan ni declaran. status=requires_review o unconfigured significa que falta revision juridica o parametrizacion.",
+  "payload": {
+    "currency": "COP",
+    "rules": [
+      {
+        "id": "minimum",
+        "norm_id": "CO-DECRETO-159-2026",
+        "concept": "Salario mínimo 2026",
+        "formula_note": "Valor indicativo publicado; estado judicial posterior por validar",
+        "value_text": "1.750.905 COP",
+        "verified_on": "2026-09-26",
+        "status": "requires_review"
+      },
+      {
+        "id": "transport",
+        "norm_id": "CO-DECRETO-1470-2025",
+        "concept": "Auxilio transporte 2026",
+        "formula_note": "249.095 COP; hasta dos salarios mínimos con condiciones de desplazamiento",
+        "value_text": "249.095 COP",
+        "verified_on": "2026-09-26",
+        "status": "requires_review"
+      },
+      {
+        "id": "overtime",
+        "norm_id": "CO-CST",
+        "concept": "Horas extra y recargos",
+        "formula_note": "Dependen de jornada, fecha, tipo de recargo y reforma 2025",
+        "value_text": null,
+        "verified_on": "2026-09-26",
+        "status": "unconfigured"
+      },
+      {
+        "id": "benefits",
+        "norm_id": "CO-CST",
+        "concept": "Prestaciones y vacaciones",
+        "formula_note": "Cesantías, intereses, prima y vacaciones: base y periodo requieren revisión",
+        "value_text": null,
+        "verified_on": "2026-09-26",
+        "status": "unconfigured"
+      },
+      {
+        "id": "social",
+        "norm_id": "CO-CST",
+        "concept": "Seguridad social",
+        "formula_note": "Aportes, base IBC, topes y condiciones requieren fuentes actualizadas",
+        "value_text": null,
+        "verified_on": "2026-09-26",
+        "status": "unconfigured"
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "country": "CO",
+  "locale": "es-CO",
+  "currency": "COP",
+  "formats": {
+    "ui": "es",
+    "number": "es-ES",
+    "money": "es-CO"
+  },
+  "jurisdiction": {
+    "code": "CO",
+    "name": "Colombia",
+    "tax_label": "Renta",
+    "core_status": "Fuentes laborales demo; impuestos sin parametrizar"
+  },
+  "notes": "Referencia declarativa; index.html no lee este archivo. La interfaz no tiene conmutador de idioma (solo español). number refleja Intl.NumberFormat('es-ES') del coste de mano de obra y money refleja toLocaleString('es-CO') del simulador de nómina: la divergencia existe en el nucleo y aqui se documenta, no se corrige."
+}

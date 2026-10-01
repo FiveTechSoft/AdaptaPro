@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "country": "CO",
+  "kind": "reference",
+  "note": "Copia declarativa de APCompliance.levels y APCompliance.colombia en index.html. El nucleo no importa este archivo; sirve para revisar el ejemplo sin leer el monolito. checked_on solo se declara cuando la demo documenta fecha de verificacion; el resto queda en null y no se rellena por inferencia.",
+  "payload": {
+    "levels": [
+      { "key": "constitucion", "name": "Constitución", "rank": 1, "description": "Norma superior (ejemplo de jerarquía)" },
+      { "key": "ley", "name": "Leyes", "rank": 2, "description": "Mandatos legales (sin texto jurídico cargado)" },
+      { "key": "reglamento", "name": "Reglamentos", "rank": 3, "description": "Desarrollo reglamentario (sin fuente cargada)" },
+      { "key": "sector", "name": "Normas sectoriales", "rank": 4, "description": "Dependen de jurisdicción y sector" },
+      { "key": "interna", "name": "Políticas internas", "rank": 5, "description": "Reglas de operación de esta demo" }
+    ],
+    "norms": [
+      {
+        "id": "CO-CONST-25-53",
+        "level": 1,
+        "name": "Constitución Política, arts. 25 y 53",
+        "scope": "Trabajo digno y remuneración mínima vital y móvil",
+        "source_url": "https://www.suin-juriscol.gov.co/viewDocument.asp?ruta=Constitucion%2F1687988",
+        "checked_on": null
+      },
+      {
+        "id": "CO-CST",
+        "level": 2,
+        "name": "Código Sustantivo del Trabajo",
+        "scope": "Salario, jornada, descansos y prestaciones; revisar artículos y reformas",
+        "source_url": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=199983",
+        "checked_on": "2026-09-26"
+      },
+      {
+        "id": "CO-LEY-2466-2025",
+        "level": 2,
+        "name": "Ley 2466 de 2025",
+        "scope": "Reforma laboral; vigencia escalonada por disposición",
+        "source_url": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=260676",
+        "checked_on": null
+      },
+      {
+        "id": "CO-DECRETO-159-2026",
+        "level": 3,
+        "name": "Decreto 159 de 2026",
+        "scope": "Salario mínimo transitorio 2026; estado judicial requiere revisión",
+        "source_url": "https://www.cancilleria.gov.co/normograma/compilacion/docs/decreto_0159_2026.htm",
+        "checked_on": "2026-09-26"
+      },
+      {
+        "id": "CO-DECRETO-1470-2025",
+        "level": 3,
+        "name": "Decreto 1470 de 2025",
+        "scope": "Auxilio de transporte 2026 y condiciones",
+        "source_url": "https://cancilleria.gov.co/normograma/compilacion/docs/decreto_1470_2025.htm",
+        "checked_on": "2026-09-26"
+      },
+      {
+        "id": "CO-CE-AUTO-2026",
+        "level": 4,
+        "name": "Consejo de Estado: auto cautelar 2026",
+        "scope": "Suspensión provisional de Decreto 1469 y orden de acto sustituto; revisar providencias posteriores",
+        "source_url": "https://www.alcaldiabogota.gov.co/sisjur/normas/Norma1.jsp?dt=S&i=192123",
+        "checked_on": null
+      },
+      {
+        "id": "CO-CC-C815-1999",
+        "level": 4,
+        "name": "Corte Constitucional, C-815/99",
+        "scope": "Criterios constitucionales para fijar salario mínimo",
+        "source_url": "https://www.corteconstitucional.gov.co/relatoria/1999/C-815-99.htm",
+        "checked_on": null
+      }
+    ]
+  }
+}

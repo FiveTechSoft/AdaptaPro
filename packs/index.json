@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "generator": "scripts/build-countries.mjs",
+  "countries": [
+    {
+      "code": "CO",
+      "name": "Colombia - referencia de la demo",
+      "status": "borrador",
+      "runtime_enabled": false,
+      "maintainer": "FiveTechSoft",
+      "scope": [
+        "Jerarquia de cumplimiento demostrativa",
+        "Vista de nomina Colombia demostrativa",
+        "Reglas de nomina de ejemplo con fecha de verificacion"
+      ],
+      "files": {
+        "data": [
+          "CO/data/compliance-norms.json",
+          "CO/data/payroll-rules.json"
+        ],
+        "locale": [
+          "CO/locale/es-CO.json"
+        ],
+        "tests": [
+          "CO/tests/manual-plan.md"
+        ]
+      }
+    },
+    {
+      "code": "VE",
+      "name": "Venezuela - indice inicial",
+      "status": "borrador",
+      "runtime_enabled": false,
+      "maintainer": "FiveTechSoft",
+      "scope": [
+        "Selector juridico CO/VE de la demo",
+        "Jurisdiccion y etiqueta fiscal ISLR declaradas en el nucleo"
+      ],
+      "files": {
+        "data": [],
+        "locale": [],
+        "tests": []
+      }
+    }
+  ]
+}

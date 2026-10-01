@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fivetechsoft.github.io/packs/schemas/pack-data.schema.json",
+  "title": "Sobrecarga de datos de ejemplo de un pack",
+  "description": "Todo archivo bajo XX/data/ usa este envoltorio. payload contiene los datos; el nucleo no lo importa.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "country", "kind", "note", "payload"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "country": { "type": "string", "pattern": "^[A-Z]{2}$" },
+    "kind": { "enum": ["reference", "example"] },
+    "note": { "type": "string", "minLength": 1 },
+    "payload": { "type": "object" }
+  }
+}

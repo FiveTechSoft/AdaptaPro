@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FiveTech ERP | Operaciones Inteligentes 2030</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/sql-wasm.js"></script>
+<script src="vendor/chart.js/4.4.8/chart.umd.js"></script>
+<script src="vendor/sql.js/1.13.0/sql-wasm.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -992,7 +992,7 @@ const AP = {
   async init(){
     try{
       await new Promise((resolve,reject)=>{if(globalThis.__apCoreReady)return resolve();globalThis.addEventListener('ap-core-ready',resolve,{once:true});setTimeout(()=>reject(Error('Módulos del núcleo no cargados')),20000);});
-      const SQL=await initSqlJs({locateFile:f=>'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/'+f});
+      const SQL=await initSqlJs({locateFile:f=>'vendor/sql.js/1.13.0/'+f});
       this.store=await this.storage();const saved=await this.loadBytes();this.db=saved?new SQL.Database(saved):new SQL.Database();this.db.run('PRAGMA foreign_keys=ON');
       const seed=await this.loadSeed();
       await this.applyMigrations();

@@ -24,4 +24,9 @@ La demo se sirve desde `index.html` en GitHub Pages. SQLite (sql.js) vive en el 
 
 Ejecutar `node scripts/validate-packs.mjs`. Verificar que cada JSON parsea, que los códigos y estados son válidos, que no hay claves extrañas y que ningún borrador se marca como habilitado. La acción de CI ejecuta el mismo validador en PR y push. Antes de integrar cambios ejecutables, además probar en navegador: primera carga limpia, recarga de IndexedDB, cambio CO/VE, vistas de cumplimiento y nómina, ambos modos, cola de aprobaciones, auditoría y restablecimiento. Documentar capturas/resultados; estas pruebas manuales **no están automatizadas por CI**. Ningún resultado sustituye la revisión jurídica local ni una auditoría de seguridad.
 
+## Integración con el modelo Zen
+
+- El gate FreeTier de Zen exige `stream:true` y un `tools` que contenga `bash` **y** `read`; el proxy `zenproxy/index.php` inyecta `User-Agent: opencode/1.18.34` y una sesión `ses_…` porque el navegador no puede fijar el `User-Agent`.
+- En el PHP del host fija `serialize_precision=-1` antes de `json_encode` (con el valor por defecto 17, `0.7` sale como `0.6999…`) y decodifica el JSON sin flag asociativo (con él, `{}` sale como `[]`).
+
 Consulta `docs/modelo-proveedores.md` para el argumento comercial sin promesas de producción.

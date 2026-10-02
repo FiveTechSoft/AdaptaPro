@@ -1,6 +1,6 @@
 # ROADMAP: agentes FiveTech con Instinct
 
-Actualizado: 2 octubre 2026. Plan aprobado: ALPHA/BETA/GAMMA del ERP ↔ email firmado ↔ Instinct como cerebro. No confundir este transporte de aplicación con una API pública oficial ni con el relay de pruebas local.
+Actualizado: 2 octubre 2026. Plan aprobado: ALPHA/BETA/GAMMA del ERP ↔ chat con opencode (Mimo 2.6 Flash Free) como cerebro. Decisión del 2 de octubre de 2026: **no se usa transporte de email de Instinct**; los agentes solo conversan por chat dentro del ERP (`AP.ask` → proxy → opencode) y esa vía está verificada en Pages con el modelo real (14/14 y 6/6). El diseño de email firmado documentado más abajo queda como material histórico no ejercitado, no como trabajo pendiente.
 
 ## Transición: del monolito a un core extensible
 
@@ -28,24 +28,24 @@ Actualizado: 2 octubre 2026. Plan aprobado: ALPHA/BETA/GAMMA del ERP ↔ email f
 
 2 de octubre de 2026. `sql.js` 1.13.0 (`sql-wasm.js` 48.788 B + `sql-wasm.wasm` 659.806 B) y `chart.js` 4.4.8 (`chart.umd.js` 206.279 B) pasan de CDN externo (jsdelivr y cdnjs, sin `integrity`) a `vendor/` servido con el propio origen. Base del cambio: `initSqlJs` es imprescindible para arrancar `init()`, así que un CDN caído o bloqueado dejaba la demo sin ERP; además CI instalaba chart.js 4.4.8 desde `node_modules` mientras Pages servía 4.4.1, y ahora producción usa exactamente el fichero que prueba CI. Los tres ficheros se copiaron de `node_modules` con SHA-256 idéntico al origen y `locateFile` quedó relativo (`vendor/sql.js/1.13.0/`); `scripts/test-agents.cjs` y los harness locales sirven `.wasm` con `application/wasm`. Verificado: suites locales 23/23, 13/13 y 17/17; cero referencias a CDN por dos métodos (`git grep` y script Python con `locateFile_cdn=0`); en Pages el wasm responde 200 con `application/wasm` y 659.806 B, y las suites 6/6, 6/6 y 14/14 pasan sin errores de página. Siguen externos por no ser críticos (degradan sin bloquear el arranque): los widgets de TradingView, YouTube e identidad de Google y la fuente Inter de Google Fonts.
 
-## Prueba manual temporal
+## Prueba manual temporal (fuera de alcance: sin email de Instinct)
 
 [Quickstart de ida y vuelta](docs/quickstart.md): modo SIN firma, NO AUTENTICADO, opt-in explícito antes de OAuth, revisión de cuenta/destinatario/cuerpo por turno y respuesta inerte rotulada. No autoenvíos, no compras ni herramientas. El test real aún está pendiente; la firma HMAC no está lista. Acceso al panel movido al final del menú lateral.
 
-## Estado real
+## Estado real (canal actual: chat con opencode; diseño de email Instinct fuera de alcance)
 
 - [x] Diseño por agente, IDs, nonce, conversación, secuencia y respuesta inerte.
 - [x] Módulo navegador `instinct-gmail.mjs`: llamadas Gmail API, OAuth GIS, perfil de cuenta, scopes mínimos para enviar/leer, MIME, firma/verificación WebCrypto, minimización y límites, correlación de respuestas, bloqueo de reenvío ambiguo.
 - [x] Biblioteca de log localStorage y resumen por ventana con anomalías, límites y pérdida de retención declarada.
 - [x] 27 comprobaciones locales en `instinct-gmail-test.mjs`, solo fixtures. Ejecutar `node instinct-gmail-test.mjs` (Node 22).
 - [x] Panel UI `instinct-ui.mjs` cargado por index.html: configuración pública, OAuth, selector ALPHA/BETA/GAMMA, revisión del cuerpo/destino, chat cableado al activar el puente, respuesta firmada inerte y vista de log. Pruebas locales de controles y revisión visual; no OAuth real aún.
-- [ ] Crear/configurar OAuth client Google y habilitar Gmail API.
-- [ ] Autorizar y verificar cuenta ERP elegida por el dueño (Gmail). Confirmar destino de Instinct antes del primer envío. Las direcciones se configuran en sesión, no se incrustan en código.
-- [ ] Provisión segura de HMAC en ambos extremos y respondedor real que valide solicitudes y firme respuestas.
-- [ ] Primer correo real, respuesta inteligente, diálogo multiturno, captura del chat y timings reales. NO realizados todavía.
-- [ ] Completar cobertura de todos los eventos y verificación periódica con respuestas reales de Instinct. UI registra modo, OAuth, preparación/envío, comprobación y respuesta válida. Resumen local configurable; no autoenvío ni monitor verificado.
+- **Fuera de alcance** (decisión 2 oct 2026, sin email de Instinct): crear/configurar OAuth client Google y habilitar Gmail API.
+- **Fuera de alcance** (decisión 2 oct 2026): autorizar y verificar cuenta ERP elegida por el dueño (Gmail) y confirmar destino de Instinct antes de un primer envío.
+- **Fuera de alcance** (decisión 2 oct 2026): provisión segura de HMAC en ambos extremos y respondedor real que valide solicitudes y firme respuestas.
+- **Fuera de alcance** (decisión 2 oct 2026): primer correo real, diálogo multiturno, captura y timings reales.
+- **Fuera de alcance** (decisión 2 oct 2026): cobertura de eventos y verificación periódica con respuestas reales de Instinct. El canal real de los agentes es el chat con opencode (Mimo 2.6 Flash Free), ya probado en Pages con auditoría.
 
-## Fase 1: Pages + Gmail OAuth, navegador abierto
+## Fase 1: Pages + Gmail OAuth, navegador abierto (fuera de alcance)
 
 El ERP sigue en GitHub Pages. El navegador obtiene consentimiento OAuth y llama directamente a Gmail API por HTTPS. No SMTP/POP en navegador, no Node en Pages, no client secret, contraseñas ni refresh token en la web.
 
@@ -87,7 +87,7 @@ Resumen `adaptapro.audit/1`: ventana de secuencias, fechas, conteos, metadatos d
 
 Cada X minutos configurable (5..1440, valor de diseño inicial 60) se prepara resumen local. Biblioteca `scheduleReview` no envía correo y su cursor solo significa resumen generado, NO verificado. Para activar autoenvío hacen falta cuenta/destino, permiso del dueño sobre contenido/cadencia y límite, firmador/respondedor, correlación de informe y cursor de última verificación confirmada. Evitar autoenvíos superpuestos y duplicados; pausar con token caducado. No decir "verificado por Instinct" hasta una respuesta auténtica correlacionada.
 
-## Fase 2: backend persistente 24/7
+## Fase 2: backend persistente 24/7 (fuera de alcance)
 
 - Node/servicio detrás de proxy TLS autenticado y roles; no GitHub Pages.
 - Buzón dedicado con SMTP/POP TLS o Gmail OAuth de servidor, secretos fuera del repo.
@@ -96,11 +96,11 @@ Cada X minutos configurable (5..1440, valor de diseño inicial 60) se prepara re
 - Firmador aislado, registro de auditoría de servidor, revisión periódica durable con alertas verificadas.
 - Monitor activo aunque se cierre navegador; permisos de negocio y comunicaciones siguen separados.
 
-## Criterio de aceptación real
+## Criterio de aceptación real (email, fuera de alcance)
 
 Probar ALPHA, BETA y GAMMA con datos del ERP; varios turnos y contexto correcto; respuesta fuera de orden sin mezcla; duplicados, timeout/reinicio sin reenvío; OAuth expirado; firmas inválidas; log/anomalías y revisión confirmada. Medir envío Gmail API, llegada/request, análisis/respondedor, llegada/respuesta y chat visible. No sumar métricas anidadas, no sustituir latencia real por mocks ni los 180 ms del relay local.
 
-## Fuentes de configuración
+## Fuentes de configuración (Google OAuth, fuera de alcance)
 
 - https://developers.google.com/identity/oauth2/web/guides/get-google-api-clientid
 - https://developers.google.com/identity/oauth2/web/guides/use-token-model

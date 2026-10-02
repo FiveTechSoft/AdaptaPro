@@ -976,19 +976,20 @@ const AP = {
   db: null, busy: false, store: null, cycleBusy:false, cycleTimer:null, cycleIntervalMs:30000, lastModelCycleAt:0, mode: localStorage.getItem('adaptapro-mode')==='autonomo'?'autonomo':'supervisado', agentsOn: localStorage.getItem('adaptapro-agents')!=='off',
   money: n => 'USD '+new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n/100),
   esc: s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),
-  rows(sql,args=[]){ const q=this.db.prepare(sql); try {q.bind(args); const out=[]; while(q.step())out.push(q.getAsObject()); return out;} finally {q.free();} },
-  one(sql,args=[]){ return this.rows(sql,args)[0]; },
-  async storage(){ return new Promise((resolve,reject)=>{const r=indexedDB.open('adaptapro-local-v1',1); r.onupgradeneeded=()=>r.result.createObjectStore('database');r.onerror=()=>reject(r.error);r.onsuccess=()=>resolve(r.result);}); },
-  async loadBytes(){return new Promise((resolve,reject)=>{const t=this.store.transaction('database','readonly');const r=t.objectStore('database').get('main');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});},
-  async persist(){const bytes=this.db.export();return new Promise((resolve,reject)=>{const t=this.store.transaction('database','readwrite');t.objectStore('database').put(bytes,'main');t.oncomplete=resolve;t.onerror=()=>reject(t.error);});},
-  async reset(){if(!await this.confirmAction('Restablecer solo esta demo','Esto borra permanentemente pedidos, propuestas, decisiones, perfiles y movimientos locales de este navegador y vuelve a cargar el escenario ficticio de julio de 2030. No afecta otros equipos ni sistemas reales.'))return;await new Promise((resolve,reject)=>{const t=this.store.transaction('database','readwrite');t.objectStore('database').delete('main');t.oncomplete=resolve;t.onerror=()=>reject(t.error);});this.db?.close();this.db=null;localStorage.removeItem('adaptapro-notices-read');await this.init();this.audit('SISTEMA','demo_restablecida','settings','reset',{origen:'boton_menu'});await this.persist();this.note('Datos locales restablecidos.');},
-  tx(fn){this.db.run('BEGIN IMMEDIATE');try{const v=fn();this.db.run('COMMIT');return v;}catch(e){this.db.run('ROLLBACK');throw e;}},
-  async loadSeed(){const r=await fetch('data/seed/demo.json');if(!r.ok)throw Error('No se pudo cargar data/seed/demo.json');return r.json();},
-  async migrationPlan(){const r=await fetch('data/migrations/index.json');if(!r.ok)throw Error('No se pudo cargar data/migrations/index.json');const plan=await r.json();if(!Array.isArray(plan.migrations)||!plan.migrations.length)throw Error('Plan de migraciones vacío');let prev=0;for(const m of plan.migrations){if(!Number.isInteger(m.n)||m.n<=prev||typeof m.file!=='string')throw Error('Entrada de migración inválida: '+JSON.stringify(m));prev=m.n;}return plan.migrations;},
-  userVersion(){const r=this.db.exec('PRAGMA user_version');return r.length?Number(r[0].values[0][0]):0;},
-  async applyMigrations(){const plan=await this.migrationPlan();const current=this.userVersion();let applied=0;for(const m of plan){if(m.n<=current)continue;const res=await fetch(m.file);if(!res.ok)throw Error('No se pudo cargar '+m.file);const sql=await res.text();if(!sql.trim())throw Error('Migración vacía: '+m.file);this.db.run(sql);this.db.run('PRAGMA user_version='+m.n);applied++;}return applied;},
+  rows(...a){return APData.rows(...a);},
+  one(...a){return APData.one(...a);},
+  storage(...a){return APData.storage(...a);},
+  loadBytes(...a){return APData.loadBytes(...a);},
+  persist(...a){return APData.persist(...a);},
+  reset(...a){return APCommands.reset(...a);},
+  tx(...a){return APData.tx(...a);},
+  loadSeed(...a){return APData.loadSeed(...a);},
+  migrationPlan(...a){return APData.migrationPlan(...a);},
+  userVersion(...a){return APData.userVersion(...a);},
+  applyMigrations(...a){return APData.applyMigrations(...a);},
   async init(){
     try{
+      await new Promise((resolve,reject)=>{if(globalThis.__apCoreReady)return resolve();globalThis.addEventListener('ap-core-ready',resolve,{once:true});setTimeout(()=>reject(Error('Módulos del núcleo no cargados')),20000);});
       const SQL=await initSqlJs({locateFile:f=>'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/'+f});
       this.store=await this.storage();const saved=await this.loadBytes();this.db=saved?new SQL.Database(saved):new SQL.Database();this.db.run('PRAGMA foreign_keys=ON');
       const seed=await this.loadSeed();
@@ -998,10 +999,10 @@ const AP = {
       await this.persist();this.render();this.updateMode();this.updateAgents();this.note('Demo local ficticia (semilla de julio de 2030). Modo '+this.mode+'.');this.startCycle();
     }catch(e){this.note('No se pudieron cargar los datos: '+e.message,true);console.error(e);}
   },
-  updateAgents(){const b=document.getElementById('ap-agents');if(b){b.textContent=this.agentsOn?'🤖 Agentes':'⏸ Agentes';b.setAttribute('aria-pressed',String(this.agentsOn));b.title=this.agentsOn?'Motor automático activo: analiza y propone con el modelo cuando hace falta. Deténlo para no consumir cuota; el chat sigue respondiendo si escribes.':'Motor automático detenido: ninguna llamada automática al modelo. El chat sigue respondiendo si escribes.';}const c=document.getElementById('ap-cycle');if(c)c.textContent=this.agentsOn?'Motor de eventos demo · cada 30 s con la pestaña visible':'Motor de agentes detenido · sin consumo automático';},
-  toggleAgents(){this.agentsOn=!this.agentsOn;localStorage.setItem('adaptapro-agents',this.agentsOn?'on':'off');this.startCycle();this.updateAgents();this.note(this.agentsOn?'Motor de agentes activado.':'Motor de agentes detenido. El chat sigue disponible.');},
-  updateMode(){const b=document.getElementById('ap-mode');b.textContent=this.mode==='autonomo'?'⚡ Autónomo':'👤 Supervisado';b.setAttribute('aria-pressed',this.mode==='autonomo');b.title=this.mode==='autonomo'?'Autónomo: analiza y crea propuestas locales nuevas; la capa de cumplimiento actual exige revisión y no las autoaprueba. No compra ni recibe mercancía.':'Supervisado: las propuestas esperan revisión humana.';},
-  async toggleMode(){const next=this.mode==='autonomo'?'supervisado':'autonomo';if(next==='autonomo'&&!await this.confirmAction('Activar modo autónomo','El modo autónomo ejecuta análisis y crea propuestas locales nuevas, pero la capa de cumplimiento actual exige revisión y no las aprueba automáticamente. No compra ni registra recepciones; las propuestas anteriores siguen pendientes.'))return;const prev=this.mode;this.mode=next;localStorage.setItem('adaptapro-mode',next);this.audit('SISTEMA','modo_cambiado','settings','mode',{from:prev,to:next});this.updateMode();this.note('Modo '+next+' activado.');},
+  updateAgents(...a){return APCommands.updateAgents(...a);},
+  toggleAgents(...a){return APCommands.toggleAgents(...a);},
+  updateMode(...a){return APPolicy.updateMode(...a);},
+  toggleMode(...a){return APPolicy.toggleMode(...a);},
   note(text,error=false){const e=document.getElementById('ap-state');if(e){e.textContent=text;e.style.color=error?'#fca5a5':'#94a3b8';}},
   render(){
     if(!this.db)return;
@@ -1026,95 +1027,21 @@ const AP = {
     const low=stock.filter(x=>x.needs_restock).length;
     const metric=document.getElementById('ap-stock-metric');if(metric)metric.textContent=stock.length-low+'/'+stock.length;
   },
-  async decide(id,status){
-    const p=this.one('SELECT * FROM purchase_proposals WHERE id=?',[id]);if(!p)return;
-    const check=APCompliance.evaluate(this,{sku:p.sku,qty:p.proposed_qty,supplier_id:p.supplier_id});if(status==='aprobada'&&check.status==='block'){this.note('La propuesta sigue bloqueada. '+check.reason,true);return;}
-    const input=await this.decisionForm(`${status==='aprobada'?'Revisión humana y aprobación local':'Rechazar'} ${id}`,`${p.proposed_qty} unidades de ${p.sku} · ${this.money(p.proposed_qty*p.unit_cost_cents)}. Estado de cumplimiento: ${check.status==='review'?'REVISAR (no conforme certificado)':check.status}. ${check.norm_id||'Sin norma'}: ${check.reason}. Si apruebas, solo cambia el estado de esta propuesta local: no certifica legalidad, no compra ni registra recepción. Indica responsable y motivo de tu revisión.`,true);if(!input)return;if(!input.actor||!input.reason){this.note('Es obligatorio indicar responsable y motivo de la revisión humana.',true);return;}
-    try{const refreshed=APCompliance.evaluate(this,{sku:p.sku,qty:p.proposed_qty,supplier_id:p.supplier_id});if(status==='aprobada'&&refreshed.status==='block')throw Error('Bloqueo de cumplimiento vigente');this.tx(()=>{this.db.run('UPDATE approval_queue SET status=?,decided_by=?,decided_at=?,decision_reason=? WHERE proposal_id=? AND status=?',[status,input.actor,new Date().toISOString(),input.reason,id,'pendiente']);if(!this.db.getRowsModified())throw Error('La propuesta ya se había decidido');this.audit(input.actor,'decision_'+status,'purchase_proposal',id,{reason:input.reason,compliance_status:refreshed.status,compliance_norm_id:refreshed.norm_id,compliance_reason:refreshed.reason,human_review:status==='aprobada'&&refreshed.status==='review'});});await this.persist();this.render();this.note('Decisión local registrada: '+status+(status==='aprobada'&&refreshed.status==='review'?' tras revisión humana; no certifica cumplimiento jurídico.':'.'));if(status==='aprobada')APSound.play('approval');}catch(e){this.note(e.message,true);}
-  },
-  async receive(id){
-    const p=this.one(`SELECT p.* FROM purchase_proposals p JOIN approval_queue q ON q.proposal_id=p.id WHERE p.id=? AND q.status='aprobada'`,[id]);if(!p)return;
-    const input=await this.decisionForm('Registrar recepción',`${p.proposed_qty} unidades de ${p.sku}. Esto aumentará el stock local; registra la recepción solo cuando la entrega se haya comprobado.`,false);if(!input)return;
-    try{this.tx(()=>{if(this.one('SELECT id FROM stock_movements WHERE proposal_id=?',[id]))throw Error('Recepción ya registrada');const now=new Date().toISOString();this.db.run('UPDATE inventory SET on_hand=on_hand+?,updated_at=? WHERE sku=?',[p.proposed_qty,now,p.sku]);this.db.run('INSERT INTO stock_movements VALUES(?,?,?,?,?,?)',['MOV-'+id,p.sku,p.proposed_qty,'recepcion_registrada',id,now]);this.audit(input.actor,'recepcion_registrada','purchase_proposal',id,{sku:p.sku,quantity:p.proposed_qty});});await this.persist();this.render();this.note('Recepción registrada; existencias actualizadas.');}catch(e){this.note(e.message,true);}
-  },
-  confirmAction(title,detail){return this.decisionForm(title,detail,false,true).then(Boolean);},
-  decisionForm(title,detail,reasonRequired,confirmOnly=false){
-    return new Promise(resolve=>{
-      const box=document.getElementById('ap-dialog');this.dialogReturnFocus=document.activeElement;box.hidden=false;
-      box.innerHTML=`<form id="ap-decision-form"><h3>${this.esc(title)}</h3><p>${this.esc(detail)}</p>${confirmOnly?'':`<label>Responsable<input id="ap-actor" required maxlength="80" autocomplete="name"></label>${reasonRequired?'<label>Motivo<textarea id="ap-reason" required maxlength="500"></textarea></label>':''}`}<div class="ap-dialog-buttons"><button type="button" id="ap-cancel">Cancelar</button><button type="submit">Confirmar</button></div></form>`;
-      const close=v=>{box.hidden=true;box.innerHTML='';this.dialogReturnFocus?.focus();resolve(v);};
-      box.querySelector('#ap-cancel').onclick=()=>close(null);box.onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();close(null)}};
-      box.querySelector('form').onsubmit=e=>{e.preventDefault();close(confirmOnly?{}:{actor:box.querySelector('#ap-actor').value.trim(),reason:reasonRequired?box.querySelector('#ap-reason').value.trim():''});};
-      (box.querySelector('input')||box.querySelector('#ap-cancel')).focus();
-    });
-  },
-  audit(actor,action,type,id,details){this.db.run('INSERT INTO audit_log VALUES(?,?,?,?,?,?,?)',[crypto.randomUUID(),new Date().toISOString(),actor,action,type,id,JSON.stringify(details)]);},
-  context(){return {stock:this.rows('SELECT * FROM stock_status'),orders:this.rows("SELECT l.order_id,l.sku,l.quantity,o.status,o.region FROM sales_order_lines l JOIN sales_orders o ON o.id=l.order_id"),proposals:this.rows('SELECT p.id,p.sku,p.proposed_qty,p.rationale,q.status FROM purchase_proposals p JOIN approval_queue q ON p.id=q.proposal_id')};},
-  async propose(args){
-    const sku=String(args.sku||'');const x=this.one('SELECT * FROM stock_status WHERE sku=?',[sku]);if(!x||!x.needs_restock)throw Error('SKU inexistente o sin necesidad de reposición');
-    if(this.one("SELECT p.id FROM purchase_proposals p JOIN approval_queue q ON q.proposal_id=p.id WHERE p.sku=? AND q.status='pendiente'",[sku]))return 'Ya hay una propuesta pendiente para '+sku;
-    this.setAgentState('gamma','Comparando proveedores',true);
-    const supplier=this.one('SELECT sp.*,s.name,s.lead_days FROM supplier_products sp JOIN suppliers s ON s.id=sp.supplier_id WHERE sp.sku=? AND s.active=1 ORDER BY s.lead_days ASC,sp.unit_cost_cents ASC LIMIT 1',[sku]);this.setAgentState('gamma',supplier?`Plazo ${supplier.lead_days} días`:'Sin proveedor',false);if(!supplier)throw Error('No hay proveedor activo');
-    const qty=Math.max(x.target_stock-x.available,supplier.min_order_qty);const id='PROP-'+Date.now();
-    const compliance=APCompliance.evaluate(this,{sku,qty,supplier_id:supplier.supplier_id});if(compliance.status==='block')throw Error('Propuesta detenida por cumplimiento: '+compliance.reason);const auto=this.mode==='autonomo'&&compliance.status==='pass';this.tx(()=>{const now=new Date().toISOString();this.db.run('INSERT INTO purchase_proposals VALUES(?,?,?,?,?,?,?,?,?)',[id,sku,supplier.supplier_id,qty,supplier.unit_cost_cents,'USD','ALPHA',String(args.reason||'Stock por debajo del punto de reposición').slice(0,500),now]);this.db.run('INSERT INTO approval_queue(proposal_id,status,decided_by,decided_at,decision_reason) VALUES(?,?,?,?,?)',[id,auto?'aprobada':'pendiente',auto?'modo_automatico':null,auto?now:null,auto?'Aprobación automática local: cumplimiento pass':null]);this.audit('GAMMA','proveedor_seleccionado','supplier',supplier.supplier_id,{sku,lead_days:supplier.lead_days,unit_cost_cents:supplier.unit_cost_cents});this.audit('ALPHA','propuesta_creada','purchase_proposal',id,{sku,quantity:qty});this.db.run('INSERT INTO compliance_checks(proposal_id,status,norm_id,reason,checked_at) VALUES(?,?,?,?,?)',[id,compliance.status,compliance.norm_id,compliance.reason,now]);this.audit('CUMPLIMIENTO','revision_normativa','purchase_proposal',id,{status:compliance.status,norm_id:compliance.norm_id,reason:compliance.reason});if(auto)this.audit('modo_automatico','aprobacion_automatica','purchase_proposal',id,{sku,quantity:qty,compliance_status:compliance.status,compliance_reason:compliance.reason});});await this.persist();this.render();if(auto)APSound.play('autonomous');return `Propuesta ${id} creada: ${qty} unidades de ${sku} por ${this.money(qty*supplier.unit_cost_cents)}. ${auto?'Aprobada automáticamente en la base local tras cumplimiento pass.':'Pendiente de aprobación humana y revisión de cumplimiento;'} No se ha efectuado compra ni recepción.`;
-  },
-  // Único punto de conexión del modelo: cambiar endpoints, modelo o autenticación aquí.
-  async modelCall(messages,tools){
-    const request=async(endpoint,model)=>{
-      const body={model,messages,temperature:0.2,stream:false};if(tools)body.tools=tools;
-      const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),25000);
-      try{
-        const r=await fetch(endpoint+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer public'},body:JSON.stringify(body),signal:controller.signal});
-        if(!r.ok)throw Error('Servicio no disponible (HTTP '+r.status+')');
-        const j=await r.json();if(!j.choices?.[0]?.message)throw Error('Respuesta vacía');return j.choices[0].message;
-      }finally{clearTimeout(timeout);}
-    };
-    let last;
-    for(const endpoint of this.endpoints){
-      let available=[];
-      try{const r=await fetch(endpoint+'/models',{headers:{'Authorization':'Bearer public'}});if(r.ok){const j=await r.json();available=(j.data||[]).map(x=>x.id).filter(x=>x.endsWith('-free'));}}catch(e){last=e;}
-      const candidates=this.activeModel?[this.activeModel,...available.filter(x=>x!==this.activeModel)]:[this.model,...available.filter(x=>x!==this.model)];
-      for(const model of candidates){try{const response=await request(endpoint,model);this.activeModel=model;return response;}catch(e){last=e;}}
-    }
-    throw last||Error('Servicio no disponible');
-  },
+  decide(...a){return APCommands.decide(...a);},
+  receive(...a){return APCommands.receive(...a);},
+  confirmAction(...a){return APPolicy.confirmAction(...a);},
+  decisionForm(...a){return APPolicy.decisionForm(...a);},
+  audit(...a){return APPolicy.audit(...a);},
+  context(...a){return APCommands.context(...a);},
+  propose(...a){return APCommands.propose(...a);},
+  modelCall(...a){return APCommands.modelCall(...a);},
   closeChat(){const e=document.getElementById('chatWindow');e.hidden=true;e.style.display='none';localStorage.setItem('adaptapro-chat-open','false');},
   tab(which){const e=document.getElementById('chatWindow');e.hidden=false;e.style.display='block';localStorage.setItem('adaptapro-chat-open','true');document.getElementById('ap-chat-panel').hidden=which!=='chat';document.getElementById('ap-supervision-panel').hidden=which!=='supervision';},
   append(text,who){const el=document.createElement('div');el.className='chat-msg '+who;if(who==='ai')APFormat.render(el,text);else el.textContent=String(text);const body=document.querySelector('.chat-body');body.append(el);body.scrollTop=body.scrollHeight;},
   setAgentState(agent,label,working){const el=document.getElementById('ap-agent-'+agent);if(el){el.textContent=label;el.classList.toggle('ap-working',working);}},
-  startCycle(){
-    if(this.cycleTimer)clearInterval(this.cycleTimer);
-    const el=document.getElementById('ap-cycle');
-    if(!this.agentsOn){this.cycleTimer=null;if(el)el.textContent='Motor de agentes detenido · sin consumo automático';return;}
-    this.cycleTimer=setInterval(()=>this.cycle().catch(e=>this.note('Motor de eventos: '+e.message,true)),this.cycleIntervalMs);
-    if(el)el.textContent='Motor de eventos demo · cada 30 s con la pestaña visible';
-  },
-  async cycle(){
-    if(!this.db||this.cycleBusy||this.busy||document.hidden||!this.agentsOn)return;
-    const count=this.one("SELECT count(*) AS n FROM audit_log WHERE action='pedido_generado'").n;
-    this.cycleBusy=true;this.setAgentState('beta','Registrando pedido',true);
-    try{
-      const sku=count%2?'SKU-713':'SKU-451',qty=2+(count%3),id='PED-'+(1001+this.one('SELECT count(*) AS n FROM sales_orders').n),at=new Date().toISOString();
-      const product=this.one('SELECT sale_price_cents FROM products WHERE sku=?',[sku]);
-      this.tx(()=>{this.db.run('INSERT INTO sales_orders VALUES(?,?,?,?,?)',[id,'Canal digital','España',at,'pendiente']);this.db.run('INSERT INTO sales_order_lines VALUES(?,?,?,?,?)',[id,1,sku,qty,product.sale_price_cents]);this.audit('BETA','pedido_generado','sales_order',id,{sku,quantity:qty,source:'motor_local'});});
-      await this.persist();this.render();this.setAgentState('beta','Pedido registrado',false);
-      if(this.one('SELECT needs_restock FROM stock_status WHERE sku=?',[sku]).needs_restock){
-        this.setAgentState('alpha','Revisando pedido',true);
-        const pending=this.one("SELECT p.id FROM purchase_proposals p JOIN approval_queue q ON q.proposal_id=p.id WHERE p.sku=? AND q.status IN ('pendiente','aprobada') LIMIT 1",[sku]);
-        if(!pending&&Date.now()-this.lastModelCycleAt>=60000){this.lastModelCycleAt=Date.now();await this.ask(`Nuevo pedido ${id}: ${qty} unidades de ${sku}. Revisa stock y decide si hace falta propuesta de reposición.`,true);}
-        else this.setAgentState('alpha',pending?'Propuesta en seguimiento':'En espera',false);
-      }
-    }finally{this.cycleBusy=false;}
-  },
-  async ask(text,quiet=false){if(this.busy||!this.db)return;this.busy=true;if(!quiet){this.tab('chat');this.append(text,'user');}this.setAgentState('alpha','Analizando',true);this.note('Analizando con ALPHA...');
-    try{
-      const tools=[{type:'function',function:{name:'proponer_reposicion',description:'Crear una propuesta local de reposición. La revisión de cumplimiento actual la deja pendiente incluso en Autónomo; no compra ni cambia stock.',parameters:{type:'object',properties:{sku:{type:'string'},reason:{type:'string'}},required:['sku','reason']}}}];
-      const messages=[{role:'system',content:'Eres ALPHA, agente de inventario de FiveTech. Responde en español con hechos del contexto. Puedes proponer reposición con la herramienta si el stock está bajo. Nunca digas que has comprado ni recibido mercancía. Describe exactamente el estado de la propuesta en SQLite y el modo actual. No inventes datos ni atribuyas acciones a BETA/GAMMA si no constan en la auditoría. En modo Autónomo el cumplimiento actual exige revisión humana de toda propuesta local nueva; nunca se compra ni se recibe mercancía. No reveles proveedores de modelos.'},{role:'user',content:'Modo actual: '+this.mode+'. Datos vigentes: '+JSON.stringify(this.context())+'\nSolicitud: '+text}];
-      let m=await this.modelCall(messages,tools);
-      if(m.tool_calls?.length){messages.push(m);for(const c of m.tool_calls.slice(0,2)){let result;try{if(c.function.name!=='proponer_reposicion')throw Error('Herramienta no admitida');result=await this.propose(JSON.parse(c.function.arguments));}catch(e){result='Error: '+e.message;}messages.push({role:'tool',tool_call_id:c.id,content:result});}m=await this.modelCall(messages);}
-      if(!quiet)this.append(m.content||'No hubo respuesta del agente.','ai');this.audit('ALPHA','analisis_completado','agent','ALPHA',{model:this.activeModel||this.model});await this.persist();this.render();this.setAgentState('alpha','Disponible',false);this.note('Análisis finalizado · '+this.rows("SELECT count(*) AS n FROM approval_queue WHERE status='pendiente'")[0].n+' pendientes');
-    }catch(e){if(!quiet)this.append('No se pudo contactar al agente. Tus datos y propuestas locales siguen disponibles.','ai');this.setAgentState('alpha','Sin respuesta',false);this.note('Agente no disponible: '+e.message,true);}finally{this.busy=false;}
-  }
+  startCycle(...a){return APCommands.startCycle(...a);},
+  cycle(...a){return APCommands.cycle(...a);},
+  ask(...a){return APCommands.ask(...a);},
 };
 window.AP=AP;
 const APMic={button:document.getElementById('ap-mic'),recognition:null,active:false,start(){const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Speech){this.button.disabled=true;this.button.title='Dictado no disponible en este navegador. Prueba Chrome.';this.button.setAttribute('aria-label',this.button.title);document.getElementById('chatInput').placeholder='Dictado no disponible aquí; escribe o prueba Chrome';return}if(this.active){this.recognition.stop();return}const input=document.getElementById('chatInput'),recognition=new Speech();this.recognition=recognition;recognition.lang='es-ES';recognition.continuous=false;recognition.interimResults=true;const prefix=input.value.trim();recognition.onstart=()=>{this.active=true;this.button.classList.add('is-listening');this.button.textContent='⏹';this.button.title='Detener dictado';this.button.setAttribute('aria-label','Detener dictado');this.button.setAttribute('aria-pressed','true')};recognition.onresult=e=>{let words='';for(let i=0;i<e.results.length;i++)words+=e.results[i][0].transcript;input.value=(prefix?prefix+' ':'')+words;input.focus()};recognition.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed')input.placeholder='Permite el micrófono en el navegador para dictar';else if(e.error!=='no-speech'&&e.error!=='aborted')input.placeholder='No se pudo dictar; puedes escribir el mensaje'};recognition.onend=()=>{this.active=false;this.button.classList.remove('is-listening');this.button.textContent='🎙️';this.button.title='Dictar mensaje';this.button.setAttribute('aria-label','Dictar mensaje');this.button.setAttribute('aria-pressed','false')};try{recognition.start()}catch(e){recognition.onend();input.placeholder='No se pudo iniciar el dictado; escribe el mensaje'}}};document.getElementById('ap-mic').addEventListener('click',()=>APMic.start());
@@ -1131,83 +1058,6 @@ document.getElementById('ap-tab-supervision').addEventListener('click',()=>AP.ta
 document.querySelector('.ap-human').addEventListener('click',()=>AP.tab('supervision'));
 
 const APMenu={button:document.getElementById('ap-menu-toggle'),sidebar:document.getElementById('ap-sidebar'),backdrop:document.getElementById('ap-menu-backdrop'),close(){this.sidebar.classList.remove('is-open');this.backdrop.hidden=true;this.button.setAttribute('aria-expanded','false');this.button.setAttribute('aria-label','Abrir menú de secciones');if(this.button.dataset.wasOpen==='true')this.button.focus();delete this.button.dataset.wasOpen},open(){this.button.dataset.wasOpen='true';this.sidebar.classList.add('is-open');this.backdrop.hidden=false;this.button.setAttribute('aria-expanded','true');this.button.setAttribute('aria-label','Cerrar menú de secciones');document.getElementById('ap-menu-close').focus()}};APMenu.button.onclick=()=>APMenu.sidebar.classList.contains('is-open')?APMenu.close():APMenu.open();document.getElementById('ap-menu-close').onclick=()=>APMenu.close();APMenu.backdrop.onclick=()=>APMenu.close();document.addEventListener('keydown',e=>{if(e.key==='Escape')APMenu.close()});window.addEventListener('resize',()=>{if(innerWidth>760)APMenu.close()});
-const APViews = {
-  names:["Dashboard","Finanzas","Suministro","Logística IA","Gestión de Stock","Ventas","CRM Predictivo","Precios Dinámicos","RRHH","Talento IA","Planificación","Producción","Reportes Avanzados","Agentes IA","Cumplimiento","Nómina Colombia","Subagentes jurídicos","Costes de mano de obra","Reclutamiento y cambio","Currícula · equipo","Registro de actividad"],
-  current:0,
-  safe:v=>AP.esc(v??''),
-  table(headers,rows){return '<div class="ap-table-wrap"><table class="ap-table"><thead><tr>'+headers.map(x=>'<th>'+this.safe(x)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map(x=>'<td>'+this.safe(x)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';},
-  tiles(items){return '<div class="ap-grid">'+items.map(([label,value])=>'<div class="ap-tile"><small>'+this.safe(label)+'</small><b>'+this.safe(value)+'</b></div>').join('')+'</div>';},
-  ask(label,text){return '<button class="ap-agent-btn" data-prompt="'+this.safe(text)+'">'+this.safe(label)+'</button>';},
-  section(title,lead,body){return '<h2>'+this.safe(title)+'</h2><p class="ap-view-lead">'+this.safe(lead)+'</p>'+body;},
-  activity:{q:'',actor:'',limit:200},
-  activityView(){
-    const actors=AP.rows('SELECT DISTINCT actor FROM audit_log ORDER BY actor'),st=this.activity;
-    const total=AP.one('SELECT count(*) AS n FROM audit_log').n;
-    const last=AP.one('SELECT occurred_at FROM audit_log ORDER BY occurred_at DESC LIMIT 1');
-    const filters='<div class="ap-activity-form">'+
-      '<label class="ap-activity-search">Buscar<input type="search" id="ap-activity-q" maxlength="80" placeholder="Acción, entidad o detalle" value="'+this.safe(st.q)+'"></label>'+
-      '<label>Agente<select id="ap-activity-actor"><option value="">Todos</option>'+actors.map(a=>'<option value="'+this.safe(a.actor)+'"'+(st.actor===a.actor?' selected':'')+'>'+this.safe(a.actor)+'</option>').join('')+'</select></label>'+
-      '<label>Límite<select id="ap-activity-limit">'+[50,200,500].map(n=>'<option value="'+n+'"'+(st.limit===n?' selected':'')+'>'+n+' eventos</option>').join('')+'</select></label>'+
-      '<button type="button" id="ap-activity-clear" class="ap-agent-btn">Limpiar filtros</button>'+
-      '</div>';
-    return this.section('Registro de actividad','Historial de acciones que esta demo guardó en tu navegador. Solo lectura: no se edita y no se envía a ningún servidor. Estos mismos eventos aparecen resumidos en Reportes Avanzados y Agentes IA.',
-      this.tiles([['Eventos registrados',total],['Agentes distintos',actors.length],['Último evento',last?new Date(last.occurred_at).toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'}):'Sin eventos']])+
-      filters+'<div id="ap-activity-results">'+this.activityResults()+'</div>');
-  },
-  activityResults(){
-    const st=this.activity,q=st.q.trim().replace(/[%_\\]/g,''),args=[],where=[];
-    if(q){const like='%'+q.toLowerCase()+'%';where.push('(lower(actor) LIKE ? OR lower(action) LIKE ? OR lower(entity_type) LIKE ? OR lower(entity_id) LIKE ? OR lower(details_json) LIKE ?)');args.push(like,like,like,like,like);}
-    if(st.actor){where.push('actor=?');args.push(st.actor);}
-    const clause=where.length?' WHERE '+where.join(' AND '):'';
-    const shown=AP.one('SELECT count(*) AS n FROM audit_log'+clause,args).n;
-    const rows=AP.rows('SELECT occurred_at,actor,action,entity_type,entity_id,details_json FROM audit_log'+clause+' ORDER BY occurred_at DESC,rowid DESC LIMIT ?',args.concat([st.limit]));
-    const table=rows.length?this.table(['Fecha','Agente','Acción','Entidad','Detalle'],rows.map(r=>[
-      new Date(r.occurred_at).toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'}),
-      r.actor,r.action,r.entity_type+' · '+r.entity_id,String(r.details_json).slice(0,180)
-    ])):'<p class="ap-compliance-note">No hay eventos que cumplan estos filtros.</p>';
-    return '<p class="ap-activity-meta">Mostrando '+rows.length+' de '+shown+' eventos que cumplen el filtro, de '+AP.one('SELECT count(*) AS n FROM audit_log').n+' registrados en total.</p>'+table;
-  },
-  wireActivity(box){
-    const st=this.activity,results=box.querySelector('#ap-activity-results');
-    if(!results)return;
-    const redraw=()=>{results.innerHTML=this.activityResults();};
-    const q=box.querySelector('#ap-activity-q');
-    if(q)q.oninput=()=>{clearTimeout(this.activityTimer);this.activityTimer=setTimeout(()=>{st.q=q.value;redraw();},220);};
-    const a=box.querySelector('#ap-activity-actor');
-    if(a)a.onchange=()=>{st.actor=a.value;redraw();};
-    const l=box.querySelector('#ap-activity-limit');
-    if(l)l.onchange=()=>{st.limit=Number(l.value);redraw();};
-    const c=box.querySelector('#ap-activity-clear');
-    if(c)c.onclick=()=>{this.activity={q:'',actor:'',limit:200};this.show(20);};
-  },
-  show(id){id=Number(id);if(!Number.isInteger(id)||id<0||id>=this.names.length)id=0;this.current=id;if(innerWidth<=760)APMenu.close();if(id===0&&typeof APAgentCenter!=='undefined'&&APAgentCenter.selected)APAgentCenter.back();document.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('active',Number(b.dataset.view)===id);b.setAttribute('aria-current',Number(b.dataset.view)===id?'page':'false')});document.getElementById('ap-dashboard').hidden=id!==0;const box=document.getElementById('ap-view');box.hidden=id===0;if(id&&!AP.db){box.innerHTML='<p>Cargando datos locales...</p>';return;}if(id)box.innerHTML=this.render(id);const country=box.querySelector('#ap-country');if(country)country.onchange=()=>{const from=localStorage.getItem('ap-country')||'CO';if(country.value!==from){AP.audit('SISTEMA','pais_cambiado','settings','country',{from,to:country.value});}localStorage.setItem('ap-country',country.value);this.show(id)};if(id===20)this.wireActivity(box);if(id===19){const form=box.querySelector('#ap-candidate-form');form.onsubmit=async e=>{e.preventDefault();const f=form.elements,alias=f.alias.value.trim(),role=f.role.value,evidence=f.evidence.value.trim();if(!alias||alias.length>60||!['Operaciones','Relaciones','Exploración'].includes(role)||!evidence||evidence.length>700)return;const check=APCompliance.assessEvidence(evidence);try{AP.db.run('INSERT INTO candidate_screenings VALUES(?,?,?,?,?,?,?,?,?)',[crypto.randomUUID(),alias,role,evidence,check.score,check.explanation,check.status,0,new Date().toISOString()]);await AP.persist();this.show(19)}catch(err){box.querySelector('#ap-candidate-feedback').textContent='No se pudo guardar el perfil local.'}};box.querySelectorAll('[data-approve-candidate]').forEach(b=>b.onclick=async()=>{const id=b.dataset.approveCandidate,row=AP.one('SELECT * FROM candidate_screenings WHERE id=?',[id]);if(!row||row.status!=='review'||row.score<60)return;const ok=await AP.confirmAction('Avanzar perfil al reclutamiento','Revisa la evidencia y decide tú: ¿mover '+row.alias+' al tablero de colaboradores internos? No supone contratación.');if(!ok)return;try{AP.db.run('UPDATE candidate_screenings SET status=? WHERE id=?',['approved',id]);AP.db.run('INSERT INTO recruitment_pipeline VALUES(?,?,?,?,?,?,?,?)',[crypto.randomUUID(),'Colaboradores internos',row.alias,'Detectado','Perfil preevaluado; pendiente de entrevista y validación humana.','Aprobación humana del avance',row.demo,new Date().toISOString()]);await AP.persist();this.show(19)}catch(err){box.querySelector('#ap-candidate-feedback').textContent='No se pudo avanzar el perfil.'}})}if(id===18){const form=box.querySelector('#ap-recruit-form');form.onsubmit=async e=>{e.preventDefault();const f=form.elements,kind=f.kind.value,title=f.title.value.trim(),signal=f.signal.value.trim(),note=f.note.value.trim();if(!['Colaboradores internos','Aliados','Productos','Clientes','Mercados'].includes(kind)||!title||title.length>100||note.length>180||signal.length>160)return;try{AP.db.run('INSERT INTO recruitment_pipeline VALUES(?,?,?,?,?,?,?,?)',[crypto.randomUUID(),kind,title,'Detectado',note,signal,0,new Date().toISOString()]);await AP.persist();this.show(18)}catch(err){box.querySelector('#ap-recruit-feedback').textContent='No se pudo guardar; revisa la información.'}};box.querySelectorAll('[data-recruit-id]').forEach(b=>b.onclick=async()=>{const id=b.dataset.recruitId,to=b.dataset.nextStage;try{const row=AP.one('SELECT stage FROM recruitment_pipeline WHERE id=?',[id]),stages=['Detectado','Exploración','Evaluación','Incorporación'];if(!row||stages.indexOf(to)!==stages.indexOf(row.stage)+1)return;AP.db.run('UPDATE recruitment_pipeline SET stage=? WHERE id=?',[to,id]);await AP.persist();this.show(18)}catch(err){box.querySelector('#ap-recruit-feedback').textContent='No se pudo cambiar la etapa.'}})}if(id===17){const form=box.querySelector('#ap-cost-form');form.onsubmit=async e=>{e.preventDefault();const f=form.elements,period=f.period.value,structure=f.structure.value,area=f.area.value,amount=Number(f.amount.value),country=APCompliance.country();if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(period)||!['Fabricación','Comercialización','Servicios'].includes(structure)||!['Operativa','Soporte'].includes(area)||!Number.isFinite(amount)||amount<0||amount>1e12||Math.round(amount*100)/100!==amount)return;const cents=Math.round(amount*100),currency=country==='VE'?'VES':'COP';try{AP.db.run('INSERT INTO labor_cost_entries VALUES(?,?,?,?,?,?,?,?)',[crypto.randomUUID(),country,period,structure,area,cents,currency,new Date().toISOString()]);await AP.persist();this.show(17)}catch(err){box.querySelector('#ap-cost-feedback').textContent='No se pudo guardar la entrada; comprueba los datos y vuelve a intentarlo.'}}}if(id===15){const f=box.querySelector('#ap-payroll-form');if(f)f.onsubmit=e=>{e.preventDefault();const salary=Number(f.elements.salary.value),days=Number(f.elements.days.value);if(!Number.isFinite(salary)||salary<0||!Number.isInteger(days)||days<0||days>30)return;const ordinary=Math.round(salary*days/30);box.querySelector('#ap-payroll-output').innerHTML='<b>Salario ordinario prorrateado (simulación): '+ordinary.toLocaleString('es-CO')+' COP</b><br>Auxilio, extras/recargos, prestaciones y seguridad social: <b>pendientes de reglas validadas</b>.<br>Norma de referencia: CO-CST; revisión jurídica obligatoria. No es neto a pagar.'}}box.querySelectorAll('[data-prompt]').forEach(b=>b.onclick=()=>AP.ask(b.dataset.prompt));},
-  render(i){const q=(sql,args=[])=>AP.rows(sql,args),one=(sql)=>AP.one(sql),money=n=>AP.money(n||0),t=(h,r)=>this.table(h,r),tiles=x=>this.tiles(x),ask=(l,p)=>this.ask(l,p),p=q('SELECT * FROM stock_status ORDER BY sku'),orders=q('SELECT o.id,o.customer_name,o.region,o.status,o.placed_at,coalesce(sum(l.quantity*l.unit_price_cents),0) AS amount FROM sales_orders o LEFT JOIN sales_order_lines l ON l.order_id=o.id GROUP BY o.id ORDER BY o.rowid DESC LIMIT 40'),props=q('SELECT p.id,p.sku,s.name,p.proposed_qty,p.unit_cost_cents,s.lead_days,a.status FROM purchase_proposals p JOIN suppliers s ON s.id=p.supplier_id JOIN approval_queue a ON a.proposal_id=p.id ORDER BY p.rowid DESC LIMIT 30');
-    switch(i){
-      case 1: {const total=one('SELECT coalesce(sum(quantity*unit_price_cents),0) AS n FROM sales_order_lines').n, committed=one("SELECT coalesce(sum(p.proposed_qty*p.unit_cost_cents),0) AS n FROM purchase_proposals p JOIN approval_queue a ON a.proposal_id=p.id WHERE a.status='aprobada'").n;return this.section('Finanzas','Cartera de pedidos y compromisos locales. Una propuesta aprobada no equivale a un pago.',tiles([['Valor de pedidos',money(total)],['Propuestas aprobadas',money(committed)],['Pedidos registrados',orders.length]])+ '<h3>Valor por pedido</h3>'+t(['Pedido','Cliente','Estado','Importe'],orders.map(x=>[x.id,x.customer_name,x.status,money(x.amount)]))+ '<div class="ap-tools">'+ask('BETA · Analizar cartera','Analiza la cartera de pedidos y el riesgo de inventario. No infieras cobros ni pagos.')+'</div>');}
-      case 2: return this.section('Suministro','Propuestas locales, proveedores activos y plazos. Aprobar no emite una orden de compra.',tiles([['Propuestas',props.length],['Pendientes',props.filter(x=>x.status==='pendiente').length],['Proveedores activos',one('SELECT count(*) AS n FROM suppliers WHERE active=1').n]])+'<h3>Propuestas</h3>'+t(['ID','SKU','Proveedor','Unidades','Plazo','Estado'],props.map(x=>[x.id,x.sku,x.name,x.proposed_qty,x.lead_days+' días',x.status]))+'<div class="ap-tools">'+ask('ALPHA · Revisar suministro','Revisa las alertas de reposición y, si corresponde, crea propuestas locales de compra pendientes de aprobación.')+'</div>');
-      case 3: return this.section('Logística IA','GAMMA compara proveedores y plazos para las propuestas creadas en este navegador.',tiles([['Proveedores activos',one('SELECT count(*) AS n FROM suppliers WHERE active=1').n],['Propuestas con proveedor',props.length]])+'<h3>Opciones de abastecimiento</h3>'+t(['Proveedor','SKU','Plazo','Coste unitario','Mínimo'],q('SELECT s.name,sp.sku,s.lead_days,sp.unit_cost_cents,sp.min_order_qty FROM supplier_products sp JOIN suppliers s ON s.id=sp.supplier_id WHERE s.active=1 ORDER BY sp.sku,s.lead_days,sp.unit_cost_cents').map(x=>[x.name,x.sku,x.lead_days+' días',money(x.unit_cost_cents),x.min_order_qty]))+'<div class="ap-tools">'+ask('GAMMA · Evaluar plazos','Compara proveedores activos y sus plazos para productos con alerta; no afirmes envíos ni entregas que no consten.')+'</div>');
-      case 4: return this.section('Gestión de Stock','Existencias físicas, reservas y umbrales calculados desde SQLite.',tiles([['Referencias',p.length],['Con alerta',p.filter(x=>x.needs_restock).length],['Unidades disponibles',p.reduce((n,x)=>n+x.available,0)]])+'<h3>Inventario</h3>'+t(['SKU','Producto','Físico','Reservado','Disponible','Umbral','Objetivo','Estado'],p.map(x=>[x.sku,x.name,x.on_hand,x.reserved,x.available,x.reorder_point,x.target_stock,x.needs_restock?'Reponer':'Correcto']))+'<div class="ap-tools">'+ask('ALPHA · Analizar stock','Revisa existencias y pedidos. Si procede, crea una propuesta local de reposición, sin comprar ni registrar recepción.')+'</div>');
-      case 5: return this.section('Ventas','Pedidos registrados en este navegador. BETA añade entradas durante los ciclos visibles.',tiles([['Pedidos',one('SELECT count(*) AS n FROM sales_orders').n],['Valor registrado',money(one('SELECT coalesce(sum(quantity*unit_price_cents),0) AS n FROM sales_order_lines').n)],['Pendientes',one("SELECT count(*) AS n FROM sales_orders WHERE status='pendiente'").n]])+'<h3>Pedidos recientes</h3>'+t(['Pedido','Cliente','Región','Estado','Valor'],orders.map(x=>[x.id,x.customer_name,x.region,x.status,money(x.amount)]))+'<div class="ap-tools">'+ask('BETA · Analizar pedidos','Revisa los pedidos existentes y señala si alguna línea presenta riesgo por stock bajo, sin inventar ventas ni cobros.')+'</div>');
-
-      case 6: {const customers=q('SELECT customer_name,region,count(*) AS orders,sum(l.quantity*l.unit_price_cents) AS value FROM sales_orders o JOIN sales_order_lines l ON l.order_id=o.id GROUP BY customer_name,region ORDER BY value DESC');return this.section('CRM Predictivo','BETA observa el valor y frecuencia por cliente. Las señales son reglas sobre datos locales, no una probabilidad externa.',tiles([['Clientes',customers.length],['Cartera',money(customers.reduce((n,x)=>n+x.value,0))]])+'<h3>Clientes y señales</h3>'+t(['Cliente','Región','Pedidos','Valor','Señal'],customers.map(x=>[x.customer_name,x.region,x.orders,money(x.value),x.orders>2?'Seguimiento prioritario':'Relación activa']))+'<div class="ap-tools">'+ask('BETA · Revisar clientes','Analiza clientes y pedidos de la base local. No inventes historial, satisfacción ni predicciones cuantificadas.')+'</div>');}
-      case 7: {const prices=q('SELECT p.sku,p.name,p.sale_price_cents,min(sp.unit_cost_cents) AS cost,count(l.order_id) AS lines FROM products p LEFT JOIN supplier_products sp ON sp.sku=p.sku LEFT JOIN sales_order_lines l ON l.sku=p.sku GROUP BY p.sku ORDER BY p.sku');return this.section('Precios Dinámicos','BETA compara precios de venta con costes registrados. Sin cambiar precios sin aprobación humana.',tiles([['Referencias',prices.length],['Margen bruto orientativo',prices.length?Math.round(prices.reduce((n,x)=>n+(x.sale_price_cents-x.cost)/x.sale_price_cents,0)/prices.length*100)+' %':'-']])+'<h3>Lectura de márgenes</h3>'+t(['SKU','Producto','Precio','Coste mínimo','Margen bruto','Líneas'],prices.map(x=>[x.sku,x.name,money(x.sale_price_cents),money(x.cost),x.cost?Math.round((x.sale_price_cents-x.cost)/x.sale_price_cents*100)+' %':'-',x.lines]))+'<div class="ap-tools">'+ask('BETA · Evaluar precios','Revisa precios de venta y costes de proveedores. Sugiere oportunidades sin afirmar un cambio ni asignar precios nuevos.')+'</div>');}
-      case 8: {const people=q('SELECT * FROM workforce ORDER BY team,name');return this.section('RRHH','Capacidad de equipo registrada en este entorno. No se toman decisiones laborales de forma automática.',tiles([['Personas',people.length],['Horas asignadas',people.reduce((n,x)=>n+x.assigned_hours,0)],['Capacidad semanal',people.reduce((n,x)=>n+x.capacity_hours,0)]])+'<h3>Equipo y carga</h3>'+t(['Nombre','Rol','Equipo','Asignadas','Capacidad','Estado'],people.map(x=>[x.name,x.role,x.team,x.assigned_hours+' h',x.capacity_hours+' h',x.status])));}
-      case 9: {const people=q('SELECT name,role,team,capacity_hours-assigned_hours AS available,status FROM workforce ORDER BY available DESC');return this.section('Talento IA','Vista de capacidad disponible por equipo. No evalúa personas ni infiere aptitudes o rendimiento.',tiles([['Horas libres',people.reduce((n,x)=>n+x.available,0)],['Equipos',new Set(people.map(x=>x.team)).size]])+'<h3>Disponibilidad</h3>'+t(['Persona','Especialidad registrada','Equipo','Horas libres','Estado'],people.map(x=>[x.name,x.role,x.team,x.available+' h',x.status])));}
-      case 10: {const tasks=q('SELECT * FROM planning_tasks ORDER BY due_at');return this.section('Planificación','Tareas operativas vinculadas a pedidos. Fechas del conjunto local, sin agenda externa.',tiles([['Tareas',tasks.length],['Pendientes',tasks.filter(x=>x.status==='pendiente').length]])+'<h3>Próximos hitos</h3>'+t(['ID','Tarea','Fecha objetivo','Equipo','Pedido','Estado'],tasks.map(x=>[x.id,x.title,x.due_at.slice(0,10),x.team,x.linked_order_id||'-',x.status]))+'<div class="ap-tools">'+ask('ALPHA · Revisar prioridades','Revisa stock, pedidos y propuestas para señalar prioridades. No cambies fechas ni prometas entregas.')+'</div>');}
-      case 11: {const jobs=q('SELECT j.*,p.name FROM production_jobs j JOIN products p ON p.sku=j.sku ORDER BY j.due_at');return this.section('Producción','Órdenes de trabajo locales conectadas a productos y pedidos. Sin registrar producción física automáticamente.',tiles([['Órdenes de trabajo',jobs.length],['Unidades planificadas',jobs.reduce((n,x)=>n+x.quantity,0)]])+'<h3>Estado de fabricación</h3>'+t(['Orden','Producto','Unidades','Fase','Objetivo','Responsable','Pedido'],jobs.map(x=>[x.id,x.name,x.quantity,x.stage,x.due_at.slice(0,10),x.owner,x.order_id||'-']))+'<div class="ap-tools">'+ask('ALPHA · Evaluar materiales','Revisa las órdenes de producción y el stock disponible; señala riesgos materiales sin afirmar fabricación real.')+'</div>');}
-      case 12: {const events=q('SELECT occurred_at,actor,action,entity_id FROM audit_log ORDER BY rowid DESC LIMIT 50');return this.section('Reportes Avanzados','Informe en vivo de la base de este navegador. Cada evento tiene registro de auditoría.',tiles([['Pedidos',one('SELECT count(*) AS n FROM sales_orders').n],['Eventos',one('SELECT count(*) AS n FROM audit_log').n],['Propuestas',props.length]])+'<h3>Registro de operaciones</h3>'+t(['Fecha','Agente','Acción','Entidad'],events.map(x=>[x.occurred_at.slice(0,19).replace('T',' '),x.actor,x.action.replaceAll('_',' '),x.entity_id])));}
-      case 14: return APCompliance.view();
-      case 15: return APCompliance.payrollView();
-      case 16: return APCompliance.agentsView();
-      case 17: return APCompliance.costView();
-      case 18: return APCompliance.recruitmentView();
-      case 19: return APCompliance.candidateView();
-      case 20: return this.activityView();
-      case 13: {const events=q('SELECT actor,action,entity_id,occurred_at FROM audit_log ORDER BY rowid DESC LIMIT 30');return this.section('Agentes IA','ALPHA analiza inventario, BETA registra pedidos y GAMMA compara proveedores. Los estados se basan en operaciones de SQLite.',tiles([['ALPHA',document.getElementById('ap-agent-alpha').textContent],['BETA',document.getElementById('ap-agent-beta').textContent],['GAMMA',document.getElementById('ap-agent-gamma').textContent]])+'<h3>Actividad registrada</h3>'+t(['Agente','Operación','Entidad','Hora'],events.map(x=>[x.actor,x.action.replaceAll('_',' '),x.entity_id,x.occurred_at.slice(11,19)]))+'<div class="ap-tools">'+ask('ALPHA · Ejecutar análisis','Revisa inventario y pedidos actuales, y crea propuesta de reposición si es necesaria.')+'</div>');}
-      default: return this.section(this.names[i],'Sin datos para esta sección.','');
-    }
-  }
-};
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>APViews.show(b.dataset.view)));
 const APAgentCenter={selected:null,
   show(agent){if(!['ALPHA','BETA','GAMMA'].includes(agent)||!AP.db)return;this.selected=agent;document.querySelectorAll('[data-agent]').forEach(b=>{const on=b.dataset.agent===agent;b.classList.toggle('is-selected',on);b.setAttribute('aria-pressed',String(on))});document.getElementById('ap-agent-center').hidden=false;document.querySelector('.alerts-card').hidden=true;document.querySelector('.charts-row').hidden=true;this.render();document.getElementById('ap-agent-center').scrollIntoView({block:'nearest',behavior:'smooth'})},
@@ -1263,6 +1113,7 @@ window.onYouTubeIframeAPIReady=function(){try{new YT.Player('ap-news-player',{ev
 </script>
 <script async src="https://www.youtube.com/iframe_api"></script>
 <script async defer src="https://accounts.google.com/gsi/client"></script>
-<script type="module" src="./instinct-ui.mjs"></script>
+<script type="module" src="./core/index.mjs"></script>
+  <script type="module" src="./instinct-ui.mjs"></script>
 </body>
   </html>

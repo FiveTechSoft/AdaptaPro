@@ -998,7 +998,7 @@ const AP = {
       await this.applyMigrations();
       if(!saved){this.tx(()=>{for(const [table,items] of Object.entries(seed)){if(table==='meta')continue;for(const item of items){const keys=Object.keys(item);this.db.run(`INSERT INTO ${table} (${keys.join(',')}) VALUES (${keys.map(()=>'?').join(',')})`,keys.map(k=>item[k]));}}});}
       else{this.tx(()=>{for(const table of ['workforce','production_jobs','planning_tasks'])for(const item of seed[table]||[]){const keys=Object.keys(item);this.db.run('INSERT OR IGNORE INTO '+table+' ('+keys.join(',')+') VALUES ('+keys.map(()=>'?').join(',')+')',keys.map(k=>item[k]));}});this.db.run("UPDATE purchase_proposals SET currency='USD' WHERE currency='EUR'");}
-      await this.persist();try{await APPacks.load();}catch(e){console.warn('Registro de packs no disponible: '+e.message);}this.render();this.updateMode();this.updateAgents();this.note('Demo local ficticia (semilla de julio de 2030). Modo '+this.mode+'.');this.startCycle();
+      await this.persist();APPacks.load().catch(e=>console.warn('Registro de packs no disponible: '+e.message));this.render();this.updateMode();this.updateAgents();this.note('Demo local ficticia (semilla de julio de 2030). Modo '+this.mode+'.');this.startCycle();
     }catch(e){this.note('No se pudieron cargar los datos: '+e.message,true);console.error(e);}
   },
   updateAgents(...a){return APCommands.updateAgents(...a);},

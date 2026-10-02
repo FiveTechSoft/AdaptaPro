@@ -1024,13 +1024,14 @@ const AP = {
     document.getElementById('ap-audit').innerHTML=this.rows('SELECT actor,action,entity_id,occurred_at FROM audit_log ORDER BY rowid DESC LIMIT 6').map(e=>`<div class="ap-line">${this.esc(e.actor)} · ${this.esc(e.action)} · ${this.esc(e.entity_id)}</div>`).join('');
     const feed=document.getElementById('ap-feed');feed.innerHTML=this.rows('SELECT actor,action,entity_id,occurred_at FROM audit_log ORDER BY rowid DESC LIMIT 7').map(e=>`<div class="ap-feed-item"><time>${this.esc(new Date(e.occurred_at).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}))}</time><strong>${this.esc(e.actor)}</strong> · ${this.esc(e.action.replaceAll('_',' '))}<small>${this.esc(e.entity_id)}</small></div>`).join('');
     document.getElementById('ap-orders').innerHTML=this.rows('SELECT id,customer_name,region,status FROM sales_orders ORDER BY rowid DESC LIMIT 8').map(e=>`<div class="ap-line"><b>${this.esc(e.id)}</b> · ${this.esc(e.customer_name)} · ${this.esc(e.region)} · ${this.esc(e.status)}</div>`).join('');
-    document.querySelectorAll('[data-decision]').forEach(b=>b.onclick=()=>this.decide(b.dataset.id,b.dataset.decision));
-    document.querySelectorAll('[data-receive]').forEach(b=>b.onclick=()=>this.receive(b.dataset.receive));
+    document.querySelectorAll('[data-decision]').forEach(b=>b.onclick=()=>this.command({cmd:'propuesta_decidir',payload:{id:b.dataset.id,status:b.dataset.decision}}).catch(e=>this.note(e.message,true)));
+    document.querySelectorAll('[data-receive]').forEach(b=>b.onclick=()=>this.command({cmd:'recepcion_registrar',payload:{id:b.dataset.receive}}).catch(e=>this.note(e.message,true)));
     const low=stock.filter(x=>x.needs_restock).length;
     const metric=document.getElementById('ap-stock-metric');if(metric)metric.textContent=stock.length-low+'/'+stock.length;
   },
   decide(...a){return APCommands.decide(...a);},
   receive(...a){return APCommands.receive(...a);},
+  command(...a){return APBus.command(...a);},
   confirmAction(...a){return APPolicy.confirmAction(...a);},
   decisionForm(...a){return APPolicy.decisionForm(...a);},
   audit(...a){return APPolicy.audit(...a);},

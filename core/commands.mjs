@@ -45,7 +45,7 @@ export const APCommands = {
       const tools=[{type:'function',function:{name:'proponer_reposicion',description:'Crear una propuesta local de reposición. La revisión de cumplimiento actual la deja pendiente incluso en Autónomo; no compra ni cambia stock.',parameters:{type:'object',properties:{sku:{type:'string'},reason:{type:'string'}},required:['sku','reason']}}}];
       const messages=[{role:'system',content:'Eres ALPHA, agente de inventario de FiveTech. Responde en español con hechos del contexto. Puedes proponer reposición con la herramienta si el stock está bajo. Nunca digas que has comprado ni recibido mercancía. Describe exactamente el estado de la propuesta en SQLite y el modo actual. No inventes datos ni atribuyas acciones a BETA/GAMMA si no constan en la auditoría. En modo Autónomo el cumplimiento actual exige revisión humana de toda propuesta local nueva; nunca se compra ni se recibe mercancía. No reveles proveedores de modelos.'},{role:'user',content:'Modo actual: '+AP.mode+'. Datos vigentes: '+JSON.stringify(AP.context())+'\nSolicitud: '+text}];
       let m=await AP.modelCall(messages,tools);
-      if(m.tool_calls?.length){messages.push(m);for(const c of m.tool_calls.slice(0,2)){let result;try{if(c.function.name!=='proponer_reposicion')throw Error('Herramienta no admitida');result=await AP.propose(JSON.parse(c.function.arguments));}catch(e){result='Error: '+e.message;}messages.push({role:'tool',tool_call_id:c.id,content:result});}m=await AP.modelCall(messages);}
+      if(m.tool_calls?.length){messages.push(m);for(const c of m.tool_calls.slice(0,2)){let result;try{if(c.function.name!=='proponer_reposicion')throw Error('Herramienta no admitida');result=await AP.command({cmd:'propuesta_crear',payload:JSON.parse(c.function.arguments),actor:'ALPHA'});}catch(e){result='Error: '+e.message;}messages.push({role:'tool',tool_call_id:c.id,content:result});}m=await AP.modelCall(messages);}
       if(!quiet)AP.append(m.content||'No hubo respuesta del agente.','ai');AP.audit('ALPHA','analisis_completado','agent','ALPHA',{model:AP.activeModel||AP.model});await AP.persist();AP.render();AP.setAgentState('alpha','Disponible',false);AP.note('Análisis finalizado · '+AP.query("SELECT count(*) AS n FROM approval_queue WHERE status='pendiente'")[0].n+' pendientes');
     }catch(e){if(!quiet)AP.append('No se pudo contactar al agente. Tus datos y propuestas locales siguen disponibles.','ai');AP.setAgentState('alpha','Sin respuesta',false);AP.note('Agente no disponible: '+e.message,true);}finally{AP.busy=false;}
   },
@@ -70,7 +70,7 @@ export const APCommands = {
     if(AP.cycleTimer)clearInterval(AP.cycleTimer);
     const el=document.getElementById('ap-cycle');
     if(!AP.agentsOn){AP.cycleTimer=null;if(el)el.textContent='Motor de agentes detenido · sin consumo automático';return;}
-    AP.cycleTimer=setInterval(()=>AP.cycle().catch(e=>AP.note('Motor de eventos: '+e.message,true)),AP.cycleIntervalMs);
+    AP.cycleTimer=setInterval(()=>AP.command({cmd:'pedido_generar',payload:{}}).catch(e=>AP.note('Motor de eventos: '+e.message,true)),AP.cycleIntervalMs);
     if(el)el.textContent='Motor de eventos demo · cada 30 s con la pestaña visible';
   },
   toggleAgents(){AP.agentsOn=!AP.agentsOn;localStorage.setItem('adaptapro-agents',AP.agentsOn?'on':'off');AP.startCycle();AP.updateAgents();AP.note(AP.agentsOn?'Motor de agentes activado.':'Motor de agentes detenido. El chat sigue disponible.');},

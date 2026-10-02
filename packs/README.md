@@ -17,7 +17,10 @@ packs/
     locale/             formato y jurisdicción con envoltorio {schema_version,country,locale,currency,formats,jurisdiction,notes}
     tests/              plan de pruebas manuales y resultados
   VE/
-    manifest.json
+    manifest.json       obligatorio
+    data/               estado real de VE en el nucleo (jurisdiccion, chequeo, subagentes)
+    locale/             es-VE, moneda VES y jurisdiccion ISLR
+    tests/              plan de pruebas manuales y resultados
 ```
 
 `kind` distingue `reference` (copia literal de algo que ya existe en el núcleo) de `example` (dato ilustrativo). Los archivos de `data/` y `locale/` deben declarar el `country` de su directorio. Si una fecha de consulta no se conoce, se usa `null`: no se rellena por inferencia. `index.json` registra los archivos de cada país para que un fork o una futura herramienta pueda localizarlos sin leer el árbol completo.

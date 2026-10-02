@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "country": "VE",
+  "kind": "reference",
+  "note": "Copia declarativa de lo que index.html declara para Venezuela: la fila de legal_jurisdictions, la moneda de la vista de costes, el resultado del chequeo de cumplimiento y el estado visible de los siete subagentes. El nucleo no importa este archivo. No se anade ninguna norma, articulo ni fuente: sin fecha de consulta el campo queda vacio por diseno, no por olvido.",
+  "payload": {
+    "jurisdiction": {
+      "country": "VE",
+      "name": "Venezuela",
+      "tax_label": "ISLR",
+      "status": "Por configurar: sin normas tributarias cargadas"
+    },
+    "currency": "VES",
+    "compliance": {
+      "status": "review",
+      "reason": "Faltan fuentes jurídicas vigentes para Constitución; requiere evaluación humana",
+      "norms_loaded": 0,
+      "note": "Las filas DEMO-% de compliance_norms son genericas y no citan fuente; ninguna pertenece a Venezuela. evaluate() devuelve review con el texto de reason, no pass ni block."
+    },
+    "payroll": {
+      "rules_loaded": 0,
+      "note": "La vista de nomina del nucleo es Nómina Colombia; no existe nomina Venezuela ni payroll_rules por pais."
+    },
+    "subagents": [
+      { "id": "mercantil", "status": "Por configurar" },
+      { "id": "laboral", "status": "Por configurar" },
+      { "id": "civil", "status": "Por configurar" },
+      { "id": "tributario-nacional", "status": "Por configurar" },
+      { "id": "tributario-regional", "status": "Por configurar" },
+      { "id": "tributario-local", "status": "Por configurar" },
+      { "id": "administrativo", "status": "Por configurar" }
+    ],
+    "subagents_note": "El nucleo muestra 'Demo de fuentes' solo para laboral con el pais en CO; con VE los siete aparecen 'Por configurar'. Los subagentes son diseno, no ejecutores."
+  }
+}

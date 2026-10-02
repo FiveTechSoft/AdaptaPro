@@ -34,12 +34,20 @@
       "maintainer": "FiveTechSoft",
       "scope": [
         "Selector juridico CO/VE de la demo",
-        "Jurisdiccion y etiqueta fiscal ISLR declaradas en el nucleo"
+        "Jurisdiccion y etiqueta fiscal ISLR declaradas en el nucleo",
+        "Copia declarativa del estado real de VE: chequeo en review, sin normas ni nomina propias",
+        "Formatos y moneda VES documentados en locale/es-VE.json"
       ],
       "files": {
-        "data": [],
-        "locale": [],
-        "tests": []
+        "data": [
+          "VE/data/jurisdiction-status.json"
+        ],
+        "locale": [
+          "VE/locale/es-VE.json"
+        ],
+        "tests": [
+          "VE/tests/manual-plan.md"
+        ]
       }
     }
   ]

@@ -7,8 +7,10 @@
   "maintainer": "FiveTechSoft",
   "scope": [
     "Selector juridico CO/VE de la demo",
-    "Jurisdiccion y etiqueta fiscal ISLR declaradas en el nucleo"
+    "Jurisdiccion y etiqueta fiscal ISLR declaradas en el nucleo",
+    "Copia declarativa del estado real de VE: chequeo en review, sin normas ni nomina propias",
+    "Formatos y moneda VES documentados en locale/es-VE.json"
   ],
   "sources": [],
-  "notes": "El nucleo solo declara la jurisdiccion y la etiqueta ISLR; no hay normas, fuentes ni datos locales cargados para Venezuela. Sin fecha de consulta no se listan fuentes: no se rellena sources por completar el campo."
+  "notes": "El nucleo solo declara la jurisdiccion y la etiqueta ISLR; no hay normas, fuentes ni datos locales cargados para Venezuela. Sin fecha de consulta no se listan fuentes: no se rellena sources por completar el campo. data/ y locale/ son copias declarativas de lo que el nucleo ya muestra; no anaden reglas ni activan nada."
 }

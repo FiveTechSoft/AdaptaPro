@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "country": "VE",
+  "locale": "es-VE",
+  "currency": "VES",
+  "formats": {
+    "ui": "es",
+    "number": "es-ES",
+    "money": "es-ES"
+  },
+  "jurisdiction": {
+    "code": "VE",
+    "name": "Venezuela",
+    "tax_label": "ISLR",
+    "core_status": "Por configurar: sin normas tributarias cargadas"
+  },
+  "notes": "Referencia declarativa; index.html no lee este archivo y la interfaz no tiene conmutador de idioma (solo español). number documenta el Intl.NumberFormat('es-ES') real de la vista de coste de mano de obra, que termina concatenando ' VES' sin un formateo de dinero propio; money se declara igual porque el nucleo no aplica toLocaleString de dinero a Venezuela (el simulador de nomina es de Colombia). No se declara ningun formato que el nucleo no ejecute hoy."
+}

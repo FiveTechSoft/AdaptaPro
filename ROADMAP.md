@@ -16,7 +16,7 @@ Actualizado: 1 octubre 2026. Plan aprobado: ALPHA/BETA/GAMMA del ERP ↔ email f
 **Fases:**
 
 - [x] **Paso 0 · diagrama** — `docs/diagrama-core.svg` con las tres capas, el ciclo de PR/issues y los límites de un pack.
-- [ ] **Paso 1 · esquema versionado** — `PRAGMA user_version`, `data/migrations/` numeradas y acumulativas, y `APCompliance.migrate()` (creación de tablas en JS, `index.html:951`) movida a migración SQL. Sustituye la migración ad-hoc por una pista ordenada.
+- [x] **Paso 1 · esquema versionado** — hecho el 2 de octubre de 2026: `PRAGMA user_version`, plan en `data/migrations/index.json` (`schema.sql` es la entrada n=1) y migración `0002_compliance.sql`, que sustituye a `APCompliance.migrate()` en JavaScript. `AP.applyMigrations()` solo ejecuta lo que supera el pragma y cada fichero es idempotente; los cambios de esquema entran como migración nueva, no editando la base.
 - [ ] **Paso 2 · extraer `AP` a módulos ES** — `core/data.mjs`, `core/policy.mjs`, `core/commands.mjs`, `core/views.mjs`. Ya existe el precedente: `index.html:1220` importa `./instinct-ui.mjs`.
 - [ ] **Paso 3 · unificar el SQL de la UI en `AP.exec`/`AP.query`** — `APViews.render()` (`index.html:1139-1164`) hace ~15 `SELECT` inline; deben pasar por la superficie única con validación y auditoría.
 - [ ] **Paso 4 · loader de packs** — registro en el kernel, aislamiento y habilitación condicionada a migración y pruebas adjuntas. Hoy no existe: `runtime_enabled` es siempre `false` y nada lo importa en runtime.

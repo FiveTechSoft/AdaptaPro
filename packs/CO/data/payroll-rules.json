@@ -2,7 +2,7 @@
   "schema_version": 1,
   "country": "CO",
   "kind": "example",
-  "note": "Copia declarativa de las filas de payroll_rules que siembra APCompliance.migrate en index.html. Son valores orientativos de la demo con su fecha de verificacion; no liquidan, no pagan ni declaran. status=requires_review o unconfigured significa que falta revision juridica o parametrizacion.",
+  "note": "Copia declarativa de las filas de payroll_rules que siembra la migracion 0002_compliance.sql (antes APCompliance.migrate en index.html). Son valores orientativos de la demo con su fecha de verificacion; no liquidan, no pagan ni declaran. status=requires_review o unconfigured significa que falta revision juridica o parametrizacion.",
   "payload": {
     "currency": "COP",
     "rules": [

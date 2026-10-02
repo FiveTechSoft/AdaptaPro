@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "note": "Plan de migraciones de la base local (sql.js). Se aplican en orden, por n creciente, las entradas con n mayor que PRAGMA user_version, y el pragma sube al terminar cada una. data/schema.sql es la base (n=1) y no se reutiliza: cualquier cambio posterior entra como fichero nuevo numerado en data/migrations/. file es relativo a la raiz del sitio.",
+  "migrations": [
+    {
+      "n": 1,
+      "file": "data/schema.sql",
+      "note": "Esquema base de la demo"
+    },
+    {
+      "n": 2,
+      "file": "data/migrations/0002_compliance.sql",
+      "note": "Tablas y semillas declarativas de cumplimiento, subagentes, jurisdicciones, coste de mano de obra, reclutamiento y nomina"
+    }
+  ]
+}

@@ -195,6 +195,6 @@
   <path d="M465,505 L512,505 L512,996 L1645,996 L1645,968" fill="none" stroke="#d99a2b" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#arA)"/>
   <text class="lbl" x="1080" y="988" text-anchor="middle" fill="#e8b45a">CI valida el pack antes de que entre en el registro</text>
 
-  <text class="foot" x="60" y="1032">Estado actual → objetivo · paso 1: versionado de esquema y migraciones numeradas. Siguiente: extraer AP de index.html a módulos ES, unificar el SQL de la UI en AP.exec y añadir el loader de packs.</text>
+  <text class="foot" x="60" y="1032">Estado actual → objetivo · hechos: esquema versionado, AP en módulos ES y SQL unificado en AP.query/AP.exec con validación y auditoría. Siguiente: loader de packs y CI completa.</text>
   <text class="foot" x="60" y="1056">Los límites de AGENTS.md no cambian: supervisado deja propuestas pendientes; autónomo puede aprobar propuestas locales con auditoría, pero no emite compras ni recibe mercancía.</text>
 </svg>

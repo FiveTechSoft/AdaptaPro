@@ -147,7 +147,7 @@ Nada de esto se implementó ni se desplegó con este documento.
 ## Fuentes de código
 
 - [index.html](../index.html): `AP` (delegando en los módulos), `APAgentCenter`, `APCompliance`, `APNotices`.
-- [core/index.mjs](../core/index.mjs): núcleo en módulos ES — `data.mjs` (`APData`), `policy.mjs` (`APPolicy`), `commands.mjs` (`APCommands`), `views.mjs` (`APViews`).
+- [core/index.mjs](../core/index.mjs): núcleo en módulos ES — `data.mjs` (`APData`, con la superficie SQL validada `AP.query`/`AP.exec` y `tx()`), `policy.mjs` (`APPolicy`), `commands.mjs` (`APCommands`), `views.mjs` (`APViews`).
 - [schema.sql](../data/schema.sql): tablas, restricciones y `stock_status`.
 - [demo.json](../data/seed/demo.json): semilla ficticia julio de 2030.
 - [Gmail UI](../instinct-ui.mjs), [contrato Gmail](../instinct-gmail.mjs).

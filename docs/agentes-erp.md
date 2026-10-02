@@ -127,7 +127,7 @@ Además: `node instinct-gmail-test.mjs` (27 fixtures), `node cloudflare/worker.t
 ### Evidencia y reproducción
 
 - [Resultados detallados](evidencia-agentes/resultados-agentes.json)
-- [Ensayo reproducible](../scripts/test-agents.cjs): necesita Node, Google Chrome y `npm install --no-save playwright sql.js@1.13.0 chart.js@4.4.8` en la raíz. Ejecutar `node scripts/test-agents.cjs`. Solo usa 127.0.0.1; aborta red externa y simula modelo.
+- [Ensayo reproducible](../scripts/test-agents.cjs): necesita Node, Google Chrome (o la variable `CHROME_BIN`) y `npm install --no-save playwright sql.js@1.13.0 chart.js@4.4.8` en la raíz. Ejecutar `node scripts/test-agents.cjs`. Solo usa 127.0.0.1; aborta red externa y simula modelo. El workflow `.github/workflows/erp-tests.yml` lo ejecuta en cada PR y push junto con `cloudflare/worker.test.mjs` y sube capturas y `resultados-agentes.json` como artefacto; espera a que `user_version` y la auditoría indiquen que migraciones y siembra terminaron antes de la primera aserción.
 - [Agentes / auditoría local](evidencia-agentes/3-agentes.png)
 - [Subagentes jurídicos](evidencia-agentes/4-juridicos.png)
 - [RRHH](evidencia-agentes/5-rrhh.png)

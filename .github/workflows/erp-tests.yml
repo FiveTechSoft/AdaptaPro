@@ -1,0 +1,41 @@
+name: Pruebas del ERP (worker y agentes)
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  worker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fixtures del worker (sin red ni correo)
+        run: node cloudflare/worker.test.mjs
+  agents:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CHROME_BIN: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Dependencias de prueba (las mismas que docs/agentes-erp.md)
+        run: npm install --no-save playwright sql.js@1.13.0 chart.js@4.4.8
+      - name: Suite de agentes (17 casos, modelo simulado, red externa bloqueada)
+        run: node scripts/test-agents.cjs
+      - name: Subir evidencia
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidencia-agentes
+          path: |
+            evidencia-*.png
+            resultados-agentes.json
+          if-no-files-found: ignore

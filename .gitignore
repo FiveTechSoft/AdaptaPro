@@ -1,0 +1,7 @@
+# Dependencias de pruebas instaladas en la raiz (npm install --no-save)
+node_modules/
+package-lock.json
+
+# Salidas de scripts/test-agents.cjs en la raiz (la evidencia versionada vive en docs/evidencia-agentes/)
+/evidencia-*.png
+/resultados-agentes.json

@@ -1,6 +1,6 @@
 # CI del lado ERP: diseño y estado
 
-Estado: ESQUELETO, no operativo end-to-end. Se conserva la UI manual actual. El workflow `ERP mail CI - offline dry-run skeleton` solo valida el contrato local; no consulta Gmail, no lee secretos, no envía correo y no tiene schedule. No sustituye la prueba real ni elimina hoy el OAuth del navegador.
+Estado: ESQUELETO, no operativo end-to-end. Se conserva la UI manual actual. El workflow `ERP mail CI - offline dry-run skeleton` se eliminó el 2 de octubre de 2026 (commit `5335808`); la comprobación que ejecutaba sigue disponible como script local `python3 scripts/ci_erp_preflight.py`. La CI actual del repo son `packs.yml` (validador de packs) y `erp-tests.yml` (worker y agentes), y ninguno de los dos consulta Gmail, lee secretos, envía correo ni tiene schedule. No sustituye la prueba real ni elimina hoy el OAuth del navegador.
 
 ## Flujo propuesto
 
@@ -37,7 +37,7 @@ El gateway deberá ofrecer claim exclusivo por ID, lease y estados prepared/clai
 
 ## Prueba
 
-Hoy: ejecutar `python3 scripts/ci_erp_preflight.py` localmente, o lanzar manualmente el workflow. Esperado: `prepared-not-operational`, network/send false y lista de prerequisitos. Un workflow rojo por billing no es una prueba fallida del correo.
+Hoy: ejecutar `python3 scripts/ci_erp_preflight.py` localmente (el workflow manual que lo lanzaba se eliminó el 2 de octubre de 2026). Esperado: `prepared-not-operational`, network/send false y lista de prerequisitos. Un workflow rojo por billing no es una prueba fallida del correo.
 
 Después de implementar prerrequisitos: mantener dry-run de red sin envíos; verificar cuenta OAuth real y leer solo jobs de prueba. Aprobar mensaje/destino/scope, enviar un turno real, comprobar recepción en Instinct, responder por canal autorizado, recoger respuesta correlacionada y mostrarla al abrir ERP. Medir timestamps reales. Probar rechazo de remitente/route/nonce erróneos, expiración, headers falsificados, duplicado, OAuth revocado, timeout ambiguo y pestaña cerrada. No declarar end-to-end hasta readback real.
 

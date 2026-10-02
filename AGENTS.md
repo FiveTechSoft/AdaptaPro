@@ -4,7 +4,11 @@ Lee este archivo y `CONTRIBUTING.md` antes de modificar el repositorio. Objetivo
 
 ## Estado real del producto
 
-La demo se sirve desde `index.html` en GitHub Pages. SQLite (sql.js) vive en el navegador y se persiste en IndexedDB; `data/schema.sql` y `data/seed/demo.json` crean datos ficticios. No hay backend multiusuario ni permisos, despliegue de packs ni pagos reales. El selector jurídico existente ofrece CO y VE; la nómina Colombia y la jerarquía de normas son una demostración que requiere revisión profesional. Los nuevos archivos de `packs/` son **contratos y ejemplos de diseño**, no se cargan automáticamente en la aplicación. No vendas una adaptación como operativa por el mero hecho de añadir un JSON.
+La demo se sirve desde `index.html` en GitHub Pages. SQLite (sql.js) vive en el navegador y se persiste en IndexedDB; `data/schema.sql` y `data/seed/demo.json` crean datos ficticios. No hay backend multiusuario ni permisos, despliegue de packs ni pagos reales. El selector jurídico existente ofrece CO y VE; la nómina Colombia y la jerarquía de normas son una demostración que requiere revisión profesional. Los nuevos archivos de `packs/` son **contratos y ejemplos de diseño**: el núcleo solo lee `packs/index.json` para registrarlos y calcular la puerta de habilitación (`APPacks.gate()`), nunca carga sus datos ni migraciones. No vendas una adaptación como operativa por el mero hecho de añadir un JSON.
+
+## Superficie SQL del núcleo
+
+`AP.query` solo admite `SELECT`/`WITH` de una sentencia parametrizada; `AP.exec` solo admite `INSERT`/`UPDATE`/`DELETE`, corre en `tx()` y exige `actor` y `action` para auditar (`audit:false` solo en escrituras intermedias). `AP.db.run` queda para el kernel: semilla, migraciones y `PRAGMA`.
 
 ## Límites que no se negocian
 

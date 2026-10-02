@@ -5,7 +5,8 @@ de este archivo sustituye revision juridica local ni auditoria de seguridad.
 
 ## Alcance de lo que se puede probar hoy
 
-El nucleo (`index.html`, `data/schema.sql`, `data/seed/demo.json`) no importa `packs/`.
+El nucleo importa unico y exclusivamente `packs/index.json` (registro en `core/packs.mjs`
+y puerta `APPacks.gate()`), nunca los datos, idiomas ni migraciones del pack.
 Por tanto las pruebas 1-3 son las unicas que este pack puede afectar, y 4-6 documentan el
 estado del nucleo tal cual, para que un fork tenga la lista completa.
 

@@ -1,6 +1,6 @@
 # ROADMAP: agentes FiveTech con Instinct
 
-Actualizado: 1 octubre 2026. Plan aprobado: ALPHA/BETA/GAMMA del ERP ↔ email firmado ↔ Instinct como cerebro. No confundir este transporte de aplicación con una API pública oficial ni con el relay de pruebas local.
+Actualizado: 2 octubre 2026. Plan aprobado: ALPHA/BETA/GAMMA del ERP ↔ email firmado ↔ Instinct como cerebro. No confundir este transporte de aplicación con una API pública oficial ni con el relay de pruebas local.
 
 ## Transición: del monolito a un core extensible
 
@@ -23,6 +23,10 @@ Actualizado: 1 octubre 2026. Plan aprobado: ALPHA/BETA/GAMMA del ERP ↔ email f
 - [x] **Paso 5 · CI completa** — hecho el 2 de octubre de 2026, con esta base: (1) `cloudflare/worker.test.mjs` ya pasaba local sin red (**17 PASS**: validadores de consulta y respuesta, cola con fixtures, envío único) y no depende de nada externo, así que corre en un job de Node puro; (2) `scripts/test-agents.cjs` (17 casos) exige las dependencias que documenta `docs/agentes-erp.md` (`npm install --no-save playwright sql.js@1.13.0 chart.js@4.4.8`) y un Chrome, que en el runner es `/usr/bin/google-chrome` — por eso el script acepta ahora `CHROME_BIN` en vez de ruta fija (hoy también se puede ejecutar en Windows). Workflow nuevo `.github/workflows/erp-tests.yml` con dos jobs en cada PR y push a `main` (mismos triggers que `packs.yml`): *worker* (Node 22, segundos) y *agentes* (instala las tres dependencias, `CHROME_BIN`, sube `evidencia-*.png` y `resultados-agentes.json` como artefacto). `.gitignore` nuevo evita commitear `node_modules/` y las salidas de la raíz (la evidencia versionada sigue en `docs/evidencia-agentes/`). Hallazgo corregido de camino: la condición de espera del script (`AP?.db`) se cumplía antes de terminar migraciones y siembra, y hacía fallar 5 de 17 casos por «no such table»; ahora espera `user_version === 2` y `audit_log` con filas, el mismo criterio de las pruebas locales. Verificado local: **17/17 dos veces** (contador propio = casos `test()` = 17) y worker 17 PASS; verificado en CI tras el push.
 
 **Reglas que no cambian durante la transición:** ningún pack se salta cola, auditoría o confirmaciones; el modo Supervisado sigue dejando propuestas pendientes; Autónomo no compra ni recibe; los límites de `AGENTS.md` sobre núcleo y packs siguen vigentes. El kernel se cambia en un PR aparte, con responsable del núcleo.
+
+## Mejora de la web: dependencias críticas autoalojadas
+
+2 de octubre de 2026. `sql.js` 1.13.0 (`sql-wasm.js` 48.788 B + `sql-wasm.wasm` 659.806 B) y `chart.js` 4.4.8 (`chart.umd.js` 206.279 B) pasan de CDN externo (jsdelivr y cdnjs, sin `integrity`) a `vendor/` servido con el propio origen. Base del cambio: `initSqlJs` es imprescindible para arrancar `init()`, así que un CDN caído o bloqueado dejaba la demo sin ERP; además CI instalaba chart.js 4.4.8 desde `node_modules` mientras Pages servía 4.4.1, y ahora producción usa exactamente el fichero que prueba CI. Los tres ficheros se copiaron de `node_modules` con SHA-256 idéntico al origen y `locateFile` quedó relativo (`vendor/sql.js/1.13.0/`); `scripts/test-agents.cjs` y los harness locales sirven `.wasm` con `application/wasm`. Verificado: suites locales 23/23, 13/13 y 17/17; cero referencias a CDN por dos métodos (`git grep` y script Python con `locateFile_cdn=0`); en Pages el wasm responde 200 con `application/wasm` y 659.806 B, y las suites 6/6, 6/6 y 14/14 pasan sin errores de página. Siguen externos por no ser críticos (degradan sin bloquear el arranque): los widgets de TradingView, YouTube e identidad de Google y la fuente Inter de Google Fonts.
 
 ## Prueba manual temporal
 

@@ -79,6 +79,17 @@ El usuario dispara el cribado en Currícula. Avanzar un perfil exige botón y co
 
 **Ejemplo probado:** texto "Profesional excelente" devuelve 0/80 y `needs_evidence`; "Coordiné equipo, aprendí y entregué un proyecto" devuelve 80/80 y `review`. La puntuación mide coincidencias textuales, no mérito ni compatibilidad cultural. Un proceso real requeriría criterios aprobados, consentimiento, protección de datos y evaluación de sesgo.
 
+## Motor automático: encendido y apagado
+
+El botón **🤖 Agentes** de la cabecera detiene o reanuda el ciclo automático de 30 segundos (`AP.cycle()`), que es la única vía que llama al modelo sin que nadie escriba. Con el motor detenido no hay llamadas automáticas ni eventos BETA nuevos; el chat, el botón "Analizar" y los botones de vista siguen funcionando porque son acciones explícitas del usuario.
+
+- Estado en `AP.agentsOn`, guardado en `localStorage` con la clave `adaptapro-agents` (`on`/`off`); si la clave no existe el motor arranca activo.
+- Al detener se limpia `AP.cycleTimer`, el botón pasa a **⏸ Agentes** con `aria-pressed="false"` y el texto del motor queda en "Motor de agentes detenido · sin consumo automático".
+- Al reactivar, `startCycle()` vuelve a crear el temporizador con `cycleIntervalMs` (30 000 ms) y restaura el texto de actividad.
+- `cycle()` también sale antes de tocar datos si la pestaña está oculta o si hay otro ciclo o chat en marcha.
+
+**Verificación (2 octubre 2026):** con el motor detenido, 30 segundos con la pestaña visible produjeron 0 llamadas al modelo y 0 filas nuevas en `audit_log`; el estado sobrevive a la recarga y se reactiva con un clic. Servida desde GitHub Pages, la misma comprobación dio idéntico resultado.
+
 ## Puentes: transporte alternativo, no agentes adicionales
 
 `instinct-ui.mjs` y `instinct-central-ui.mjs` pueden sustituir `AP.ask()` al habilitar explícitamente un puente y paran el ciclo. Permiten seleccionar ALPHA/BETA/GAMMA como etiqueta del turno. Reciben respuestas como texto inerte; no ejecutan `proponer_reposicion` desde el correo.

@@ -52,7 +52,7 @@ En **Authorized JavaScript origins**, añade exactamente:
 https://fivetechsoft.github.io
 ```
 
-Es un origen, no una página. No añadas `/AdaptaPro/`, ruta, query ni barra final. Para pruebas locales se pueden añadir aparte `http://localhost` y `http://localhost:PUERTO` que realmente se vaya a usar.
+Es un origen, no una página. No añadas `/Core/`, ruta, query ni barra final. Para pruebas locales se pueden añadir aparte `http://localhost` y `http://localhost:PUERTO` que realmente se vaya a usar.
 
 Esta implementación usa Google Identity Services con token y popup. No inventes una redirect URI ni pongas un Client Secret en el navegador. Un Client Secret solo pertenece a flujos del lado servidor.
 
@@ -64,7 +64,7 @@ No copies ni compartas **Client Secret**, una contraseña, token o JSON de crede
 
 ## 7. Autorizar desde FiveTech
 
-Abre https://fivetechsoft.github.io/AdaptaPro/ y pulsa **Instinct · Gmail**.
+Abre https://fivetechsoft.github.io/Core/ y pulsa **Instinct · Gmail**.
 
 1. Pega el Client ID en su campo.
 2. Confirma **Buzón ERP**: `fivetech2@gmail.com`.

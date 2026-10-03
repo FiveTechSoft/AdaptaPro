@@ -30,7 +30,7 @@ jobs:
         run: npm install --no-save playwright sql.js@1.13.0 chart.js@4.4.8
       - name: Suite de agentes (23 casos, modelo simulado, red externa bloqueada)
         run: node scripts/test-agents.cjs
-      - name: Suite de nucleo y chat local (27 casos, stub del modelo)
+      - name: Suite de nucleo y chat local (29 casos, stub del modelo)
         run: node scripts/test-core.mjs
       - name: Suite de migraciones en navegador (13 casos)
         run: node scripts/test-migrations.mjs

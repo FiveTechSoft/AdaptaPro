@@ -128,7 +128,7 @@ Además: `node instinct-gmail-test.mjs` (27 fixtures), `node cloudflare/worker.t
 
 - [Resultados detallados](evidencia-agentes/resultados-agentes.json)
 - [Ensayo reproducible](../scripts/test-agents.cjs): necesita Node, Google Chrome (o la variable `CHROME_BIN`) y `npm install --no-save playwright sql.js@1.13.0 chart.js@4.4.8` en la raíz. Ejecutar `node scripts/test-agents.cjs`. Solo usa 127.0.0.1; aborta red externa y simula modelo. El workflow `.github/workflows/erp-tests.yml` lo ejecuta en cada PR y push junto con `cloudflare/worker.test.mjs` y sube capturas y `resultados-agentes.json` como artefacto; espera a que `user_version` y la auditoría indiquen que migraciones y siembra terminaron antes de la primera aserción.
-- [Suite de núcleo y chat local](../scripts/test-core.mjs) (27 casos: superficie `query`/`exec`, propuestas, decisiones, escrituras de UI, chat con modelo simulado, meta description y comprobaciones de móvil a 390×844) y [suite de migraciones en navegador](../scripts/test-migrations.mjs) (13 casos: primera carga, plan de migraciones, vistas, recarga y restablecimiento). Misma base de dependencias; servidor en puerto efímero, red externa abortada y motor de eventos detenido para que ninguna llamada real dependa de la red. El mismo workflow las ejecuta tras la suite de agentes.
+- [Suite de núcleo y chat local](../scripts/test-core.mjs) (29 casos: superficie `query`/`exec`, propuestas, decisiones, doble recepción y desempate de proveedores, escrituras de UI, chat con modelo simulado, meta description y comprobaciones de móvil a 390×844) y [suite de migraciones en navegador](../scripts/test-migrations.mjs) (13 casos: primera carga, plan de migraciones, vistas, recarga y restablecimiento). Misma base de dependencias; servidor en puerto efímero, red externa abortada y motor de eventos detenido para que ninguna llamada real dependa de la red. El mismo workflow las ejecuta tras la suite de agentes.
 - [Agentes / auditoría local](evidencia-agentes/3-agentes.png)
 - [Subagentes jurídicos](evidencia-agentes/4-juridicos.png)
 - [RRHH](evidencia-agentes/5-rrhh.png)
@@ -140,10 +140,10 @@ Las capturas muestran datos de fixture, no operaciones reales. Los detalles son 
 1. Separar prompts y contextos ALPHA/BETA/GAMMA; hoy los rótulos de botones sugieren separación que no existe.
 2. Incluir contexto de proveedores/producción/planificación cuando la pregunta lo requiera. No atribuir al chat datos que no recibe.
 3. Reservar stock por pedido y enlazar cantidad demandada con reposición. Hoy BETA no cambia reservas.
-4. Añadir casos de desempate de proveedores, recepción manual/doble recepción, reset y formulario de avance RRHH a la cobertura automatizada. No fueron ensayados en esta batería.
+4. Casos de desempate de proveedores y doble recepción añadidos a `scripts/test-core.mjs` el 3 de octubre de 2026; recepción manual, avance de RRHH y reset ya estaban cubiertos en `test-core.mjs`/`test-migrations.mjs`. Con ello este punto queda cerrado.
 5. Mantener jurídicos como diseño hasta contar con reglas, fuentes actuales y revisión profesional. No activar cálculos por completar fichas.
 
-Nada de esto se implementó ni se desplegó con este documento.
+Nada de esto se implementó ni se desplegó con este documento, salvo el punto 4 (cobertura de tests), que se añadió después.
 
 ## Fuentes de código
 

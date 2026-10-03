@@ -138,6 +138,37 @@ const afterRecv = await page.evaluate((x) => ({
 }), { id: prop.last.id, sku: beforeRecv.sku });
 ck('receive registra recepción con AP.exec y audita', afterRecv.on_hand === beforeRecv.on_hand + beforeRecv.qty && afterRecv.a === beforeRecv.a + 1 && afterRecv.moves === 1 && !String(rres).startsWith('ERROR'), JSON.stringify({ beforeRecv, afterRecv, rres }));
 
+const recv2P = page.evaluate((id) => AP.receive(id), prop.last.id).catch((e) => 'ERROR: ' + e.message);
+await page.waitForSelector('#ap-decision-form', { timeout: 15000 });
+await page.fill('#ap-actor', 'TEST');
+await page.click('#ap-decision-form button[type=submit]');
+const rres2 = await recv2P;
+const dbl = await page.evaluate((x) => ({
+  note: document.getElementById('ap-state').textContent,
+  on_hand: AP.one('SELECT on_hand FROM inventory WHERE sku=?', [x.sku]).on_hand,
+  moves: AP.one('SELECT count(*) n FROM stock_movements WHERE proposal_id=?', [x.id]).n,
+  a: AP.one("SELECT count(*) n FROM audit_log WHERE action='recepcion_registrada'").n,
+}), { id: prop.last.id, sku: beforeRecv.sku });
+ck('doble recepción rechazada sin tocar stock, movimientos ni auditoría', dbl.note === 'Recepción ya registrada' && dbl.on_hand === afterRecv.on_hand && dbl.moves === 1 && dbl.a === afterRecv.a, JSON.stringify({ rres2, dbl }));
+
+const tie = await page.evaluate(async () => {
+  const sku = 'SKU-TIE-DESEMPATE';
+  const now = new Date().toISOString();
+  AP.exec({ sql: 'INSERT INTO products VALUES(?,?,?,?,?,?,?,?)', args: [sku, 'Producto de desempate', 'Demo', 'ud', 1000, 10, 50, 1], actor: 'TEST', action: 'fixture_desempate', entity: 'product', id: sku, detail: { sku } });
+  AP.exec({ sql: 'INSERT INTO inventory VALUES(?,?,?,?)', args: [sku, 0, 0, now], audit: false });
+  AP.exec({ sql: 'INSERT INTO suppliers VALUES(?,?,?,?,?,?)', args: ['SUP-TIE-A', 'Tie A', 'CO', null, 7, 1], audit: false });
+  AP.exec({ sql: 'INSERT INTO suppliers VALUES(?,?,?,?,?,?)', args: ['SUP-TIE-B', 'Tie B', 'CO', null, 7, 1], audit: false });
+  AP.exec({ sql: 'INSERT INTO supplier_products VALUES(?,?,?,?)', args: ['SUP-TIE-A', sku, 900, 1], audit: false });
+  AP.exec({ sql: 'INSERT INTO supplier_products VALUES(?,?,?,?)', args: ['SUP-TIE-B', sku, 600, 1], audit: false });
+  const msg = await AP.propose({ sku });
+  const p = AP.one('SELECT supplier_id,unit_cost_cents FROM purchase_proposals WHERE sku=? ORDER BY rowid DESC LIMIT 1', [sku]);
+  const aud = AP.one("SELECT entity_id,details_json FROM audit_log WHERE action='proveedor_seleccionado' ORDER BY rowid DESC LIMIT 1");
+  let d = aud && aud.details_json;
+  if (typeof d === 'string') { try { d = JSON.parse(d); } catch { d = null; } }
+  return { msg: String(msg).slice(0, 80), p, d, entity: aud && aud.entity_id };
+});
+ck('desempate: mismo plazo, gana el menor coste', !!(tie.p && tie.p.supplier_id === 'SUP-TIE-B' && tie.p.unit_cost_cents === 600 && tie.d && tie.d.unit_cost_cents === 600 && tie.entity === 'SUP-TIE-B'), JSON.stringify(tie));
+
 await page.evaluate(() => APViews.show(17));
 const aCost = await page.evaluate(() => AP.one("SELECT count(*) n FROM audit_log WHERE action='costo_registrado'").n);
 await page.fill('#ap-cost-form [name=period]', '2026-01');

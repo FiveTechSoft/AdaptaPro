@@ -37,4 +37,4 @@ La demo muestra paneles, agentes ALPHA/BETA/GAMMA, cola de aprobaciones con audi
 
 **Próximo paso comercial:** piloto con un proveedor y un solo caso de uso verificable; acordar jurisdicción, responsable local, criterios de aceptación, datos ficticios para la demo y plan de mantenimiento. Medir tiempo de adaptación y coste de mantener el fork sincronizado. No ofrecer «cumplimiento automático» antes de pruebas y dictamen local.
 
-Repositorio: https://github.com/FiveTechSoft/AdaptaPro · Demo: https://fivetechsoft.github.io/AdaptaPro/
+Repositorio: https://github.com/FiveTechSoft/Core · Demo: https://fivetechsoft.github.io/Core/

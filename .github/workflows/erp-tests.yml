@@ -1,4 +1,4 @@
-name: Pruebas del ERP (worker y agentes)
+name: Pruebas del ERP (worker, agentes, nucleo y migraciones)
 on:
   pull_request:
   push:

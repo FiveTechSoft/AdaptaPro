@@ -1,6 +1,8 @@
-# FiveTech
+# Core
 
-**FiveTech: ERP Agéntico y Autónomo, con supervisión humana.**
+**Core: el núcleo de un ERP Agéntico y Autónomo, con supervisión humana.**
+
+> **Core** es el núcleo de un ERP Agéntico: la base estable sobre la que trabajan los agentes de IA, y a la que se añaden módulos y packs por país. Lo desarrolla FiveTech.
 
 ## El concepto
 

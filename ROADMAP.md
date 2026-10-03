@@ -1,4 +1,4 @@
-# ROADMAP: agentes FiveTech con Instinct
+# ROADMAP: agentes Core con Instinct
 
 Actualizado: 2 octubre 2026. Plan aprobado: ALPHA/BETA/GAMMA del ERP ↔ chat con opencode (Mimo 2.6 Flash Free) como cerebro. Decisión del 2 de octubre de 2026: **no se usa transporte de email de Instinct**; los agentes solo conversan por chat dentro del ERP (`AP.ask` → proxy → opencode) y esa vía está verificada en Pages con el modelo real (14/14 y 6/6). El diseño de email firmado documentado más abajo queda como material histórico no ejercitado, no como trabajo pendiente.
 

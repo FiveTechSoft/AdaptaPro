@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FiveTech ERP | Operaciones Inteligentes 2030</title>
-<meta name="description" content="FiveTech ERP: demo local de operaciones con agentes ALPHA, BETA y GAMMA, cumplimiento por país y datos ficticios en SQLite.">
-<meta property="og:title" content="FiveTech ERP | Operaciones Inteligentes 2030">
+<title>Core, el núcleo de un ERP Agéntico | Operaciones Inteligentes 2030</title>
+<meta name="description" content="Core, el núcleo de un ERP Agéntico: demo local de operaciones con agentes ALPHA, BETA y GAMMA, cumplimiento por país y datos ficticios en SQLite.">
+<meta property="og:title" content="Core, el núcleo de un ERP Agéntico | Operaciones Inteligentes 2030">
 <meta property="og:description" content="Demo local con agentes de inventario, pedidos y proveedores; datos ficticios solo en tu navegador.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://fivetechsoft.github.io/Core/">
@@ -628,7 +628,7 @@
       <button type="button" class="ap-menu-close" id="ap-menu-close" aria-label="Cerrar menú de secciones">Cerrar ✕</button>
       <div class="logo">
         <div class="logo-icon">IA</div>
-        <div class="logo-text">FiveTech</div>
+        <div class="logo-text">Core<small style="display:block;font-size:10px;font-weight:400;opacity:.7;line-height:1.2">Núcleo de un ERP Agéntico</small></div>
       </div>
       <button type="button" class="nav-item active" data-view="0"><span class="icon">📊</span> Dashboard</button>
       <button type="button" class="nav-item" data-view="1"><span class="icon">💰</span> Finanzas</button>
@@ -763,7 +763,7 @@
   <!-- CHAT WINDOW MOVIBLE -->
   <div class="chat-window" id="chatWindow" hidden>
     <div class="chat-header" id="chatHeader">
-      <h4>💬 CHAT CON FIVETECH IA</h4>
+      <h4>💬 CHAT CON CORE IA</h4>
       <button type="button" class="close" onclick="AP.closeChat()" aria-label="Cerrar chat">✕</button>
     </div>
     <div class="ap-tabs"><button id="ap-tab-chat">Chat</button><button id="ap-tab-supervision">Supervisión <span id="ap-pending">0</span></button></div>
@@ -785,7 +785,7 @@
   </div>
 
   <div id="ap-headlines" class="ap-headlines"><span class="ap-headlines-label">EN PORTADA</span><div class="ap-headlines-clip"><div id="ap-headlines-text"></div></div></div>
-  <div id="ap-tv" class="ap-tv" hidden><div class="ap-tv-top"><div><span class="ap-live-dot"></span> FIVETECH · EN DIRECTO <small>OPERACIONES INTELIGENTES</small></div><time id="ap-tv-clock"></time><button id="ap-tv-close" aria-label="Salir del modo TV">Salir ✕</button></div><div class="ap-tv-stage"><div class="ap-tv-head"><small id="ap-tv-kicker">INTELIGENCIA DE OPERACIONES</small><h1 id="ap-tv-title">El negocio, en movimiento</h1><p id="ap-tv-subtitle"></p></div><div id="ap-tv-viz" class="ap-tv-viz"><svg viewBox="0 0 900 330" aria-label="Flujo de agentes entre ventas, inventario y suministro" role="img"><defs><linearGradient id="ap-tv-line"><stop stop-color="#318ffb"/><stop offset=".5" stop-color="#a967ed"/><stop offset="1" stop-color="#39d8c2"/></linearGradient></defs><path d="M130 165 Q350 10 450 165 Q550 320 770 165" fill="none" stroke="url(#ap-tv-line)" stroke-width="3" stroke-dasharray="10 8" class="ap-tv-path"/><circle cx="130" cy="165" r="64" class="ap-tv-node"/><circle cx="450" cy="165" r="64" class="ap-tv-node"/><circle cx="770" cy="165" r="64" class="ap-tv-node"/><text x="130" y="157" text-anchor="middle">BETA</text><text x="450" y="157" text-anchor="middle">ALPHA</text><text x="770" y="157" text-anchor="middle">GAMMA</text><text x="130" y="184" text-anchor="middle" class="ap-tv-node-sub">VENTAS</text><text x="450" y="184" text-anchor="middle" class="ap-tv-node-sub">INVENTARIO</text><text x="770" y="184" text-anchor="middle" class="ap-tv-node-sub">SUMINISTRO</text><circle r="9" fill="#e4f8ff" class="ap-tv-pulse"><animateMotion dur="5s" repeatCount="indefinite" path="M130 165 Q350 10 450 165 Q550 320 770 165"/></circle></svg></div><div id="ap-tv-cards" class="ap-tv-cards"></div></div><div id="ap-tv-lower" class="ap-tv-lower"><span class="ap-tv-live">● EN VIVO</span><strong id="ap-tv-story"></strong><small>FIVETECH · DATOS LOCALES</small></div></div>
+  <div id="ap-tv" class="ap-tv" hidden><div class="ap-tv-top"><div><span class="ap-live-dot"></span> CORE · EN DIRECTO <small>OPERACIONES INTELIGENTES</small></div><time id="ap-tv-clock"></time><button id="ap-tv-close" aria-label="Salir del modo TV">Salir ✕</button></div><div class="ap-tv-stage"><div class="ap-tv-head"><small id="ap-tv-kicker">INTELIGENCIA DE OPERACIONES</small><h1 id="ap-tv-title">El negocio, en movimiento</h1><p id="ap-tv-subtitle"></p></div><div id="ap-tv-viz" class="ap-tv-viz"><svg viewBox="0 0 900 330" aria-label="Flujo de agentes entre ventas, inventario y suministro" role="img"><defs><linearGradient id="ap-tv-line"><stop stop-color="#318ffb"/><stop offset=".5" stop-color="#a967ed"/><stop offset="1" stop-color="#39d8c2"/></linearGradient></defs><path d="M130 165 Q350 10 450 165 Q550 320 770 165" fill="none" stroke="url(#ap-tv-line)" stroke-width="3" stroke-dasharray="10 8" class="ap-tv-path"/><circle cx="130" cy="165" r="64" class="ap-tv-node"/><circle cx="450" cy="165" r="64" class="ap-tv-node"/><circle cx="770" cy="165" r="64" class="ap-tv-node"/><text x="130" y="157" text-anchor="middle">BETA</text><text x="450" y="157" text-anchor="middle">ALPHA</text><text x="770" y="157" text-anchor="middle">GAMMA</text><text x="130" y="184" text-anchor="middle" class="ap-tv-node-sub">VENTAS</text><text x="450" y="184" text-anchor="middle" class="ap-tv-node-sub">INVENTARIO</text><text x="770" y="184" text-anchor="middle" class="ap-tv-node-sub">SUMINISTRO</text><circle r="9" fill="#e4f8ff" class="ap-tv-pulse"><animateMotion dur="5s" repeatCount="indefinite" path="M130 165 Q350 10 450 165 Q550 320 770 165"/></circle></svg></div><div id="ap-tv-cards" class="ap-tv-cards"></div></div><div id="ap-tv-lower" class="ap-tv-lower"><span class="ap-tv-live">● EN VIVO</span><strong id="ap-tv-story"></strong><small>FIVETECH · DATOS LOCALES</small></div></div>
   <div id="ap-ticker" class="ap-ticker" hidden><div class="ap-ticker-label"><span class="ap-live-dot"></span> MERCADOS <small>Datos según disponibilidad de cada bolsa</small><time id="ap-broadcast-clock"></time></div><div class="ap-ticker-widget tradingview-widget-container"><div class="tradingview-widget-container__widget"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>{"symbols":[{"proName":"NASDAQ:AAPL","description":"Apple"},{"proName":"NASDAQ:MSFT","description":"Microsoft"},{"proName":"NASDAQ:NVDA","description":"Nvidia"},{"proName":"NASDAQ:AMZN","description":"Amazon"},{"proName":"NASDAQ:GOOGL","description":"Alphabet"},{"proName":"NASDAQ:TSLA","description":"Tesla"},{"proName":"FOREXCOM:SPXUSD","description":"S&P 500"}],"showSymbolLogo":true,"colorTheme":"dark","isTransparent":true,"displayMode":"adaptive","locale":"es"}</script></div><a href="https://www.tradingview.com/" target="_blank" rel="noopener noreferrer" class="ap-tv-credit">TradingView ↗</a></div>
   <div id="ap-dialog" class="ap-dialog" role="dialog" aria-modal="true" aria-label="Confirmar acción" hidden></div>
   <div id="ap-focus" class="ap-focus" hidden></div>

@@ -1,6 +1,6 @@
 # Contribuir como proveedor
 
-FiveTech recibe propuestas de proveedores de distintos países. Un fork permite probar sin tocar `main`; el PR permite devolver mejoras revisables al proyecto común. Esta guía no concede acceso automático al núcleo ni promete aceptar cualquier cambio.
+Core recibe propuestas de proveedores de distintos países. Un fork permite probar sin tocar `main`; el PR permite devolver mejoras revisables al proyecto común. Esta guía no concede acceso automático al núcleo ni promete aceptar cualquier cambio.
 
 1. Haz un fork de `FiveTechSoft/Core` y crea una rama por cambio. Sincroniza el fork con `main` antes del PR.
 2. Describe el problema local, país, cliente o escenario sin incluir datos personales, qué parte es común y qué parte es normativa o configuración local. Pide a tu agente que lea `AGENTS.md` y trabaje solo en la rama.

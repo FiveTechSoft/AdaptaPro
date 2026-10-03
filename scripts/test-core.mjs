@@ -261,6 +261,27 @@ const after = await page.evaluate(() => ({
 ck('el agente responde en el chat local (ask extraído)', replied && /RESPUESTA LOCAL STUB/.test(after.last || ''), JSON.stringify(after));
 ck('auditoría analisis_completado registrada', after.audit === audit0 + 1, `${audit0} -> ${after.audit}`);
 ck('sin llamadas reales al modelo con el stub', modelCalls.length === 0, String(modelCalls.length));
+await page.waitForFunction(() => !AP.busy, null, { timeout: 15000 });
+
+const sep = await page.evaluate(async () => {
+  const busy0 = AP.busy;
+  const caps = [];
+  AP.modelCall = async (messages, tools) => {
+    const user = messages[1].content;
+    const raw = (user.match(/Datos vigentes: (\{.*\})\nSolicitud:/) || [])[1] || '{}';
+    caps.push({ sys: messages[0].content, tools: !!tools, keys: Object.keys(JSON.parse(raw)), note: document.getElementById('ap-state').textContent });
+    return { content: 'STUB AGENTE ' + caps.length };
+  };
+  const ctx = { alpha: Object.keys(AP.context('ALPHA')), beta: Object.keys(AP.context('BETA')), gamma: Object.keys(AP.context('GAMMA')), def: Object.keys(AP.context()) };
+  await AP.ask('g1', true, 'GAMMA');
+  await AP.ask('b1', true, 'BETA');
+  await AP.ask('a1', true, 'ALPHA');
+  const aud = AP.query("SELECT actor FROM audit_log WHERE action='analisis_completado' ORDER BY rowid DESC LIMIT 3").map((r) => r.actor);
+  return { caps, ctx, aud, busy0 };
+});
+ck('contexto por agente: ALPHA y GAMMA ven proveedores, BETA no', sep.ctx.alpha.join(',') === 'stock,orders,proposals,providers' && sep.ctx.beta.join(',') === 'stock,orders,proposals' && sep.ctx.gamma.join(',') === 'stock,proposals,providers' && sep.ctx.def.join(',') === 'stock,orders,proposals', JSON.stringify(sep.ctx));
+ck('prompt, herramientas y auditoría separados por agente', !sep.busy0 && sep.caps.length === 3 && /Eres GAMMA/.test(sep.caps[0].sys) && !sep.caps[0].tools && /Analizando con GAMMA/.test(sep.caps[0].note) && sep.caps[0].keys.includes('providers') && /Eres BETA/.test(sep.caps[1].sys) && !sep.caps[1].tools && !sep.caps[1].keys.includes('providers') && /Eres ALPHA/.test(sep.caps[2].sys) && sep.caps[2].tools && sep.aud.join(',') === 'ALPHA,BETA,GAMMA', JSON.stringify({ busy0: sep.busy0, sys: sep.caps.map((c) => c.sys.slice(0, 11)), tools: sep.caps.map((c) => c.tools), aud: sep.aud }));
+
 const metaLen = await page.evaluate(() => { const m = document.querySelector('meta[name=description]'); return m ? m.content.length : 0; });
 ck('meta description presente en el head', metaLen > 40, String(metaLen));
 await page.evaluate(() => AP.closeChat());

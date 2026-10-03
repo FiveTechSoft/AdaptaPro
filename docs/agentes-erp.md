@@ -4,7 +4,7 @@ Revisión del código y prueba local: 1 de octubre de 2026. Base revisada: `main
 
 ## Resumen
 
-Hay tres nombres operativos: ALPHA, BETA y GAMMA. No son tres modelos independientes: ALPHA es el único chat que llama a un modelo; BETA genera pedidos demo con JavaScript y GAMMA selecciona proveedor con SQL dentro de la creación de propuestas. Además existen siete fichas jurídicas de diseño, una capa local de cumplimiento y un cribado RRHH por palabras clave. Ningún agente compra, paga, contrata, declara impuestos o gestiona envíos reales.
+Hay tres nombres operativos: ALPHA, BETA y GAMMA. No son tres modelos independientes: sigue existiendo un único chat y un único modelo, pero desde el 3 de octubre de 2026 cada botón rotulado envía con el prompt y el contexto propios de ese agente y la auditoría lo refleja; BETA genera pedidos demo con JavaScript y GAMMA selecciona proveedor con SQL dentro de la creación de propuestas. Además existen siete fichas jurídicas de diseño, una capa local de cumplimiento y un cribado RRHH por palabras clave. Ningún agente compra, paga, contrata, declara impuestos o gestiona envíos reales.
 
 | Componente | Implementado hoy | No implementado |
 | --- | --- | --- |
@@ -17,7 +17,7 @@ Hay tres nombres operativos: ALPHA, BETA y GAMMA. No son tres modelos independie
 
 ## ALPHA: inventario y propuestas
 
-- **Función exacta:** `AP.ask()` envía pregunta, modo y `AP.context()` al modelo. Si este pide `proponer_reposicion`, ejecuta `AP.propose()`. Acepta como máximo dos llamadas de herramienta por respuesta y hace una segunda consulta para redactar el resultado.
+- **Función exacta:** `AP.ask(texto, quiet, agente)` envía pregunta, modo y `AP.context(agente)` con el prompt `APCorePrompts` del agente (ALPHA: stock, pedidos, propuestas y proveedores; BETA: sin proveedores; GAMMA: sin pedidos). Solo ALPHA recibe la herramienta `proponer_reposicion`; si la usa, ejecuta `AP.propose()`. Acepta como máximo dos llamadas de herramienta por respuesta y hace una segunda consulta para redactar el resultado. Los envíos silenciosos del ciclo siguen siendo de ALPHA.
 - **Datos que lee:** `stock_status` (físico, reservado, disponible, umbral y objetivo), líneas de pedido con estado y región, propuestas con cantidad/motivo/estado. La herramienta lee también proveedores activos y catálogo de costes/mínimos. El contexto del chat normal NO incluye proveedores, personal, producción ni tareas. Que una vista muestre una tabla no significa que el modelo la reciba.
 - **Decisión que propone:** reposición de SKU con `available <= reorder_point`. Cantidad: `max(target_stock - available, min_order_qty)` del proveedor elegido. Crea propuesta y cola; no acepta una cantidad arbitraria del modelo.
 - **Disparadores:** chat, botón analizar, botones de vistas y ciclo local cuando un pedido demo afecta a SKU bajo umbral. En el ciclo, no vuelve a pedir modelo si existe propuesta pendiente/aprobada para ese SKU, y limita el inicio de análisis a una vez por minuto.
@@ -128,7 +128,7 @@ Además: `node instinct-gmail-test.mjs` (27 fixtures), `node cloudflare/worker.t
 
 - [Resultados detallados](evidencia-agentes/resultados-agentes.json)
 - [Ensayo reproducible](../scripts/test-agents.cjs): necesita Node, Google Chrome (o la variable `CHROME_BIN`) y `npm install --no-save playwright sql.js@1.13.0 chart.js@4.4.8` en la raíz. Ejecutar `node scripts/test-agents.cjs`. Solo usa 127.0.0.1; aborta red externa y simula modelo. El workflow `.github/workflows/erp-tests.yml` lo ejecuta en cada PR y push junto con `cloudflare/worker.test.mjs` y sube capturas y `resultados-agentes.json` como artefacto; espera a que `user_version` y la auditoría indiquen que migraciones y siembra terminaron antes de la primera aserción.
-- [Suite de núcleo y chat local](../scripts/test-core.mjs) (29 casos: superficie `query`/`exec`, propuestas, decisiones, doble recepción y desempate de proveedores, escrituras de UI, chat con modelo simulado, meta description y comprobaciones de móvil a 390×844) y [suite de migraciones en navegador](../scripts/test-migrations.mjs) (13 casos: primera carga, plan de migraciones, vistas, recarga y restablecimiento). Misma base de dependencias; servidor en puerto efímero, red externa abortada y motor de eventos detenido para que ninguna llamada real dependa de la red. El mismo workflow las ejecuta tras la suite de agentes.
+- [Suite de núcleo y chat local](../scripts/test-core.mjs) (31 casos: superficie `query`/`exec`, propuestas, decisiones, doble recepción y desempate de proveedores, escrituras de UI, chat con modelo simulado, prompts y contextos separados por agente, meta description y comprobaciones de móvil a 390×844) y [suite de migraciones en navegador](../scripts/test-migrations.mjs) (13 casos: primera carga, plan de migraciones, vistas, recarga y restablecimiento). Misma base de dependencias; servidor en puerto efímero, red externa abortada y motor de eventos detenido para que ninguna llamada real dependa de la red. El mismo workflow las ejecuta tras la suite de agentes.
 - [Agentes / auditoría local](evidencia-agentes/3-agentes.png)
 - [Subagentes jurídicos](evidencia-agentes/4-juridicos.png)
 - [RRHH](evidencia-agentes/5-rrhh.png)
@@ -137,13 +137,13 @@ Las capturas muestran datos de fixture, no operaciones reales. Los detalles son 
 
 ## Huecos y próximos cambios propuestos
 
-1. Separar prompts y contextos ALPHA/BETA/GAMMA; hoy los rótulos de botones sugieren separación que no existe.
-2. Incluir contexto de proveedores/producción/planificación cuando la pregunta lo requiera. No atribuir al chat datos que no recibe.
+1. Separar prompts y contextos ALPHA/BETA/GAMMA; hoy los rótulos de botones sugieren separación que no existe. Cerrado el 3 de octubre de 2026: prompts `APCorePrompts`, `AP.context(agente)`, herramienta solo para ALPHA y auditoría por agente (ver `scripts/test-core.mjs` y `scripts/test-agents.cjs`).
+2. Incluir contexto de proveedores/producción/planificación cuando la pregunta lo requiera. No atribuir al chat datos que no recibe. Parcial: desde el 3 de octubre de 2026 los proveedores entran en el contexto de ALPHA y GAMMA según la matriz del ROADMAP; producción y planificación siguen pendientes.
 3. Reservar stock por pedido y enlazar cantidad demandada con reposición. Hoy BETA no cambia reservas.
 4. Casos de desempate de proveedores y doble recepción añadidos a `scripts/test-core.mjs` el 3 de octubre de 2026; recepción manual, avance de RRHH y reset ya estaban cubiertos en `test-core.mjs`/`test-migrations.mjs`. Con ello este punto queda cerrado.
 5. Mantener jurídicos como diseño hasta contar con reglas, fuentes actuales y revisión profesional. No activar cálculos por completar fichas.
 
-Nada de esto se implementó ni se desplegó con este documento, salvo el punto 4 (cobertura de tests), que se añadió después.
+Nada de esto se implementó ni se desplegó con este documento, salvo el punto 4 (cobertura de tests), el punto 1 (separación de prompts/ contextos) y el matiz de proveedores del punto 2, que se añadieron después.
 
 ## Fuentes de código
 

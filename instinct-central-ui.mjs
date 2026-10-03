@@ -25,7 +25,7 @@ export function mountCentralUI(AP){
  }catch(e){pause();status(e.message);}};
  // Selecting the manual bridge pauses this one; no double sends.
  document.getElementById('ig-enabled')?.addEventListener('change',e=>{if(e.target.checked)pause();});
- AP.ask=async function(text,quiet=false){if(!enabled)return prior(text,quiet);if(quiet)return;try{
+ AP.ask=async function(text,quiet=false,...rest){if(!enabled)return prior(text,quiet,...rest);if(quiet)return;try{
   if(!el('ic-consent').checked)throw Error('Consentimiento retirado');if(!AP.db)throw Error('ERP no listo');
   const c=AP.context();const tables={stock:c.stock||[],orders:c.orders||[],proposals:c.proposals||[],suppliers:AP.rows('SELECT s.id,s.name,s.lead_days,sp.sku,sp.unit_cost_cents,sp.min_order_qty FROM suppliers s JOIN supplier_products sp ON sp.supplier_id=s.id WHERE s.active=1')};
   const fields={stock:['sku','on_hand','reserved','available','reorder_point','target_stock','needs_restock'],orders:['order_id','sku','quantity','status','region'],proposals:['id','sku','proposed_qty','status'],suppliers:['id','sku','name','lead_days','unit_cost_cents','min_order_qty']};

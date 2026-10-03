@@ -79,3 +79,12 @@ node scripts/test-agents.cjs      # 17 casos sobre la UI real (requiere npm inst
 ## Trabajo de los agentes y pruebas
 
 Consulta [funciones exactas, límites y verificación local](docs/agentes-erp.md). ALPHA usa el modelo; BETA y GAMMA son reglas locales. Los subagentes jurídicos son diseño, no ejecutores.
+
+
+## Nombre del repositorio y continuidad de datos
+
+El repositorio es [FiveTechSoft/Core](https://github.com/FiveTechSoft/Core). La demo está en https://fivetechsoft.github.io/Core/. GitHub Pages sigue publicando `main` desde la raíz; la antigua ruta `/AdaptaPro/` no redirige.
+
+Se mantienen las claves de IndexedDB y localStorage, los protocolos, el worker y las aplicaciones OAuth existentes. El origen sigue siendo `https://fivetechsoft.github.io`, por lo que cambiar la ruta no cambia el almacenamiento del navegador. No se han borrado ni reiniciado datos.
+
+Los enlaces del antiguo repositorio redirigen al nuevo. Para actualizar un clon local: `git remote set-url origin https://github.com/FiveTechSoft/Core.git`.

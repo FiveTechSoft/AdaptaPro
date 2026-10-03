@@ -48,6 +48,6 @@ Solo después de aprobación y tests: añadir schedule y habilitar worker. Actio
 - OAuth web-server y offline: https://developers.google.com/identity/protocols/oauth2/web-server
 - OAuth y expiración/revocación: https://developers.google.com/identity/protocols/oauth2
 - Triggers de Actions: https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows
-- Job bloqueado sin ejecutar: https://github.com/FiveTechSoft/AdaptaPro/actions/runs/36682216405
-- Pages desplegado: https://github.com/FiveTechSoft/AdaptaPro/actions/runs/36682216563
+- Job bloqueado sin ejecutar: https://github.com/FiveTechSoft/Core/actions/runs/36682216405
+- Pages desplegado: https://github.com/FiveTechSoft/Core/actions/runs/36682216563
 - Prueba manual existente: [quickstart](quickstart.md)

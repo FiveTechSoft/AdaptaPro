@@ -125,7 +125,7 @@
   <line x1="116" y1="712" x2="624" y2="712" stroke="#2a4a55" stroke-width="1.2"/>
   <text class="small" x="116" y="750">SQLite en navegador · IndexedDB · datos de demo</text>
   <text class="small" x="116" y="782">Sin backend multiusuario ni packs ejecutables</text>
-  <text class="tiny" x="116" y="808" fill="#5f7b8d">github.com/FiveTechSoft/AdaptaPro</text>
+  <text class="tiny" x="116" y="808" fill="#5f7b8d">github.com/FiveTechSoft/Core</text>
 
   <!-- arrow 1: fork -->
   <path d="M678,512 C745,474 855,474 922,502" fill="none" stroke="#4fd8c8" stroke-width="5" stroke-linecap="round" marker-end="url(#arrTeal)"/>

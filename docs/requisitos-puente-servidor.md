@@ -96,10 +96,10 @@ No pedir credenciales en la respuesta. Este documento no ordena al administrador
 ## Fuentes
 
 Código actual y contratos:
-- https://github.com/FiveTechSoft/AdaptaPro/blob/main/cloudflare/worker.mjs
-- https://github.com/FiveTechSoft/AdaptaPro/blob/main/instinct-central-client.mjs
-- https://github.com/FiveTechSoft/AdaptaPro/blob/main/instinct-central-ui.mjs
-- https://github.com/FiveTechSoft/AdaptaPro/blob/main/docs/quickstart.md (modo Gmail manual y roadmap, no autoridad para despliegue automático)
+- https://github.com/FiveTechSoft/Core/blob/main/cloudflare/worker.mjs
+- https://github.com/FiveTechSoft/Core/blob/main/instinct-central-client.mjs
+- https://github.com/FiveTechSoft/Core/blob/main/instinct-central-ui.mjs
+- https://github.com/FiveTechSoft/Core/blob/main/docs/quickstart.md (modo Gmail manual y roadmap, no autoridad para despliegue automático)
 
 Documentación oficial consultada 2026-09-30:
 - https://nodejs.org/en/about/previous-releases (Node 24/22 LTS, 20 EOL)

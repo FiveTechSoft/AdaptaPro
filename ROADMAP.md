@@ -83,7 +83,7 @@ Guía paso a paso: [Configurar Gmail OAuth para Pages](docs/setup-gmail-oauth.md
 2. Biblioteca de APIs: habilitar Gmail API.
 3. Google Auth Platform: Branding (nombre/contacto), Audience (External para Gmail personal), Testing y test user con el buzón ERP.
 4. Data Access: `https://www.googleapis.com/auth/gmail.send` y `https://www.googleapis.com/auth/gmail.readonly`. No modify ni acceso completo. send es sensible; readonly restringido. Ampliar usuarios/publicar puede exigir verificación Google.
-5. Clients: OAuth client de tipo Web application. JavaScript origin: `https://fivetechsoft.github.io`, SIN ruta `/AdaptaPro/`. El token/popup GIS no usa un client secret ni requiere un redirect URI inventado.
+5. Clients: OAuth client de tipo Web application. JavaScript origin: `https://fivetechsoft.github.io`, SIN ruta `/Core/`. El token/popup GIS no usa un client secret ni requiere un redirect URI inventado.
 6. Configurar Client ID público (termina en `.apps.googleusercontent.com`). No subir Client Secret.
 7. Cargar Google Identity Services desde `https://accounts.google.com/gsi/client`, autorizar con botón, verificar perfil y scopes concedidos.
 

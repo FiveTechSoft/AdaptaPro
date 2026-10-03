@@ -110,6 +110,19 @@ const cyc = await page.evaluate(async () => {
 });
 ck('cycle inserta el pedido con AP.exec y audita', !cyc.hidden && cyc.o1 === cyc.o0 + 1 && cyc.a1 === cyc.a0 + 1, JSON.stringify(cyc));
 
+const resv = await page.evaluate(async () => {
+  for (const s of ['SKU-451', 'SKU-713']) AP.exec({ sql: 'UPDATE inventory SET reserved=on_hand-1 WHERE sku=?', args: [s], audit: false });
+  const snap = {};
+  for (const s of ['SKU-451', 'SKU-713']) snap[s] = AP.one('SELECT reserved,on_hand FROM inventory WHERE sku=?', [s]);
+  AP.lastModelCycleAt = Date.now();
+  await AP.cycle();
+  const line = AP.one('SELECT sku,quantity FROM sales_order_lines ORDER BY rowid DESC LIMIT 1');
+  const now = AP.one('SELECT reserved FROM inventory WHERE sku=?', [line.sku]).reserved;
+  const audit = AP.one("SELECT details_json FROM audit_log WHERE action='pedido_generado' ORDER BY rowid DESC LIMIT 1").details_json;
+  return { snap, line, now, audit };
+});
+ck('cycle reserva la cantidad pedida, limitada por existencias', resv.now === Math.min(resv.snap[resv.line.sku].reserved + resv.line.quantity, resv.snap[resv.line.sku].on_hand) && resv.now === resv.snap[resv.line.sku].on_hand && JSON.parse(resv.audit).reserved === resv.now, JSON.stringify(resv));
+
 const decideP = page.evaluate((id) => AP.decide(id, 'aprobada'), prop.last.id).catch((e) => 'ERROR: ' + e.message);
 await page.waitForSelector('#ap-decision-form', { timeout: 15000 });
 await page.fill('#ap-actor', 'TEST');
@@ -281,6 +294,20 @@ const sep = await page.evaluate(async () => {
 });
 ck('contexto por agente: ALPHA y GAMMA ven proveedores, BETA no', sep.ctx.alpha.join(',') === 'stock,orders,proposals,providers' && sep.ctx.beta.join(',') === 'stock,orders,proposals' && sep.ctx.gamma.join(',') === 'stock,proposals,providers' && sep.ctx.def.join(',') === 'stock,orders,proposals', JSON.stringify(sep.ctx));
 ck('prompt, herramientas y auditoría separados por agente', !sep.busy0 && sep.caps.length === 3 && /Eres GAMMA/.test(sep.caps[0].sys) && !sep.caps[0].tools && /Analizando con GAMMA/.test(sep.caps[0].note) && sep.caps[0].keys.includes('providers') && /Eres BETA/.test(sep.caps[1].sys) && !sep.caps[1].tools && !sep.caps[1].keys.includes('providers') && /Eres ALPHA/.test(sep.caps[2].sys) && sep.caps[2].tools && sep.aud.join(',') === 'ALPHA,BETA,GAMMA', JSON.stringify({ busy0: sep.busy0, sys: sep.caps.map((c) => c.sys.slice(0, 11)), tools: sep.caps.map((c) => c.tools), aud: sep.aud }));
+
+const cond = await page.evaluate(async () => {
+  const caps = [];
+  AP.modelCall = async (messages) => {
+    const raw = (messages[1].content.match(/Datos vigentes: (\{.*\})\nSolicitud:/) || [])[1] || '{}';
+    caps.push(Object.keys(JSON.parse(raw)));
+    return { content: 'STUB CONTEXTO' };
+  };
+  await AP.ask('Revisa la producción de materiales', true, 'ALPHA');
+  await AP.ask('¿Qué hay en planificación?', true, 'ALPHA');
+  await AP.ask('Consulta general', true, 'ALPHA');
+  return { caps };
+});
+ck('contexto añade producción o planificación solo si la pregunta lo requiere', cond.caps.length === 3 && cond.caps[0].includes('production') && !cond.caps[0].includes('planning') && !cond.caps[1].includes('production') && cond.caps[1].includes('planning') && !cond.caps[2].includes('production') && !cond.caps[2].includes('planning'), JSON.stringify(cond.caps));
 
 const metaLen = await page.evaluate(() => { const m = document.querySelector('meta[name=description]'); return m ? m.content.length : 0; });
 ck('meta description presente en el head', metaLen > 40, String(metaLen));

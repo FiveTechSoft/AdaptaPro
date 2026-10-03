@@ -51,7 +51,10 @@ export const APCommands = {
     if(AP.busy||!AP.db)return;AP.busy=true;if(!quiet){AP.tab('chat');AP.append(text,'user');}AP.setAgentState(st,'Analizando',true);AP.note('Analizando con '+who+'...');
     try{
       const tools=[{type:'function',function:{name:'proponer_reposicion',description:'Crear una propuesta local de reposición. La revisión de cumplimiento actual la deja pendiente incluso en Autónomo; no compra ni cambia stock.',parameters:{type:'object',properties:{sku:{type:'string'},reason:{type:'string'}},required:['sku','reason']}}}];
-      const messages=[{role:'system',content:APCorePrompts[who]},{role:'user',content:'Modo actual: '+AP.mode+'. Datos vigentes: '+JSON.stringify(AP.context(who))+'\nSolicitud: '+text}];
+      const ctx=AP.context(who);const req=String(text);
+      if(/producci|fabricaci|materiales|taller/i.test(req))ctx.production=AP.query('SELECT * FROM production_jobs ORDER BY due_at');
+      if(/planific|tareas|prioridad|calendario|programaci/i.test(req))ctx.planning=AP.query('SELECT * FROM planning_tasks ORDER BY due_at');
+      const messages=[{role:'system',content:APCorePrompts[who]},{role:'user',content:'Modo actual: '+AP.mode+'. Datos vigentes: '+JSON.stringify(ctx)+'\nSolicitud: '+text}];
       let m=await AP.modelCall(messages,who==='ALPHA'?tools:undefined);
       if(who==='ALPHA'&&m.tool_calls?.length){messages.push(m);for(const c of m.tool_calls.slice(0,2)){let result;try{if(c.function.name!=='proponer_reposicion')throw Error('Herramienta no admitida');result=await AP.command({cmd:'propuesta_crear',payload:JSON.parse(c.function.arguments),actor:who});}catch(e){result='Error: '+e.message;}messages.push({role:'tool',tool_call_id:c.id,content:result});}m=await AP.modelCall(messages);}
       if(!quiet)AP.append(m.content||'No hubo respuesta del agente.','ai');AP.audit(who,'analisis_completado','agent',who,{model:AP.activeModel||AP.model});await AP.persist();AP.render();AP.setAgentState(st,'Disponible',false);AP.note('Análisis finalizado · '+AP.query("SELECT count(*) AS n FROM approval_queue WHERE status='pendiente'")[0].n+' pendientes');
@@ -64,7 +67,7 @@ export const APCommands = {
     try{
       const sku=count%2?'SKU-713':'SKU-451',qty=2+(count%3),id='PED-'+(1001+AP.one('SELECT count(*) AS n FROM sales_orders').n),at=new Date().toISOString();
       const product=AP.one('SELECT sale_price_cents FROM products WHERE sku=?',[sku]);
-      AP.tx(()=>{AP.exec({sql:'INSERT INTO sales_orders VALUES(?,?,?,?,?)',args:[id,'Canal digital','España',at,'pendiente'],audit:false});AP.exec({sql:'INSERT INTO sales_order_lines VALUES(?,?,?,?,?)',args:[id,1,sku,qty,product.sale_price_cents],actor:'BETA',action:'pedido_generado',entity:'sales_order',id,detail:{sku,quantity:qty,source:'motor_local'}});});
+      AP.tx(()=>{AP.exec({sql:'INSERT INTO sales_orders VALUES(?,?,?,?,?)',args:[id,'Canal digital','España',at,'pendiente'],audit:false});const inv=AP.one('SELECT on_hand,reserved FROM inventory WHERE sku=?',[sku]);const reserved=Math.min(inv.reserved+qty,inv.on_hand);AP.exec({sql:'UPDATE inventory SET reserved=?,updated_at=? WHERE sku=?',args:[reserved,at,sku],audit:false});AP.exec({sql:'INSERT INTO sales_order_lines VALUES(?,?,?,?,?)',args:[id,1,sku,qty,product.sale_price_cents],actor:'BETA',action:'pedido_generado',entity:'sales_order',id,detail:{sku,quantity:qty,source:'motor_local',reserved_before:inv.reserved,reserved}});});
       await AP.persist();AP.render();AP.setAgentState('beta','Pedido registrado',false);
       if(AP.one('SELECT needs_restock FROM stock_status WHERE sku=?',[sku]).needs_restock){
         AP.setAgentState('alpha','Revisando pedido',true);

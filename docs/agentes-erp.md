@@ -25,25 +25,25 @@ Hay tres nombres operativos: ALPHA, BETA y GAMMA. No son tres modelos independie
 - **Límites:** SKU desconocido o sin alerta se rechaza; propuesta pendiente duplicada no se crea; sin proveedor activo falla. No reserva ni aumenta stock. En el modo Autónomo existe una rama de autoaprobación si cumplimiento fuese `pass`, pero el evaluador actual siempre devuelve `review`: las nuevas propuestas quedan pendientes en ambos modos.
 - **No puede hacer:** comprar, pagar, dar por recibida mercancía, editar precios, fechas, personal o producción. Una persona decide la propuesta con responsable y motivo. Otra acción explícita registra recepción local después de verificar entrega.
 - **Ejemplo probado:** SKU-451 tiene 18 físicos, 12 reservados, 6 disponibles, umbral 20 y objetivo 80. La propuesta nueva es de 74 unidades (salvo mínimo superior), queda pendiente y deja stock intacto. La semilla ya contiene una propuesta pendiente de ese SKU; el ensayo de creación retiró esa propuesta en su base aislada para probar una nueva.
-- **Propuesto:** dar al chat contexto por módulo, separar análisis de herramienta y cubrir demanda de pedidos con reservas reales. No se implementó en esta revisión.
+- **Propuesto:** dar al chat contexto por módulo (parcial desde el 3 de octubre de 2026: producción y planificación entran si la pregunta lo pide) y cubrir demanda de pedidos con reservas reales (hecho: `AP.cycle()` reserva la cantidad pedida). Sigue pendiente separar análisis de herramienta.
 
 ## BETA: ventas y señales de demanda
 
 - **Función exacta:** `AP.cycle()` crea un pedido ficticio cada 30 segundos, solo con pestaña visible, base lista y sin otro ciclo/chat ocupado. Usa cliente fijo "Canal digital", región "España", estado pendiente; alterna SKU-451/SKU-713 y cantidades 2, 3, 4 según contador de auditoría.
 - **Datos que lee:** contador de `pedido_generado`, número de pedidos, precio de venta del SKU, `stock_status`, propuestas existentes y tiempo del último análisis. Vistas de ventas/CRM/precios leen agregados locales.
 - **Decisiones que propone:** alertas de riesgo de stock para pedidos pendientes; seguimiento prioritario si el agregado de cliente supera dos pedidos; alerta de actividad tras cuatro pedidos del motor. Son reglas de demo, no probabilidades ni pronóstico entrenado.
-- **Disparadores:** temporizador visible; las consultas "BETA · Analizar pedidos/clientes/precios/cartera" llaman realmente `AP.ask()` y por tanto ALPHA. No existe prompt de modelo BETA separado en el chat normal.
-- **Efectos locales:** inserta `sales_orders`, `sales_order_lines` y auditoría BETA. No modifica `inventory.reserved` ni físico; un pedido nuevo no recalcula reservas.
+- **Disparadores:** temporizador visible; las consultas "BETA · Analizar pedidos/clientes/precios/cartera" llaman `AP.ask(texto, false, 'BETA')` con el prompt `APCorePrompts.BETA` y contexto sin proveedores (desde el 3 de octubre de 2026).
+- **Efectos locales:** inserta `sales_orders`, `sales_order_lines` y auditoría BETA; en la misma transacción reserva `min(reservado + pedido, existencias)` en `inventory.reserved` (no toca el físico) y lo refleja en `reserved_before`/`reserved` del evento `pedido_generado`.
 - **No puede hacer:** contactar clientes, emitir factura, cobrar, confirmar entrega, aceptar venta real, cambiar precios o asignar descuentos.
-- **Ejemplo probado:** un ciclo añade exactamente un pedido y un evento BETA; inventario y reservas son idénticos antes y después.
+- **Ejemplo probado:** un ciclo añade exactamente un pedido y un evento BETA, y reserva la cantidad del SKU pedido (limitada por las existencias); el resto de las filas de inventario quedan idénticas antes y después.
 - **Propuesto:** ingerir pedidos reales, calcular demanda y sugerir precio con evidencia y revisión humana. No está implementado. Los gráficos de demanda/costes en el dashboard tienen arrays fijos, no resultados BETA.
 
 ## GAMMA: proveedores y logística
 
 - **Función exacta:** durante `AP.propose()`, SQL filtra proveedores activos del SKU, ordena por `lead_days ASC, unit_cost_cents ASC` y toma uno. El plazo tiene prioridad sobre el precio; el coste solo desempata. No es un análisis de un modelo independiente.
-- **Datos que lee:** `suppliers` y `supplier_products`: activo, SKU, días, coste y mínimo. Las vistas muestran opciones; el chat normal no recibe esas tablas.
+- **Datos que lee:** `suppliers` y `supplier_products`: activo, SKU, días, coste y mínimo. Las vistas muestran opciones; el chat ALPHA y el de GAMMA reciben esas tablas y el de BETA no (matriz de contextos).
 - **Decisión que propone:** asociar ese proveedor a la propuesta ALPHA y fijar su coste unitario/mínimo.
-- **Disparadores:** creación válida de reposición. El botón "GAMMA · Evaluar plazos" usa el chat ALPHA; no crea un ejecutor GAMMA aparte.
+- **Disparadores:** creación válida de reposición. El botón "GAMMA · Evaluar plazos" llama `AP.ask` con el prompt y contexto de GAMMA (desde el 3 de octubre de 2026); no crea un ejecutor GAMMA aparte.
 - **Efectos locales:** estado visual y auditoría `proveedor_seleccionado`; proveedor/coste quedan en la propuesta.
 - **No puede hacer:** emitir orden de compra, negociar, verificar stock del proveedor, contactar transportista, programar envío o prometer entrega. Los días son catálogo local, no disponibilidad confirmada.
 - **Ejemplo probado:** propuesta nueva de SKU-451 usa el proveedor que devuelve el orden SQL; al desactivar todos los proveedores, la creación falla con "No hay proveedor activo".
@@ -122,12 +122,14 @@ Chromium local, HTTP solo en 127.0.0.1, perfil nuevo y SQLite/Chart.js servidos 
 | Decisión humana | Estado aprobado, stock intacto | Sí |
 | Recarga | Propuestas conservadas en IndexedDB | Sí |
 
+La tabla registra la ejecución original de 17 casos. Tres filas han cambiado de contrato desde el 3 de octubre de 2026 y ahora se verifican en las suites actuales: el ciclo de BETA reserva stock (fila «BETA ciclo», hueco 3) y los botones BETA/GAMMA usan su propio prompt y contexto (filas «Botón BETA» y «Botón GAMMA», hueco 1).
+
 Además: `node instinct-gmail-test.mjs` (27 fixtures), `node cloudflare/worker.test.mjs` (validadores y cola con fetch simulado), `node scripts/validate-packs.mjs` (CO) pasaron. No son pruebas del servicio desplegado.
 
 ### Evidencia y reproducción
 
 - [Resultados detallados](evidencia-agentes/resultados-agentes.json)
-- [Ensayo reproducible](../scripts/test-agents.cjs): necesita Node, Google Chrome (o la variable `CHROME_BIN`) y `npm install --no-save playwright sql.js@1.13.0 chart.js@4.4.8` en la raíz. Ejecutar `node scripts/test-agents.cjs`. Solo usa 127.0.0.1; aborta red externa y simula modelo. El workflow `.github/workflows/erp-tests.yml` lo ejecuta en cada PR y push junto con `cloudflare/worker.test.mjs` y sube capturas y `resultados-agentes.json` como artefacto; espera a que `user_version` y la auditoría indiquen que migraciones y siembra terminaron antes de la primera aserción.
+- [Ensayo reproducible](../scripts/test-agents.cjs) (23 casos): necesita Node, Google Chrome (o la variable `CHROME_BIN`) y `npm install --no-save playwright sql.js@1.13.0 chart.js@4.4.8` en la raíz. Ejecutar `node scripts/test-agents.cjs`. Solo usa 127.0.0.1; aborta red externa y simula modelo. El workflow `.github/workflows/erp-tests.yml` lo ejecuta en cada PR y push junto con `cloudflare/worker.test.mjs` y sube capturas y `resultados-agentes.json` como artefacto; espera a que `user_version` y la auditoría indiquen que migraciones y siembra terminaron antes de la primera aserción.
 - [Suite de núcleo y chat local](../scripts/test-core.mjs) (33 casos: superficie `query`/`exec`, propuestas, decisiones, doble recepción y desempate de proveedores, reservas de BETA, escrituras de UI, chat con modelo simulado, prompts y contextos separados por agente, contexto condicional de producción/planificación, meta description y comprobaciones de móvil a 390×844) y [suite de migraciones en navegador](../scripts/test-migrations.mjs) (13 casos: primera carga, plan de migraciones, vistas, recarga y restablecimiento). Misma base de dependencias; servidor en puerto efímero, red externa abortada y motor de eventos detenido para que ninguna llamada real dependa de la red. El mismo workflow las ejecuta tras la suite de agentes.
 - [Agentes / auditoría local](evidencia-agentes/3-agentes.png)
 - [Subagentes jurídicos](evidencia-agentes/4-juridicos.png)

@@ -230,6 +230,18 @@ const after = await page.evaluate(() => ({
 ck('el agente responde en el chat local (ask extraído)', replied && /RESPUESTA LOCAL STUB/.test(after.last || ''), JSON.stringify(after));
 ck('auditoría analisis_completado registrada', after.audit === audit0 + 1, `${audit0} -> ${after.audit}`);
 ck('sin llamadas reales al modelo con el stub', modelCalls.length === 0, String(modelCalls.length));
+const metaLen = await page.evaluate(() => { const m = document.querySelector('meta[name=description]'); return m ? m.content.length : 0; });
+ck('meta description presente en el head', metaLen > 40, String(metaLen));
+await page.evaluate(() => AP.closeChat());
+await page.setViewportSize({ width: 390, height: 844 });
+await page.waitForTimeout(300);
+const mob = await page.evaluate(() => { const t = document.getElementById('ap-menu-toggle'); return { overflow: document.documentElement.scrollWidth - window.innerWidth, toggle: t ? getComputedStyle(t).display : 'ninguno' }; });
+ck('móvil sin desplazamiento horizontal', mob.overflow <= 1, String(mob.overflow));
+ck('móvil: botón de menú visible', mob.toggle !== 'none', mob.toggle);
+await page.click('#ap-menu-toggle');
+await page.waitForTimeout(350);
+const opened = await page.evaluate(() => document.getElementById('ap-sidebar').classList.contains('is-open'));
+ck('móvil: el menú abre la barra lateral', opened, String(opened));
 ck('sin errores de página', errors.length === 0, errors.join(' | ').slice(0, 300));
 if (consoleErrs.length) console.log('  INFO errores de consola:', consoleErrs.slice(0, 4).join(' | ').slice(0, 300));
 

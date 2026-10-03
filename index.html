@@ -4,7 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FiveTech ERP | Operaciones Inteligentes 2030</title>
-<script src="vendor/chart.js/4.4.8/chart.umd.js"></script>
+<meta name="description" content="FiveTech ERP: demo local de operaciones con agentes ALPHA, BETA y GAMMA, cumplimiento por país y datos ficticios en SQLite.">
+<meta property="og:title" content="FiveTech ERP | Operaciones Inteligentes 2030">
+<meta property="og:description" content="Demo local con agentes de inventario, pedidos y proveedores; datos ficticios solo en tu navegador.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fivetechsoft.github.io/AdaptaPro/">
+<script defer src="vendor/chart.js/4.4.8/chart.umd.js"></script>
 <script src="vendor/sql.js/1.13.0/sql-wasm.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -837,6 +842,7 @@
   });
 
   // ========== Charts ==========
+  const APChartsInit = () => { if (typeof Chart === 'undefined') return;
   const demandCtx = document.getElementById('demandChart').getContext('2d');
   new Chart(demandCtx, {
     type: 'bar',
@@ -920,6 +926,10 @@
       }
     }
   });
+  if (typeof applyTheme === 'function') applyTheme();
+  };
+  if (typeof Chart !== 'undefined') APChartsInit();
+  else document.addEventListener('DOMContentLoaded', APChartsInit, { once: true });
 
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => {
@@ -1071,7 +1081,7 @@ const APAgentCenter={selected:null,
     const box=document.getElementById('ap-agent-center');box.innerHTML='<div class="ap-agent-hero"><div class="agent-badge '+config.badge+'">'+config.icon+'</div><div><h2>'+a+'</h2><p>'+config.role+' · SQLite local</p></div><button class="ap-agent-back" type="button">← Volver al panel</button></div><p class="ap-agent-story">'+config.story+'</p>'+APViews.tiles(summary)+related+'<h3>HISTORIAL DE ACTIVIDAD · '+total+' EVENTOS</h3><div class="ap-agent-timeline">'+timeline+'</div>';box.querySelector('.ap-agent-back').onclick=()=>this.back();}
 };document.querySelectorAll('[data-agent]').forEach(b=>b.addEventListener('click',()=>APAgentCenter.show(b.dataset.agent)));
 
-function applyTheme(){const light=localStorage.getItem('adaptapro-theme')==='light';document.body.dataset.theme=light?'light':'dark';document.getElementById('ap-theme').textContent=light?'🌙':'☀️';document.getElementById('ap-theme').title=light?'Activar modo oscuro':'Activar modo claro';const color=light?'#536781':'#94a3b8';for(const chart of Object.values(Chart.instances)){for(const axis of Object.values(chart.options.scales||{})){axis.ticks.color=color;axis.grid.color=light?'#dde7f2':'rgba(80, 140, 255, 0.08)';}chart.update('none');}}
+function applyTheme(){const light=localStorage.getItem('adaptapro-theme')==='light';document.body.dataset.theme=light?'light':'dark';document.getElementById('ap-theme').textContent=light?'🌙':'☀️';document.getElementById('ap-theme').title=light?'Activar modo oscuro':'Activar modo claro';const color=light?'#536781':'#94a3b8';for(const chart of Object.values(typeof Chart!=='undefined'?Chart.instances:{})){for(const axis of Object.values(chart.options.scales||{})){axis.ticks.color=color;axis.grid.color=light?'#dde7f2':'rgba(80, 140, 255, 0.08)';}chart.update('none');}}
 document.getElementById('ap-theme').addEventListener('click',()=>{localStorage.setItem('adaptapro-theme',document.body.dataset.theme==='light'?'dark':'light');applyTheme()});applyTheme();
 const APFullscreen={button:document.getElementById('ap-fullscreen'),update(){const active=!!document.fullscreenElement;this.button.textContent=active?'⤡':'⛶';this.button.setAttribute('aria-pressed',String(active));this.button.setAttribute('aria-label',active?'Salir de pantalla completa':'Entrar en pantalla completa');this.button.title=active?'Salir de pantalla completa':'Entrar en pantalla completa'},async toggle(){try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}catch(e){this.button.title='Pantalla completa no disponible en este navegador'}this.update()}};APFullscreen.button.addEventListener('click',()=>APFullscreen.toggle());document.addEventListener('fullscreenchange',()=>APFullscreen.update());APFullscreen.update();
 function updateTicker(){const shown=localStorage.getItem('adaptapro-ticker')!=='false';document.getElementById('ap-ticker').hidden=!shown;const b=document.getElementById('ap-ticker-toggle');b.title=shown?'Ocultar mercados':'Mostrar mercados';b.setAttribute('aria-label',b.title);b.setAttribute('aria-pressed',String(shown))};document.getElementById('ap-ticker-toggle').addEventListener('click',()=>{localStorage.setItem('adaptapro-ticker',String(document.getElementById('ap-ticker').hidden));updateTicker()});updateTicker();setInterval(()=>{const clock=document.getElementById('ap-broadcast-clock');if(clock)clock.textContent=new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'})},1000);

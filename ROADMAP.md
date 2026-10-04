@@ -2,6 +2,20 @@
 
 Actualizado: 2 octubre 2026. Plan aprobado: ALPHA/BETA/GAMMA del ERP ↔ chat con opencode (Mimo 2.6 Flash Free) como cerebro. Decisión del 2 de octubre de 2026: **no se usa transporte de email de Instinct**; los agentes solo conversan por chat dentro del ERP (`AP.ask` → proxy → opencode) y esa vía está verificada en Pages con el modelo real (14/14 y 6/6). El diseño de email firmado documentado más abajo queda como material histórico no ejercitado, no como trabajo pendiente.
 
+## Registro de agentes: prueba temporal y reutilizable
+
+4 de octubre de 2026. La Action [Registro de agentes](.github/workflows/agentes-log.yml) hace trabajar a ALPHA, BETA y GAMMA cada 6 horas y guarda el resultado en la rama `registro`. Es una sesión de prueba en GitHub, no el log del PC. [Guía del registro](docs/registro-agentes.md).
+
+- [x] Prueba automática instalada, con ejecución manual disponible.
+- [ ] Revisar los resultados y confirmar que los agentes funcionan bien. Olin decide cuándo damos la verificación por terminada.
+- [ ] Entonces desactivar la Action, sin borrarla. Conservar el workflow, `scripts/log-agentes.mjs`, la guía y la rama `registro` para repetir la prueba en el futuro.
+
+**Ahora sigue activa. No se desactiva todavía.**
+
+Para desactivarla: GitHub > Actions > "Registro de agentes" > menú de tres puntos > **Disable workflow**. Esto detiene las ejecuciones sin borrar los archivos ni los registros.
+
+Para repetirla: en la misma pantalla, **Enable workflow** y después **Run workflow** para una prueba manual. Al habilitarla también vuelve el horario de cada 6 horas; al terminar la nueva verificación, desactivarla otra vez.
+
 ## Transición: del monolito a un core extensible
 
 [Diagrama de la arquitectura objetivo](docs/diagrama-core.svg). Todo el ERP (datos, vistas, agentes, modos) vive hoy en `index.html` (126 KB; eran 163 KB antes de extraer `core/*.mjs`) con SQL crudo en la UI y migraciones ad-hoc en JS. Un pack no puede entrar sin tocar el núcleo, y un PR no es revisable porque no hay dónde separar. La transición tiene tres entregables y un orden fijo: cada paso deja el sistema funcionando.

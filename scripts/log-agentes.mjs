@@ -2,18 +2,12 @@
 // Uso: node scripts/log-agentes.mjs   (necesita: npm i playwright sql.js@1.13.0 chart.js@4.4.8)
 import { chromium } from 'playwright';
 import fs from 'node:fs';
-import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const out = path.join(root, 'registro');
 fs.mkdirSync(out, { recursive: true });
-const types = { '.wasm': 'application/wasm', '.mjs': 'text/javascript', '.js': 'text/javascript', '.html': 'text/html', '.json': 'application/json', '.css': 'text/css', '.svg': 'image/svg+xml' };
-const server = http.createServer((req, res) => {
-  const p = path.join(root, req.url === '/' ? 'index.html' : decodeURIComponent(req.url.split('?')[0]));
-  try { res.setHeader('Content-Type', types[path.extname(p)] || 'text/plain'); res.end(fs.readFileSync(p)); } catch { res.statusCode = 404; res.end('not found'); }
-}).listen(0, '127.0.0.1');
-await new Promise((r) => server.on('listening', r));
+const URL_APP = process.env.CORE_URL || 'https://fivetechsoft.github.io/Core/'; // la web publicada: el modelo solo acepta ese origen (CORS)
 const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN || (fs.existsSync('/usr/bin/google-chrome') ? '/usr/bin/google-chrome' : undefined), headless: true, args: ['--no-sandbox'] });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1050 } });
 const errores = [], red = [];
@@ -21,20 +15,11 @@ page.on('pageerror', (e) => errores.push({ tipo: 'pagina', mensaje: e.message })
 page.on('console', (m) => { if (m.type() === 'error') errores.push({ tipo: 'consola', mensaje: m.text().slice(0, 300) }); });
 await page.route('**/*', async (route) => {
   const u = route.request().url();
-  if (u.startsWith('http://127.0.0.1:')) {
-    // sql.js y chart.js salen de node_modules si la copia local falta (igual que las pruebas del repo)
-    let file;
-    if (u.includes('sql-wasm.js')) file = 'node_modules/sql.js/dist/sql-wasm.js';
-    else if (u.includes('sql-wasm.wasm')) file = 'node_modules/sql.js/dist/sql-wasm.wasm';
-    else if (u.includes('chart.js')) file = 'node_modules/chart.js/dist/chart.umd.js';
-    if (file && !fs.existsSync(path.join(root, new URL(u).pathname))) return route.fulfill({ path: path.join(root, file), contentType: file.endsWith('.wasm') ? 'application/wasm' : 'text/javascript' });
-    return route.continue();
-  }
-  if (/api\.fivetech(soft|support)\.com/.test(u)) return route.continue();
+  if (u.startsWith(URL_APP.slice(0, URL_APP.indexOf('/', 8))) || /api\.fivetech(soft|support)\.com/.test(u)) return route.continue();
   return route.abort(); // TradingView, YouTube, Google: ruido que no es de los agentes
 });
 page.on('response', (r) => { const u = r.url(); if (/api\.fivetech(soft|support)\.com/.test(u)) red.push({ url: u.replace(/\?.*/, ''), estado: r.status() }); });
-await page.goto('http://127.0.0.1:' + server.address().port);
+await page.goto(URL_APP);
 await page.waitForFunction(() => { try { return !!(window.AP && AP.db && AP.rows('SELECT count(*) AS n FROM audit_log')[0].n > 0); } catch { return false; } }, null, { timeout: 60000 });
 await page.evaluate(() => {
   clearInterval(AP.cycleTimer);
@@ -69,11 +54,11 @@ const informe = {
   app: 'Core', ejecutado_en: new Date().toISOString(), origen: 'GitHub Actions (Chrome sin cabeza), no es el navegador del usuario',
   veredicto: llamadas.length && llamadas.every((l) => l.ok) && !errores.length ? 'OK' : llamadas.some((l) => l.ok) ? 'PARCIAL' : 'CON_ERRORES',
   eventos_antes: antes, eventos_despues: final.total, pendientes_aprobacion: final.pendientes,
-  pasos, llamadas_modelo: llamadas, red_api_modelo: red.slice(0, 40), errores_pagina: errores.slice(0, 40),
+  pasos, llamadas_modelo: llamadas, red_api_modelo: red.slice(0, 40), errores_pagina: [...new Map(errores.map((e) => [e.mensaje.slice(0, 120), e])).values()].slice(0, 20),
   por_agente: final.por_agente, eventos_recientes: final.eventos,
 };
 const txt = JSON.stringify(informe, null, 1) + '\n';
 fs.writeFileSync(path.join(out, 'ultimo.json'), txt);
 fs.writeFileSync(path.join(out, 'actividad-' + informe.ejecutado_en.slice(0, 10) + '.json'), txt);
 console.log('Veredicto:', informe.veredicto, '| llamadas al modelo:', llamadas.length, 'ok:', llamadas.filter((l) => l.ok).length, '| errores de pagina:', errores.length);
-await browser.close(); server.close();
+await browser.close();

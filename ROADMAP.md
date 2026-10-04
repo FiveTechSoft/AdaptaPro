@@ -4,7 +4,7 @@ Actualizado: 2 octubre 2026. Plan aprobado: ALPHA/BETA/GAMMA del ERP ↔ chat co
 
 ## Transición: del monolito a un core extensible
 
-[Diagrama de la arquitectura objetivo](docs/diagrama-core.svg). Todo el ERP (datos, vistas, agentes, modos) vive hoy en `index.html` (163 KB) con SQL crudo en la UI y migraciones ad-hoc en JS. Un pack no puede entrar sin tocar el núcleo, y un PR no es revisable porque no hay dónde separar. La transición tiene tres entregables y un orden fijo: cada paso deja el sistema funcionando.
+[Diagrama de la arquitectura objetivo](docs/diagrama-core.svg). Todo el ERP (datos, vistas, agentes, modos) vive hoy en `index.html` (126 KB; eran 163 KB antes de extraer `core/*.mjs`) con SQL crudo en la UI y migraciones ad-hoc en JS. Un pack no puede entrar sin tocar el núcleo, y un PR no es revisable porque no hay dónde separar. La transición tiene tres entregables y un orden fijo: cada paso deja el sistema funcionando.
 
 **Las dos misiones de los agentes, que no se mezclan:**
 

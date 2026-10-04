@@ -1,16 +1,16 @@
 {
  "app": "Core",
- "ejecutado_en": "2026-10-04T05:13:29.712Z",
+ "ejecutado_en": "2026-10-04T05:15:38.990Z",
  "origen": "GitHub Actions (Chrome sin cabeza), no es el navegador del usuario",
- "veredicto": "CON_ERRORES",
+ "veredicto": "PARCIAL",
  "eventos_antes": 1,
- "eventos_despues": 2,
+ "eventos_despues": 5,
  "pendientes_aprobacion": 1,
  "pasos": [
   {
    "paso": "BETA genera un pedido (ciclo autonomo)",
    "ok": true,
-   "ms": 36,
+   "ms": 27,
    "resultado": {
     "pedidos_nuevos": 1
    }
@@ -18,179 +18,125 @@
   {
    "paso": "ALPHA responde con el modelo real",
    "ok": true,
-   "ms": 24417,
+   "ms": 20158,
    "resultado": {
     "ultima_llamada": {
-     "ms": 24413,
-     "ok": false,
-     "error": "Failed to fetch"
+     "ms": 7852,
+     "ok": true,
+     "modelo": "mimo-v2.6-flash-free",
+     "respuesta": "Revisión de stock (modo **Supervisado**):\n\n- **SKU-451 (Tejido técnico azul, rollo):** on_hand 18, reservado 14, **disponible 4**, punto de reposición 20, objetivo 80. `needs_restock: 1` → hay riesgo de rotura, sobre todo teniendo en cuenta el pedido pendiente PED-1002 (25 uds., LATAM) y PED-1003 (2 uds.).\n- **SKU-208 (Cierre industrial, caja):** disponible 31, por encima de su punto de reposición",
+     "herramientas": []
     },
     "estado_agente": {
-     "actor": "BETA",
-     "action": "pedido_generado"
+     "actor": "ALPHA",
+     "action": "analisis_completado"
     }
    }
   },
   {
    "paso": "BETA responde con el modelo real",
    "ok": true,
-   "ms": 27510,
+   "ms": 11104,
    "resultado": {
     "ultima_llamada": {
-     "ms": 27507,
-     "ok": false,
-     "error": "Failed to fetch"
+     "ms": 11091,
+     "ok": true,
+     "modelo": "mimo-v2.6-flash-free",
+     "respuesta": "**Resumen de pedidos**\n\n- **PED-1001 (España, confirmado):** SKU-451 × 12 y SKU-208 × 5.\n- **PED-1002 (LATAM, pendiente):** SKU-451 × 25.\n- **PED-1003 (España, pendiente):** SKU-451 × 2.\n\n**Riesgo de stock**\n\n- **SKU-451 – Tejido técnico azul:** disponible 4, reservado 14 y existencias 18. Hay **39 unidades solicitadas** frente a **4 disponibles**, con un déficit acumulado de **35** si se atiende ",
+     "herramientas": []
     },
     "estado_agente": {
      "actor": "BETA",
-     "action": "pedido_generado"
+     "action": "analisis_completado"
     }
    }
   },
   {
    "paso": "GAMMA responde con el modelo real",
    "ok": true,
-   "ms": 34429,
+   "ms": 9574,
    "resultado": {
     "ultima_llamada": {
-     "ms": 34426,
-     "ok": false,
-     "error": "Failed to fetch"
+     "ms": 9562,
+     "ok": true,
+     "modelo": "mimo-v2.6-flash-free",
+     "respuesta": "Con los datos vigentes hay una única propuesta pendiente:\n\n**PROP-001 — SKU-451 (Tejido técnico azul, rollo)**\n- Cantidad propuesta: 80 unidades\n- Estado: pendiente\n\n**Comparativa de proveedores aplicable**\n\n| Proveedor | SKU | Plazo (lead_days) | Coste unitario | Pedido mínimo |\n|---|---|---|---|---|\n| PROV-01 Textiles Sierra S.L. | SKU-451 | 4 días | 3.400 cents (34,00 €) | 10 |\n| PROV-02 Compon",
+     "herramientas": []
     },
     "estado_agente": {
-     "actor": "BETA",
-     "action": "pedido_generado"
+     "actor": "GAMMA",
+     "action": "analisis_completado"
     }
    }
   }
  ],
  "llamadas_modelo": [
   {
-   "ms": 24413,
-   "ok": false,
-   "error": "Failed to fetch"
+   "ms": 12292,
+   "ok": true,
+   "modelo": "mimo-v2.6-flash-free",
+   "respuesta": "",
+   "herramientas": [
+    "proponer_reposicion"
+   ]
   },
   {
-   "ms": 27507,
-   "ok": false,
-   "error": "Failed to fetch"
+   "ms": 7852,
+   "ok": true,
+   "modelo": "mimo-v2.6-flash-free",
+   "respuesta": "Revisión de stock (modo **Supervisado**):\n\n- **SKU-451 (Tejido técnico azul, rollo):** on_hand 18, reservado 14, **disponible 4**, punto de reposición 20, objetivo 80. `needs_restock: 1` → hay riesgo de rotura, sobre todo teniendo en cuenta el pedido pendiente PED-1002 (25 uds., LATAM) y PED-1003 (2 uds.).\n- **SKU-208 (Cierre industrial, caja):** disponible 31, por encima de su punto de reposición",
+   "herramientas": []
   },
   {
-   "ms": 34426,
-   "ok": false,
-   "error": "Failed to fetch"
+   "ms": 11091,
+   "ok": true,
+   "modelo": "mimo-v2.6-flash-free",
+   "respuesta": "**Resumen de pedidos**\n\n- **PED-1001 (España, confirmado):** SKU-451 × 12 y SKU-208 × 5.\n- **PED-1002 (LATAM, pendiente):** SKU-451 × 25.\n- **PED-1003 (España, pendiente):** SKU-451 × 2.\n\n**Riesgo de stock**\n\n- **SKU-451 – Tejido técnico azul:** disponible 4, reservado 14 y existencias 18. Hay **39 unidades solicitadas** frente a **4 disponibles**, con un déficit acumulado de **35** si se atiende ",
+   "herramientas": []
+  },
+  {
+   "ms": 9562,
+   "ok": true,
+   "modelo": "mimo-v2.6-flash-free",
+   "respuesta": "Con los datos vigentes hay una única propuesta pendiente:\n\n**PROP-001 — SKU-451 (Tejido técnico azul, rollo)**\n- Cantidad propuesta: 80 unidades\n- Estado: pendiente\n\n**Comparativa de proveedores aplicable**\n\n| Proveedor | SKU | Plazo (lead_days) | Coste unitario | Pedido mínimo |\n|---|---|---|---|---|\n| PROV-01 Textiles Sierra S.L. | SKU-451 | 4 días | 3.400 cents (34,00 €) | 10 |\n| PROV-02 Compon",
+   "herramientas": []
   }
  ],
- "red_api_modelo": [],
+ "red_api_modelo": [
+  {
+   "url": "https://api.fivetechsoft.com/zen/v1/models",
+   "estado": 200
+  },
+  {
+   "url": "https://api.fivetechsoft.com/zen/v1/chat/completions",
+   "estado": 200
+  },
+  {
+   "url": "https://api.fivetechsoft.com/zen/v1/models",
+   "estado": 200
+  },
+  {
+   "url": "https://api.fivetechsoft.com/zen/v1/chat/completions",
+   "estado": 200
+  },
+  {
+   "url": "https://api.fivetechsoft.com/zen/v1/models",
+   "estado": 200
+  },
+  {
+   "url": "https://api.fivetechsoft.com/zen/v1/chat/completions",
+   "estado": 200
+  },
+  {
+   "url": "https://api.fivetechsoft.com/zen/v1/models",
+   "estado": 200
+  },
+  {
+   "url": "https://api.fivetechsoft.com/zen/v1/chat/completions",
+   "estado": 200
+  }
+ ],
  "errores_pagina": [
-  {
-   "tipo": "consola",
-   "mensaje": "Failed to load resource: net::ERR_FAILED"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Failed to load resource: net::ERR_FAILED"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Failed to load resource: net::ERR_FAILED"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Failed to load resource: net::ERR_FAILED"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Access to fetch at 'https://api.fivetechsoft.com/zen/v1/models' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the header with a"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Failed to load resource: net::ERR_FAILED"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Access to fetch at 'https://api.fivetechsoft.com/zen/v1/chat/completions' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the hea"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Failed to load resource: net::ERR_FAILED"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Access to fetch at 'https://api.fivetechsupport.com/zen/v1/models' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the header wit"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Failed to load resource: net::ERR_FAILED"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Access to fetch at 'https://api.fivetechsupport.com/zen/v1/chat/completions' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the "
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Failed to load resource: net::ERR_FAILED"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Access to fetch at 'https://api.fivetechsoft.com/zen/v1/models' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the header with a"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Failed to load resource: net::ERR_FAILED"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Access to fetch at 'https://api.fivetechsoft.com/zen/v1/chat/completions' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the hea"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Failed to load resource: net::ERR_FAILED"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Access to fetch at 'https://api.fivetechsupport.com/zen/v1/models' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the header wit"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Failed to load resource: net::ERR_FAILED"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Access to fetch at 'https://api.fivetechsupport.com/zen/v1/chat/completions' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the "
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Failed to load resource: net::ERR_FAILED"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Access to fetch at 'https://api.fivetechsoft.com/zen/v1/models' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the header with a"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Failed to load resource: net::ERR_FAILED"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Access to fetch at 'https://api.fivetechsoft.com/zen/v1/chat/completions' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Failed to load resource: net::ERR_FAILED"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Access to fetch at 'https://api.fivetechsupport.com/zen/v1/models' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the header wit"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Failed to load resource: net::ERR_FAILED"
-  },
-  {
-   "tipo": "consola",
-   "mensaje": "Access to fetch at 'https://api.fivetechsupport.com/zen/v1/chat/completions' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the "
-  },
   {
    "tipo": "consola",
    "mensaje": "Failed to load resource: net::ERR_FAILED"
@@ -199,16 +145,44 @@
  "por_agente": [
   {
    "actor": "BETA",
-   "n": 1
+   "n": 2
   },
   {
    "actor": "ALPHA",
+   "n": 2
+  },
+  {
+   "actor": "GAMMA",
    "n": 1
   }
  ],
  "eventos_recientes": [
   {
-   "occurred_at": "2026-10-04T05:12:03.166Z",
+   "occurred_at": "2026-10-04T05:15:38.674Z",
+   "actor": "GAMMA",
+   "action": "analisis_completado",
+   "entity_type": "agent",
+   "entity_id": "GAMMA",
+   "details_json": "{\"model\":\"mimo-v2.6-flash-free\"}"
+  },
+  {
+   "occurred_at": "2026-10-04T05:15:29.098Z",
+   "actor": "BETA",
+   "action": "analisis_completado",
+   "entity_type": "agent",
+   "entity_id": "BETA",
+   "details_json": "{\"model\":\"mimo-v2.6-flash-free\"}"
+  },
+  {
+   "occurred_at": "2026-10-04T05:15:17.994Z",
+   "actor": "ALPHA",
+   "action": "analisis_completado",
+   "entity_type": "agent",
+   "entity_id": "ALPHA",
+   "details_json": "{\"model\":\"mimo-v2.6-flash-free\"}"
+  },
+  {
+   "occurred_at": "2026-10-04T05:14:57.837Z",
    "actor": "BETA",
    "action": "pedido_generado",
    "entity_type": "sales_order",

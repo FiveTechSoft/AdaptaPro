@@ -1,0 +1,227 @@
+{
+ "app": "Core",
+ "ejecutado_en": "2026-10-04T05:13:29.712Z",
+ "origen": "GitHub Actions (Chrome sin cabeza), no es el navegador del usuario",
+ "veredicto": "CON_ERRORES",
+ "eventos_antes": 1,
+ "eventos_despues": 2,
+ "pendientes_aprobacion": 1,
+ "pasos": [
+  {
+   "paso": "BETA genera un pedido (ciclo autonomo)",
+   "ok": true,
+   "ms": 36,
+   "resultado": {
+    "pedidos_nuevos": 1
+   }
+  },
+  {
+   "paso": "ALPHA responde con el modelo real",
+   "ok": true,
+   "ms": 24417,
+   "resultado": {
+    "ultima_llamada": {
+     "ms": 24413,
+     "ok": false,
+     "error": "Failed to fetch"
+    },
+    "estado_agente": {
+     "actor": "BETA",
+     "action": "pedido_generado"
+    }
+   }
+  },
+  {
+   "paso": "BETA responde con el modelo real",
+   "ok": true,
+   "ms": 27510,
+   "resultado": {
+    "ultima_llamada": {
+     "ms": 27507,
+     "ok": false,
+     "error": "Failed to fetch"
+    },
+    "estado_agente": {
+     "actor": "BETA",
+     "action": "pedido_generado"
+    }
+   }
+  },
+  {
+   "paso": "GAMMA responde con el modelo real",
+   "ok": true,
+   "ms": 34429,
+   "resultado": {
+    "ultima_llamada": {
+     "ms": 34426,
+     "ok": false,
+     "error": "Failed to fetch"
+    },
+    "estado_agente": {
+     "actor": "BETA",
+     "action": "pedido_generado"
+    }
+   }
+  }
+ ],
+ "llamadas_modelo": [
+  {
+   "ms": 24413,
+   "ok": false,
+   "error": "Failed to fetch"
+  },
+  {
+   "ms": 27507,
+   "ok": false,
+   "error": "Failed to fetch"
+  },
+  {
+   "ms": 34426,
+   "ok": false,
+   "error": "Failed to fetch"
+  }
+ ],
+ "red_api_modelo": [],
+ "errores_pagina": [
+  {
+   "tipo": "consola",
+   "mensaje": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Access to fetch at 'https://api.fivetechsoft.com/zen/v1/models' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the header with a"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Access to fetch at 'https://api.fivetechsoft.com/zen/v1/chat/completions' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the hea"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Access to fetch at 'https://api.fivetechsupport.com/zen/v1/models' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the header wit"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Access to fetch at 'https://api.fivetechsupport.com/zen/v1/chat/completions' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the "
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Access to fetch at 'https://api.fivetechsoft.com/zen/v1/models' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the header with a"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Access to fetch at 'https://api.fivetechsoft.com/zen/v1/chat/completions' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the hea"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Access to fetch at 'https://api.fivetechsupport.com/zen/v1/models' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the header wit"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Access to fetch at 'https://api.fivetechsupport.com/zen/v1/chat/completions' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the "
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Access to fetch at 'https://api.fivetechsoft.com/zen/v1/models' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the header with a"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Access to fetch at 'https://api.fivetechsoft.com/zen/v1/chat/completions' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Access to fetch at 'https://api.fivetechsupport.com/zen/v1/models' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the header wit"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Access to fetch at 'https://api.fivetechsupport.com/zen/v1/chat/completions' from origin 'http://127.0.0.1:40697' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'https://fivetechsoft.github.io' that is not equal to the supplied origin. Have the server send the "
+  },
+  {
+   "tipo": "consola",
+   "mensaje": "Failed to load resource: net::ERR_FAILED"
+  }
+ ],
+ "por_agente": [
+  {
+   "actor": "BETA",
+   "n": 1
+  },
+  {
+   "actor": "ALPHA",
+   "n": 1
+  }
+ ],
+ "eventos_recientes": [
+  {
+   "occurred_at": "2026-10-04T05:12:03.166Z",
+   "actor": "BETA",
+   "action": "pedido_generado",
+   "entity_type": "sales_order",
+   "entity_id": "PED-1003",
+   "details_json": "{\"sku\":\"SKU-451\",\"quantity\":2,\"source\":\"motor_local\",\"reserved_before\":12,\"reserved\":14}"
+  },
+  {
+   "occurred_at": "2030-07-15T09:30:00Z",
+   "actor": "ALPHA",
+   "action": "propuesta_creada",
+   "entity_type": "purchase_proposal",
+   "entity_id": "PROP-001",
+   "details_json": "{\"sku\":\"SKU-451\",\"cantidad\":80}"
+  }
+ ]
+}

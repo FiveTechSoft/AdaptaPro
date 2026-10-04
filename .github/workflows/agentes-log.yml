@@ -1,0 +1,47 @@
+name: Registro de agentes (los agentes trabajan y dejan su log)
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  registro:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CHROME_BIN: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Dependencias (las mismas que las pruebas)
+        run: npm install --no-save playwright sql.js@1.13.0 chart.js@4.4.8
+      - name: Los agentes trabajan y se guarda el registro
+        run: node scripts/log-agentes.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: registro-agentes
+          path: registro/
+          if-no-files-found: ignore
+      - name: Publicar en la rama registro
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          cp -r registro /tmp/registro-nuevo
+          if git ls-remote --exit-code --heads origin registro >/dev/null 2>&1; then
+            git fetch origin registro
+            git checkout -f -B registro origin/registro
+          else
+            git checkout --orphan registro
+            git rm -rf . >/dev/null 2>&1 || true
+          fi
+          mkdir -p registro
+          cp -r /tmp/registro-nuevo/. registro/
+          printf '# Registro de agentes\n\nLo escribe la Action "Registro de agentes". Ultimo informe: registro/ultimo.json\n' > README.md
+          git add README.md registro
+          git commit -m "Registro de agentes $(date -u +%Y-%m-%dT%H:%MZ)" || echo "sin cambios"
+          git push origin registro
